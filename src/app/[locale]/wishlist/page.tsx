@@ -8,6 +8,7 @@ import { Button } from "@/components/common/Button/Button"
 import { useCart } from "@/hooks/useCart"
 import { toast } from "sonner"
 import { useWishlist } from "@/hooks/useWishlist"
+import { useNotifications } from '@/hooks/useNotifications';
 
 // Mock data for wishlist items
 const mockWishlistItems = [
@@ -51,6 +52,7 @@ export default function WishlistPage() {
   const router = useRouter()
   const { items: wishlistItems, removeItem: removeWishlistItem } = useWishlist()
   const { addItem, toggle } = useCart()
+  const { notify } = useNotifications();
 
   const handleRemoveItem = (id: number) => {
     removeWishlistItem(id)
@@ -74,7 +76,7 @@ export default function WishlistPage() {
     }
     addItem(product, 1)
     handleRemoveItem(id)
-    toast.success("Product added to cart!")
+    notify('success', 'Product added to cart!')
     toggle() // Open side cart
   }
 

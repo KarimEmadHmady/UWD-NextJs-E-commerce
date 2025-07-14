@@ -11,12 +11,13 @@ import { Badge } from "../common/Badge/Badge"
 import { useCart } from "@/hooks/useCart"
 import { useWishlist } from "@/hooks/useWishlist"
 import { Product as GlobalProduct } from "@/types/common"
-import { toast } from "sonner"
+import { useNotifications } from '@/hooks/useNotifications';
 
 export default function ProductGrid() {
   const { addItem } = useCart()
   const { items: wishlistItems, addItem: addWishlist, removeItem: removeWishlist } = useWishlist()
   const isInWishlist = (id: number) => wishlistItems.some((item) => item.id === id)
+  const { notify } = useNotifications();
   const handleWishlist = (e: React.MouseEvent, product: Product) => {
     e.preventDefault()
     e.stopPropagation()
@@ -34,10 +35,10 @@ export default function ProductGrid() {
     }
     if (isInWishlist(product.id)) {
       removeWishlist(product.id)
-      toast.success("Removed from wishlist")
+      notify('success', 'Removed from wishlist')
     } else {
       addWishlist(wishlistProduct)
-      toast.success("Added to wishlist")
+      notify('success', 'Added to wishlist')
     }
   }
 
@@ -58,7 +59,7 @@ export default function ProductGrid() {
       tags: [product.category]
     }
     addItem(commonProduct, 1)
-    toast.success("Added to cart successfully!")
+    notify('success', 'Added to cart successfully!')
   }
 
   const formatPrice = (price: number) => {

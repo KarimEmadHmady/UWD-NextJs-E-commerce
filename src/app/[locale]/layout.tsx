@@ -3,6 +3,7 @@ import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import Navbar from '@/components/common/Navbar/Navbar';
 import ReduxProvider from '@/redux/ReduxProvider';
+import NotificationContainer from '@/components/common/NotificationContainer';
 
 export default async function LocaleLayout({
   children,
@@ -21,6 +22,7 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body>
         <ReduxProvider>
+          <NotificationContainer />
           <NextIntlClientProvider>
             <Navbar />
             {children}

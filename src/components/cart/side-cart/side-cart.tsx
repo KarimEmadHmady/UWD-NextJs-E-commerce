@@ -7,7 +7,7 @@ import { Button } from "@/components/common/Button/Button"
 import CartItemComponent from "../CartItem/cart-item"
 import CartSummary from "../CartSummary/cart-summary"
 import { useCart } from "@/hooks/useCart"
-import { toast } from "sonner"
+import { useNotifications } from '@/hooks/useNotifications';
 
 interface SideCartProps {
   isOpen: boolean
@@ -26,6 +26,8 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
     removeItem
   } = useCart()
 
+  const { notify } = useNotifications();
+
   // منع التمرير على الجسم عند فتح السلة الجانبية
   useEffect(() => {
     if (isOpen) {
@@ -40,18 +42,18 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
 
   const handleUpdateQuantity = (id: number, quantity: number) => {
     updateItemQuantity(id, quantity)
-    toast.success("Cart updated successfully")
+    notify('success', 'Cart updated successfully')
   }
 
   const handleRemoveItem = (id: number) => {
     removeItem(id)
-    toast.success("Item removed from cart")
+    notify('success', 'Item removed from cart')
   }
 
   const moveToWishlist = (id: number) => {
     // هنا سنضيف منطق قائمة الرغبات لاحقاً
     handleRemoveItem(id)
-    toast.success("Item moved to wishlist")
+    notify('success', 'Item moved to wishlist')
   }
 
   const handleCheckout = () => {

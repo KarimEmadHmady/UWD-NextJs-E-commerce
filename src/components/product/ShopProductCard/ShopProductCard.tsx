@@ -7,7 +7,7 @@ import { Heart, Eye, Plus } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
 import { Badge } from "@/components/common/Badge/Badge"
 import { useCart } from "@/hooks/useCart"
-import { toast } from "sonner"
+import { useNotifications } from '@/hooks/useNotifications';
 import type { Product } from "../product-data"
 import { convertToCartProduct } from "../product-data"
 import { useWishlist } from "@/hooks/useWishlist"
@@ -22,6 +22,7 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
   const [isAdding, setIsAdding] = useState(false)
   const { items: wishlistItems, addItem: addWishlist, removeItem: removeWishlist } = useWishlist()
   const isInWishlist = wishlistItems.some((item) => item.id === product.id)
+  const { notify } = useNotifications();
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -39,10 +40,10 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
     }
     if (isInWishlist) {
       removeWishlist(product.id)
-      toast.success("Removed from wishlist")
+      notify('success', 'Removed from wishlist')
     } else {
       addWishlist(wishlistProduct)
-      toast.success("Added to wishlist")
+      notify('success', 'Added to wishlist')
     }
   }
 
@@ -65,9 +66,9 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
         tags: [product.category]
       }
       addItem(commonProduct, 1)
-      toast.success("Added to cart successfully!")
+      notify('success', 'Added to cart successfully!')
     } catch (error) {
-      toast.error("Failed to add to cart")
+      notify('error', 'Failed to add to cart')
     }
     
     setTimeout(() => setIsAdding(false), 1000)

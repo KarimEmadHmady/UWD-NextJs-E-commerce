@@ -11,7 +11,7 @@ import "yet-another-react-lightbox/styles.css"
 import { Button } from "@/components/common/Button/Button"
 import { Badge } from "@/components/common/Badge/Badge"
 import { useCart } from "@/hooks/useCart"
-import { toast } from "sonner"
+import { useNotifications } from '@/hooks/useNotifications';
 import type { Product } from "../product-data"
 import { convertToCartProduct } from "../product-data"
 import { useWishlist } from "@/hooks/useWishlist"
@@ -32,6 +32,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [isShareOpen, setIsShareOpen] = useState(false)
+  const { notify } = useNotifications();
 
   // Share URL - replace with your actual domain in production
   const shareUrl = `https://your-domain.com/product/${product.id}`
@@ -73,7 +74,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       // Redirect to checkout
       window.location.href = '/checkout'
     } catch (error) {
-      toast.error("Failed to process purchase")
+      notify('error', 'Failed to process purchase')
     }
   }
 
@@ -93,9 +94,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         tags: [product.category]
       }
       addItem(commonProduct, quantity)
-      toast.success(`${quantity} ${quantity === 1 ? 'item' : 'items'} added to cart`)
+      notify('success', `${quantity} ${quantity === 1 ? 'item' : 'items'} added to cart`)
     } catch (error) {
-      toast.error("Failed to add to cart")
+      notify('error', 'Failed to add to cart')
     }
     setIsAddingToCart(false)
   }
@@ -116,10 +117,10 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     }
     if (isInWishlist) {
       removeWishlist(product.id)
-      toast.success("Removed from wishlist")
+      notify('success', 'Removed from wishlist')
     } else {
       addWishlist(wishlistProduct)
-      toast.success("Added to wishlist")
+      notify('success', 'Added to wishlist')
     }
   }
 
