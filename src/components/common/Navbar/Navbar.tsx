@@ -11,6 +11,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Search, User, MapPin, ShoppingCart, ChevronLeft, ChevronRight, ChevronDown, X, Heart } from "lucide-react"
 import dynamic from "next/dynamic";
+import { useLang } from "@/hooks/useLang";
 // Lazy load SideCart for better performance
 const SideCart = dynamic(() => import("@/components/cart/side-cart/side-cart"), { ssr: false });
 
@@ -75,12 +76,7 @@ export default function Navigation() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
-  const [lang, setLang] = useState<'ar' | 'en'>(locale as 'ar' | 'en');
-
-  // Sync lang state with next-intl locale
-  useEffect(() => {
-    setLang(locale as 'ar' | 'en');
-  }, [locale]);
+  const { lang, setLang } = useLang();
 
   // Update html lang and dir attributes
   useEffect(() => {
@@ -93,6 +89,7 @@ export default function Navigation() {
   // Handle language switch using next-intl router
   const handleLangSwitch = (newLang: 'ar' | 'en') => {
     if (lang === newLang) return;
+    setLang(newLang); // يحدث الـ Redux
     let segments = pathname?.split("/") || [];
     // Remove empty segments at the end (from trailing slash)
     if (segments.length > 2 && segments[segments.length - 1] === "") {
@@ -111,7 +108,6 @@ export default function Navigation() {
       newPath = newPath.slice(0, -1);
     }
     router.replace(newPath);
-    setLang(newLang);
   }
 
   // Close language dropdown on outside click
