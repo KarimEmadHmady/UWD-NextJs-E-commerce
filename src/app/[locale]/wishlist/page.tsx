@@ -58,7 +58,7 @@ export default function WishlistPage() {
     // Simulate adding to cart logic
     console.log(`Item ${id} added to cart`)
     // Optionally, remove from wishlist after adding to cart
-    // handleRemoveItem(id);
+    handleRemoveItem(id);
     alert(`Product added to cart! (ID: ${id})`)
   }
 

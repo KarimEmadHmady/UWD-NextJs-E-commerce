@@ -11,60 +11,57 @@ export default function AccountPage() {
   const [activeTab, setActiveTab] = useState("overview")
 
   const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
+    name: "Karim Emad",
+    email: "karim.emad@gmail.com",
     avatar: "/placeholder.svg?height=100&width=100",
-    joinDate: "January 2023",
-    totalOrders: 12,
-    totalSpent: 15420.99,
+    joinDate: "May 2022",
+    totalOrders: 7,
+    totalSpent: 32450.75,
   }
 
   const recentOrders = [
     {
-      id: "ORD-2024-001234",
-      date: "March 10, 2024",
+      id: "ORD-2025-000789",
+      date: "July 10, 2025",
       status: "Delivered",
-      total: 4751.96,
-      items: 3,
+      total: 8999.00,
+      items: 2,
     },
     {
-      id: "ORD-2024-001233",
-      date: "February 28, 2024",
+      id: "ORD-2025-000788",
+      date: "June 22, 2025",
       status: "Processing",
-      total: 1299.99,
+      total: 4999.50,
       items: 1,
     },
     {
-      id: "ORD-2024-001232",
-      date: "February 15, 2024",
+      id: "ORD-2025-000787",
+      date: "June 1, 2025",
       status: "Shipped",
-      total: 899.99,
-      items: 2,
+      total: 2999.99,
+      items: 1,
     },
   ]
 
   const wishlistItems = [
     {
       id: 1,
-      name: "iPad Pro 12.9-inch",
-      price: 1099.99,
-      image: "/placeholder.svg?height=80&width=80",
+      name: "Samsung Galaxy S24 Ultra",
+      price: 42000.00,
+      image: "https://eljokerstores.com/wp-content/uploads/2023/09/Untitled_design-removebg-preview-1.png",
       inStock: true,
     },
     {
       id: 2,
-      name: "Apple Watch Ultra",
-      price: 799.99,
-      image: "/placeholder.svg?height=80&width=80",
+      name: "Xiaomi Smart TV 55 inch",
+      price: 18000.00,
+      image: "https://vlegko.ru/upload/iblock/900/a4ay7kyvxsv47178yp7ivr1114wbkm5u/225c56ea-5217-11ee-88d4-24418cd4ee54_adef5cda-521f-11ee-88d4-24418cd4ee54.jpg",
       inStock: false,
     },
   ]
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price)
+    return `EGP ${price.toLocaleString("en-EG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
   }
 
   const getStatusColor = (status: string) => {
@@ -163,15 +160,15 @@ export default function AccountPage() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="wishlist">Wishlist</TabsTrigger>
-            <TabsTrigger value="addresses">Addresses</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 text-gray-900 cursor-pointer">
+            <TabsTrigger value="overview" className="data-[state=active]:text-black">Overview</TabsTrigger>
+            <TabsTrigger value="orders" className="data-[state=active]:text-black">Orders</TabsTrigger>
+            <TabsTrigger value="wishlist" className="data-[state=active]:text-black">Wishlist</TabsTrigger>
+            <TabsTrigger value="addresses" className="data-[state=active]:text-black">Addresses</TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:text-black">Settings</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="mt-6">
+          <TabsContent value="overview" className="mt-6 ">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Recent Orders */}
               <Card>
@@ -197,7 +194,7 @@ export default function AccountPage() {
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" className="w-full mt-4 bg-transparent">
+                  <Button variant="outline" className="w-full mt-4 bg-transparent cursor-pointer">
                     View All Orders
                   </Button>
                 </CardContent>
@@ -210,23 +207,23 @@ export default function AccountPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
                       <Package className="w-4 h-4 mr-3" />
                       Track an Order
                     </Button>
-                    <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
                       <Heart className="w-4 h-4 mr-3" />
                       View Wishlist
                     </Button>
-                    <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
                       <MapPin className="w-4 h-4 mr-3" />
                       Manage Addresses
                     </Button>
-                    <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
                       <CreditCard className="w-4 h-4 mr-3" />
                       Payment Methods
                     </Button>
-                    <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
                       <Settings className="w-4 h-4 mr-3" />
                       Account Settings
                     </Button>
@@ -262,7 +259,7 @@ export default function AccountPage() {
                       </div>
                       <div className="flex items-center gap-4">
                         <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                        <Button variant="outline" size="sm" className="bg-transparent">
+                        <Button variant="outline" size="sm" className="bg-transparent cursor-pointer">
                           View Details
                         </Button>
                       </div>
@@ -290,10 +287,10 @@ export default function AccountPage() {
                       <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
                       <p className="text-lg font-bold text-gray-900 mb-3">{formatPrice(item.price)}</p>
                       <div className="space-y-2">
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700" disabled={!item.inStock}>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer" disabled={!item.inStock}>
                           {item.inStock ? "Add to Cart" : "Out of Stock"}
                         </Button>
-                        <Button variant="outline" className="w-full bg-transparent">
+                        <Button variant="outline" className="w-full bg-transparent cursor-pointer">
                           Remove
                         </Button>
                       </div>
@@ -315,14 +312,14 @@ export default function AccountPage() {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="font-semibold text-gray-900">Home</p>
-                        <p className="text-gray-600">123 Main Street</p>
-                        <p className="text-gray-600">New York, NY 10001</p>
-                        <p className="text-gray-600">United States</p>
+                        <p className="text-gray-600">12 Abbas El Akkad Street</p>
+                        <p className="text-gray-600">Nasr City, Cairo 11371</p>
+                        <p className="text-gray-600">Egypt</p>
                       </div>
                       <Badge>Default</Badge>
                     </div>
                   </div>
-                  <Button variant="outline" className="w-full bg-transparent">
+                  <Button variant="outline" className="w-full bg-transparent cursor-pointer">
                     Add New Address
                   </Button>
                 </div>
@@ -337,21 +334,21 @@ export default function AccountPage() {
                   <CardTitle>Account Settings</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
                     <User className="w-4 h-4 mr-3" />
                     Edit Profile
                   </Button>
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
                     <Bell className="w-4 h-4 mr-3" />
                     Notification Preferences
                   </Button>
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
                     <Shield className="w-4 h-4 mr-3" />
                     Privacy & Security
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-red-600 hover:text-red-700 bg-transparent"
+                    className="w-full justify-start text-red-600 hover:text-red-700 bg-transparent cursor-pointer"
                   >
                     <LogOut className="w-4 h-4 mr-3" />
                     Sign Out

@@ -21,10 +21,7 @@ export default function CartSummary({ subtotal, shipping, tax, discount, total, 
   const [isApplyingPromo, setIsApplyingPromo] = useState(false)
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price)
+    return `E.L ${price.toFixed(2)}`
   }
 
   const handleApplyPromo = async () => {

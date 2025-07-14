@@ -81,9 +81,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
             {/* Price */}
             <div className="flex items-center gap-4">
-              <span className="text-4xl font-bold text-gray-900">${product.price}</span>
+              <span className="text-4xl font-bold text-gray-900">E.L {product.price}</span>
               {product.originalPrice && (
-                <span className="text-2xl text-gray-400 line-through">${product.originalPrice}</span>
+                <span className="text-2xl text-gray-400 line-through">E.L {product.originalPrice}</span>
               )}
               {product.inStock ? (
                 <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">

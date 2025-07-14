@@ -23,10 +23,7 @@ export default function ProductGrid() {
   }
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price)
+    return `E.L ${price.toFixed(2)}`
   }
 
   const renderStars = (rating: number) => {

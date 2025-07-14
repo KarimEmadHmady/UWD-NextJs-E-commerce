@@ -37,10 +37,7 @@ export default function OrderConfirmationPage() {
   }
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price)
+    return `E.L ${price.toFixed(2)}`
   }
 
   useEffect(() => {

@@ -106,8 +106,8 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                 className="w-full"
               />
               <div className="flex justify-between text-sm text-gray-600 mt-2">
-                <span>${priceRange[0]}</span>
-                <span>${priceRange[1]}</span>
+                <span>E.L {priceRange[0]}</span>
+                <span>E.L {priceRange[1]}</span>
               </div>
             </div>
           </div>

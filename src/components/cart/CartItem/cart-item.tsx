@@ -38,10 +38,7 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
   }
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price)
+    return `E.L ${price.toFixed(2)}`
   }
 
   return (
@@ -121,7 +118,7 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
               className="flex items-center gap-2 text-[10px] p-[5px] cursor-pointer"
             >
               <Heart className="w-3 h-3 cursor-pointer" />
-              Save for Later
+              Save 
             </Button>
           </div>
         </div>

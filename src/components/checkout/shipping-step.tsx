@@ -60,7 +60,7 @@ export default function ShippingStep({ onShippingSelect }: ShippingStepProps) {
   }
 
   const formatPrice = (price: number) => {
-    return price === 0 ? "Free" : `$${price.toFixed(2)}`
+    return price === 0 ? "Free" : `EGP ${price.toFixed(2)}`
   }
 
   return (

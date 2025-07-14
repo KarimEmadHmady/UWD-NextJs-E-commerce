@@ -61,7 +61,7 @@ export default function SearchPage() {
 
   const filters = {
     categories: ["Laptops", "Smartphones", "Tablets", "Audio", "Wearables"],
-    priceRanges: ["Under $500", "$500 - $1000", "$1000 - $2000", "Over $2000"],
+    priceRanges: ["Under E.L 500", "E.L 500 - E.L 1000", "E.L 1000 - E.L 2000", "Over E.L 2000"],
     brands: ["Apple", "Samsung", "Sony", "Microsoft", "Google"],
     ratings: ["4+ Stars", "3+ Stars", "2+ Stars", "1+ Stars"],
   }

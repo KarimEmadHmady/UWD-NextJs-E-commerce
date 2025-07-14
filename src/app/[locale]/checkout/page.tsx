@@ -29,7 +29,13 @@ interface ShippingOption {
 export default function CheckoutPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
-  const [location, setLocation] = useState<LocationData | null>(null)
+  const [location, setLocation] = useState<LocationData | null>({
+    latitude: 30.0444,
+    longitude: 31.2357,
+    address: "123 Business Street",
+    city: "cairo",
+    country: "Egypt"
+  })
   const [shippingOption, setShippingOption] = useState<ShippingOption | null>(null)
 
   // Mock order data
@@ -41,10 +47,7 @@ export default function CheckoutPage() {
   }
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price)
+    return `E.L ${price.toFixed(2)}`
   }
 
   const steps = [
@@ -112,7 +115,7 @@ export default function CheckoutPage() {
                     <Input id="cvv" placeholder="123" />
                   </div>
                 </div>
-                <Button onClick={() => setCurrentStep(4)} className="w-full bg-blue-600 hover:bg-blue-700">
+                <Button onClick={() => setCurrentStep(4)} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                   Continue to Review
                 </Button>
               </CardContent>
@@ -155,7 +158,7 @@ export default function CheckoutPage() {
                 </div>
                 <Button
                   onClick={() => router.push("/order-confirmation")}
-                  className="w-full bg-green-600 hover:bg-green-700"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
                 >
                   Place Order
                 </Button>

@@ -28,10 +28,7 @@ export default function WishlistItemComponent({
   onAddToCart,
 }: WishlistItemProps) {
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price)
+    return `E.L ${price.toFixed(2)}`
   }
 
   return (
@@ -61,12 +58,12 @@ export default function WishlistItemComponent({
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button onClick={() => onAddToCart(id)} disabled={!inStock} className="flex-1 bg-blue-600 hover:bg-blue-700">
-            <ShoppingCart className="w-4 h-4 mr-2" />
+          <Button onClick={() => onAddToCart(id)} disabled={!inStock} className="flex-1 bg-blue-600 hover:bg-blue-700 cursor-pointer">
+            <ShoppingCart className="w-3 h-3 mr-1" />
             {inStock ? "Add to Cart" : "Out of Stock"}
           </Button>
-          <Button onClick={() => onRemove(id)} variant="outline" className="flex-1 bg-transparent">
-            <Trash2 className="w-4 h-4 mr-2" />
+          <Button onClick={() => onRemove(id)} variant="outline" className="flex-1 bg-transparent cursor-pointer">
+            <Trash2 className="w-3 h-3 mr-1" />
             Remove
           </Button>
         </div>

@@ -40,7 +40,7 @@ export default function ContactPage() {
     {
       icon: MapPin,
       title: "Visit Us",
-      details: ["123 Business Street", "New York, NY 10001", "United States"],
+      details: ["123 Business Street", "Cairo", "Egypt"],
       color: "text-blue-600",
       bgColor: "bg-blue-100",
     },
@@ -266,7 +266,7 @@ export default function ContactPage() {
                 <div className="text-center">
                   <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-500">Interactive map would be displayed here</p>
-                  <p className="text-sm text-gray-400">123 Business Street, New York, NY 10001</p>
+                  <p className="text-sm text-gray-400">123 Business Street, Cairo, Egypt</p>
                 </div>
               </div>
             </CardContent>
