@@ -4,11 +4,12 @@
 import { useState, useEffect, useRef } from "react"
 import { usePathname } from "next/navigation"
 import { useCart } from "@/hooks/useCart"
+import { useWishlist } from "@/hooks/useWishlist"
 import { useLocale } from "next-intl"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Search, User, MapPin, ShoppingCart, ChevronLeft, ChevronRight, ChevronDown, Menu, X } from "lucide-react"
+import { Search, User, MapPin, ShoppingCart, ChevronLeft, ChevronRight, ChevronDown, Menu, X, Heart } from "lucide-react"
 import dynamic from "next/dynamic";
 // Lazy load SideCart for better performance
 const SideCart = dynamic(() => import("@/components/cart/side-cart/side-cart"), { ssr: false });
@@ -55,6 +56,8 @@ export default function Navigation() {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const { items } = useCart();
   const cartCount = items.reduce((total, item) => total + item.quantity, 0);
+  const { items: wishlistItems } = useWishlist();
+  const wishlistCount = wishlistItems.length;
 
   // Menu translations
   const menuTranslations: Record<string, { en: string; ar: string }> = {
@@ -203,10 +206,11 @@ export default function Navigation() {
         <Link
           href={item.href}
           className={`
-            flex items-center justify-between h-16 px-4 text-sm text-black transition-colors duration-250 hover:text-bule-600
+            flex items-center justify-between h-16 px-4 text-sm text-black transition-colors duration-250
+            hover:text-blue-600 md:hover:text-blue-600
             ${hasChildren ? "cursor-pointer" : ""}
             ${level > 0 ? "md:px-6 md:py-2 md:h-auto" : ""}
-            ${isOpen ? "text-bule-600" : ""}
+            ${isOpen ? "text-blue-600" : ""}
           `}
           onClick={(e) => {
             if (hasChildren && window.innerWidth <= 768) {
@@ -322,7 +326,7 @@ export default function Navigation() {
               tabIndex={0}
               onClick={() => setLangDropdownOpen((open) => !open)}
             >
-              {lang === 'ar' ? 'عربى' : 'EN'}
+              {lang === 'ar' ? 'AR' : 'EN'}
               <ChevronDown className={`w-4 h-4 transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {langDropdownOpen && (
@@ -340,7 +344,7 @@ export default function Navigation() {
                   className={`block w-full text-left px-4 py-2 text-sm ${lang === 'ar' ? 'text-blue-600 font-bold' : 'text-black'} hover:bg-gray-50`}
                   onClick={() => { handleLangSwitch('ar'); setLangDropdownOpen(false); }}
                 >
-                  عربى
+                  AR
                 </button>
               </div>
             )}
@@ -349,26 +353,43 @@ export default function Navigation() {
 
         {/* Action Icons */}
         <div className="min-w-[150px] flex-shrink-0">
+          
           <ul className="flex justify-end gap-2 list-none items-center">
+            {/* Wishlist Icon */}
+            <li className="relative cursor-pointer">
+              <button
+                type="button"
+                className="p-1 text-lg transition-colors duration-250 hover:text-red-500 cursor-pointer transition-transform duration-200 hover:scale-110"
+                aria-label="Open wishlist"
+                onClick={() => router.push("/wishlist")}
+              >
+                <Heart className={`w-5 h-5 ${wishlistCount > 0 ? "fill-red-500 text-red-500" : "text-black"}`} />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-[5px] -right-[8px] bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center border-2 bg-red-500 ">
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
+            </li>
             <li>
-              <Link href="#" className="p-1 text-lg text-black transition-colors duration-250 hover:text-bule-600">
+              <Link href="#" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
                 <Search className="w-5 h-5" />
               </Link>
             </li>
             <li>
-              <Link href="#" className="p-1 text-lg text-black transition-colors duration-250 hover:text-bule-600">
+              <Link href="#" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
                 <User className="w-5 h-5" />
               </Link>
             </li>
             <li>
-              <Link href="#" className="p-1 text-lg text-black transition-colors duration-250 hover:text-bule-600">
+              <Link href="#" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
                 <MapPin className="w-5 h-5" />
               </Link>
             </li>
             <li className="relative cursor-pointer">
               <button
                 type="button"
-                className="p-1 text-lg text-black transition-colors duration-250 hover:text-bule-600 cursor-pointer "
+                className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 cursor-pointer transition-transform duration-200 hover:scale-110"
                 aria-label="Open cart"
                 onClick={() => setIsSideCartOpen(true)}
               >
@@ -380,6 +401,7 @@ export default function Navigation() {
                 )}
               </button>
             </li>
+
       {/* Side Cart Drawer */}
       <SideCart isOpen={isSideCartOpen} onClose={() => setIsSideCartOpen(false)} />
           </ul>
@@ -431,7 +453,7 @@ export default function Navigation() {
               onClick={() => handleLangSwitch('ar')}
               disabled={lang === 'ar'}
             >
-              عربى
+              AR
             </button>
           </div>
           <div className="flex justify-center gap-4 mb-2">

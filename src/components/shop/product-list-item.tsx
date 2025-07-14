@@ -5,6 +5,9 @@ import Image from "next/image"
 import { Heart, ShoppingCart, Star, Eye } from "lucide-react"
 import { Button } from "../common/Button/Button"
 import { Badge } from "../common/Badge/Badge"
+import { useWishlist } from "@/hooks/useWishlist"
+import { Product as GlobalProduct } from "@/types/common"
+import { toast } from "sonner"
 
 interface Product {
   id: number
@@ -27,7 +30,29 @@ interface ProductListItemProps {
 }
 
 export default function ProductListItem({ product }: ProductListItemProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false)
+  const { items: wishlistItems, addItem: addWishlist, removeItem: removeWishlist } = useWishlist()
+  const isWishlisted = wishlistItems.some((item) => item.id === product.id)
+  const handleWishlist = () => {
+    const wishlistProduct: GlobalProduct = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      description: product.description,
+      images: [product.image],
+      category: product.category,
+      rating: product.rating,
+      stock: product.inStock ? 10 : 0,
+      brand: "Apple",
+      tags: [product.category],
+    }
+    if (isWishlisted) {
+      removeWishlist(product.id)
+      toast.success("Removed from wishlist")
+    } else {
+      addWishlist(wishlistProduct)
+      toast.success("Added to wishlist")
+    }
+  }
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -46,7 +71,9 @@ export default function ProductListItem({ product }: ProductListItemProps) {
   }
 
   return (
-    <div className="flex gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+    <div className={`flex gap-4 p-4 rounded-lg hover:shadow-md transition-shadow bg-white border
+      ${isWishlisted ? "border-red-400 ring-2 ring-red-300 bg-red-50/40" : "border-gray-200"}
+    `}>
       {/* Product Image */}
       <div className="relative w-32 h-32 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
         <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-contain p-2" />
@@ -72,7 +99,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsWishlisted(!isWishlisted)}
+            onClick={handleWishlist}
             className={`p-2 ${isWishlisted ? "text-red-500" : "text-gray-400"} cursor-pointer`}
           >
             <Heart className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`} />

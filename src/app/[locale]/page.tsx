@@ -20,7 +20,7 @@ export default function HomePage() {
 
       <div className="relative px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl  sm:mt-0">
           <div className="text-center md:w-2/3 lg:w-1/2 xl:w-1/3 md:text-left">
-              <h2 className="text-2xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl">Discover the Best Deals – All in One Place</h2>
+              <h2 className="text-2xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl">Discover the Best Deals</h2>
               <p className="mt-4 text-base text-gray-200">Explore a wide range of high-quality products at unbeatable prices. Whether you're shopping for fashion, electronics, home goods, or more – we've got something for everyone. Fast delivery, secure checkout, and exclusive offers await!
 
               .</p>

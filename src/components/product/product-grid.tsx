@@ -9,18 +9,36 @@ import { products, convertToCartProduct } from "./product-data"
 import { Button } from "../common/Button/Button"
 import { Badge } from "../common/Badge/Badge"
 import { useCart } from "@/hooks/useCart"
+import { useWishlist } from "@/hooks/useWishlist"
+import { Product as GlobalProduct } from "@/types/common"
 import { toast } from "sonner"
 
 export default function ProductGrid() {
-  const [wishlist, setWishlist] = useState<number[]>([])
   const { addItem } = useCart()
-
-  const toggleWishlist = (productId: number) => {
-    setWishlist((prev) => 
-      prev.includes(productId) 
-        ? prev.filter((id) => id !== productId) 
-        : [...prev, productId]
-    )
+  const { items: wishlistItems, addItem: addWishlist, removeItem: removeWishlist } = useWishlist()
+  const isInWishlist = (id: number) => wishlistItems.some((item) => item.id === id)
+  const handleWishlist = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const wishlistProduct: GlobalProduct = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      description: product.description,
+      images: [product.image],
+      category: product.category,
+      rating: product.rating,
+      stock: product.inStock ? 10 : 0,
+      brand: "Apple",
+      tags: [product.category],
+    }
+    if (isInWishlist(product.id)) {
+      removeWishlist(product.id)
+      toast.success("Removed from wishlist")
+    } else {
+      addWishlist(wishlistProduct)
+      toast.success("Added to wishlist")
+    }
   }
 
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
@@ -51,7 +69,7 @@ export default function ProductGrid() {
     return Array.from({ length: 5 }, (_, index) => (
       <Star
         key={index}
-        className={`w-4 h-4 ${index < Math.floor(rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+        className={`w-3 h-3 sm:w-4 sm:h-4 ${index < Math.floor(rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
       />
     ))
   }
@@ -67,12 +85,18 @@ export default function ProductGrid() {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products.map((product) => (
           <Link
             key={product.id}
             href={`/product/${product.id}`}
-            className="group relative bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            className={`group relative rounded-2xl shadow-sm border overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1
+              bg-white
+              ${isInWishlist(product.id)
+                ? "border-red-500 ring-2 ring-red-400 bg-red-50/60"
+                : "border-gray-100"
+              }
+            `}
           >
             {/* Badges */}
             <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
@@ -106,15 +130,11 @@ export default function ProductGrid() {
                 <Button
                   size="sm"
                   variant="secondary"
-                  className={`w-10 h-10 rounded-full p-0 shadow-lg hover:shadow-xl transition-all duration-200 bg-white hover:bg-gray-50 border border-gray-200 cursor-pointer`}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    toggleWishlist(product.id)
-                  }}
+                  className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full p-0 shadow-lg hover:shadow-xl transition-all duration-200 bg-white hover:bg-gray-50 border border-gray-200 cursor-pointer`}
+                  onClick={(e) => handleWishlist(e, product)}
                 >
                   <Heart 
-                    className={`w-4 h-4 ${wishlist.includes(product.id) ? "fill-red-500 text-red-500" : "text-black"} cursor-pointer`} 
+                    className={`w-4 h-4 sm:w-5 sm:h-5 ${isInWishlist(product.id) ? "fill-red-500 text-red-500" : "text-black"} cursor-pointer`} 
                   />
                 </Button>
 
@@ -122,18 +142,18 @@ export default function ProductGrid() {
                 <Button
                   size="sm"
                   variant="secondary"
-                  className="w-10 h-10 rounded-full p-0 bg-white hover:bg-gray-50 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 cursor-pointer"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full p-0 bg-white hover:bg-gray-50 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 cursor-pointer"
                 >
-                  <Eye className="w-4 h-4 text-black cursor-pointer" />
+                  <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-black cursor-pointer" />
                 </Button>
               </div>
 
               {/* Add to Cart Button */}
               {product.inStock && (
-                <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Button
                     onClick={(e) => handleAddToCart(e, product)}
-                    className="w-full bg-white/90 hover:bg-white text-black shadow-lg backdrop-blur-sm"
+                    className="w-full bg-white/90 hover:bg-white text-black shadow-lg backdrop-blur-sm text-xs sm:text-base py-2 sm:py-3"
                   >
                     Add to Cart
                   </Button>
@@ -143,23 +163,23 @@ export default function ProductGrid() {
 
             {/* Product Info */}
             <div className="p-4 space-y-3">
-              <p className="text-sm text-gray-500 font-medium">{product.category}</p>
-              <h3 className="font-semibold text-gray-900 text-lg leading-tight line-clamp-2">
+              <p className="text-xs sm:text-sm text-gray-500 font-medium">{product.category}</p>
+              <h3 className="font-semibold text-gray-900 text-xs sm:text-base leading-tight line-clamp-2">
                 {product.name}
               </h3>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
                   {renderStars(product.rating)}
                 </div>
-                <span className="text-sm text-gray-500">({product.reviews})</span>
+                <span className="text-xs sm:text-sm text-gray-500">({product.reviews})</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-lg text-gray-900">
+                  <span className="font-bold text-xs sm:text-base text-gray-900">
                     {formatPrice(product.price)}
                   </span>
                   {product.isSale && product.originalPrice && (
-                    <span className="text-sm text-gray-500 line-through">
+                    <span className="text-xs sm:text-sm text-gray-500 line-through">
                       {formatPrice(product.originalPrice)}
                     </span>
                   )}

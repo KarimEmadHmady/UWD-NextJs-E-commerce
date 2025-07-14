@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation"
 import { Heart, ArrowLeft } from "lucide-react"
 import WishlistItemComponent from "@/components/wishlist/wishlist-item"
 import { Button } from "@/components/common/Button/Button"
+import { useCart } from "@/hooks/useCart"
+import { toast } from "sonner"
+import { useWishlist } from "@/hooks/useWishlist"
 
 // Mock data for wishlist items
 const mockWishlistItems = [
@@ -46,20 +49,33 @@ const mockWishlistItems = [
 
 export default function WishlistPage() {
   const router = useRouter()
-  const [wishlistItems, setWishlistItems] = useState(mockWishlistItems)
+  const { items: wishlistItems, removeItem: removeWishlistItem } = useWishlist()
+  const { addItem, toggle } = useCart()
 
   const handleRemoveItem = (id: number) => {
-    setWishlistItems((prevItems) => prevItems.filter((item) => item.id !== id))
-    // Simulate API call or state update for backend
-    console.log(`Item ${id} removed from wishlist`)
+    removeWishlistItem(id)
   }
 
   const handleAddToCart = (id: number) => {
-    // Simulate adding to cart logic
-    console.log(`Item ${id} added to cart`)
-    // Optionally, remove from wishlist after adding to cart
-    handleRemoveItem(id);
-    alert(`Product added to cart! (ID: ${id})`)
+    const item = wishlistItems.find((item) => item.id === id)
+    if (!item) return
+    // Map wishlist item to Product type
+    const product = {
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      description: item.name, // No description in mock, use name
+      images: item.images,
+      category: item.category,
+      rating: 5, // Default rating
+      stock: item.stock,
+      brand: "Apple", // Default brand
+      tags: [item.category],
+    }
+    addItem(product, 1)
+    handleRemoveItem(id)
+    toast.success("Product added to cart!")
+    toggle() // Open side cart
   }
 
   return (
@@ -91,7 +107,13 @@ export default function WishlistPage() {
             {wishlistItems.map((item) => (
               <WishlistItemComponent
                 key={item.id}
-                {...item}
+                id={item.id}
+                name={item.name}
+                price={item.price}
+                originalPrice={undefined}
+                image={item.images && item.images.length > 0 ? item.images[0] : "/placeholder.svg"}
+                category={item.category}
+                inStock={item.stock > 0}
                 onRemove={handleRemoveItem}
                 onAddToCart={handleAddToCart}
               />

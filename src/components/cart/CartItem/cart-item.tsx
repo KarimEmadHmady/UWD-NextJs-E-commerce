@@ -84,9 +84,9 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
                 <Minus className="w-4 h-4 cursor-pointer" />
               </Button>
 
-              <span className="px-2 py-0.5 font-medium min-w-[2rem] text-center text-xs text-gray-900 lg:px-3 lg:py-1 lg:text-sm">
-                {isUpdating ? "..." : item.quantity}
-              </span>
+              {<span className="px-2 py-0.5 font-medium min-w-[2rem] text-center text-xs text-gray-900 lg:px-3 lg:py-1 lg:text-sm">
+                { item.quantity}
+              </span>}
 
               <Button
                 variant="ghost"

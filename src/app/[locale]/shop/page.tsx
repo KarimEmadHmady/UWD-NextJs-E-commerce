@@ -91,13 +91,11 @@ export default function ShopPage() {
             {/* Products Grid/List */}
             <div className="p-4">
               {viewMode === "grid" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                   {products.map((product) => (
                     <ShopProductCard
                       key={product.id}
                       product={product}
-                      onToggleWishlist={toggleWishlist}
-                      isInWishlist={wishlist.includes(product.id)}
                     />
                   ))}
                 </div>

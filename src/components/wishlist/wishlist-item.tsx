@@ -37,7 +37,7 @@ export default function WishlistItemComponent({
       <div className="relative w-full sm:w-32 h-32 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
         <Image src={image || "/placeholder.svg"} alt={name} fill className="object-contain p-2" />
         {!inStock && (
-          <Badge variant="secondary" className="absolute top-2 left-2 bg-gray-500 text-white text-xs">
+          <Badge variant="secondary" className="absolute top-2 left-2 bg-gray-500  text-xs">
             Out of Stock
           </Badge>
         )}

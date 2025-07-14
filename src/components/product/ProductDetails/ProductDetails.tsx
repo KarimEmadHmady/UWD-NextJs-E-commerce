@@ -14,6 +14,8 @@ import { useCart } from "@/hooks/useCart"
 import { toast } from "sonner"
 import type { Product } from "../product-data"
 import { convertToCartProduct } from "../product-data"
+import { useWishlist } from "@/hooks/useWishlist"
+import { Product as GlobalProduct } from "@/types/common"
 
 interface ProductDetailsProps {
   product: Product
@@ -21,6 +23,7 @@ interface ProductDetailsProps {
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
   const { addItem } = useCart()
+  const { items: wishlistItems, addItem: addWishlist, removeItem: removeWishlist } = useWishlist()
   const [selectedColor, setSelectedColor] = useState(0)
   const [selectedRAM, setSelectedRAM] = useState("8GB")
   const [selectedStorage, setSelectedStorage] = useState("256GB")
@@ -95,6 +98,29 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       toast.error("Failed to add to cart")
     }
     setIsAddingToCart(false)
+  }
+
+  const isInWishlist = wishlistItems.some((item) => item.id === product.id)
+  const handleWishlist = () => {
+    const wishlistProduct: GlobalProduct = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      description: product.description,
+      images: [product.image],
+      category: product.category,
+      rating: product.rating,
+      stock: product.inStock ? 10 : 0,
+      brand: "Apple",
+      tags: [product.category],
+    }
+    if (isInWishlist) {
+      removeWishlist(product.id)
+      toast.success("Removed from wishlist")
+    } else {
+      addWishlist(wishlistProduct)
+      toast.success("Added to wishlist")
+    }
   }
 
   return (
@@ -304,12 +330,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
             {/* Wishlist and Share */}
             <div className="flex gap-4">
-              <Button 
-                variant="outline" 
-                className="flex-1 hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-all duration-300 cursor-pointer"
+              <Button
+                variant={isInWishlist ? "default" : "outline"}
+                className={`flex-1 transition-all duration-300 cursor-pointer ${isInWishlist ? "bg-red-100 text-red-600 border-red-300" : "hover:bg-red-50 hover:text-red-600 hover:border-red-300"}`}
+                onClick={handleWishlist}
               >
-                <Heart className="w-5 h-5 mr-2" />
-                Add to Wishlist
+                <Heart className={`w-5 h-5 mr-2 ${isInWishlist ? "fill-red-500 text-red-500" : ""}`} />
+                {isInWishlist ? "In Wishlist" : "Add to Wishlist"}
               </Button>
               <div className="relative flex-1">
                 <Button 
