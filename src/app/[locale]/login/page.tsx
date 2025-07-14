@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Mail, Lock, LogIn } from "lucide-react"
@@ -10,27 +9,23 @@ import { Button } from "@/components/common/Button/Button"
 import { Input } from "@/components/common/input/input"
 import { Label } from "@/components/common/label/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/common/card/card"
+import { useUser } from '@/hooks/useUser';
 
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { login, isAuthenticated, loading, error } = useUser();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/account");
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
-    // Simulate API call for login
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsSubmitting(false)
-
-    // For demonstration, redirect to homepage on successful login
-    if (email === "test@example.com" && password === "password") {
-      alert("Login successful!")
-      router.push("/")
-    } else {
-      alert("Invalid credentials. Please try again.")
-    }
+    login(email, password);
   }
 
   return (
@@ -76,8 +71,11 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 py-3" disabled={isSubmitting}>
-                {isSubmitting ? (
+              {error && (
+                <div className="text-red-600 text-sm text-center font-bold">{error}</div>
+              )}
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 py-3" disabled={loading}>
+                {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                     Logging In...
