@@ -44,13 +44,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Product Info */}
       <div className="p-4">
         <Link href={`/products/${product.id}`} className="block">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 hover:text-primary transition-colors">
+          <h3 className="text-xs sm:text-base font-semibold text-gray-900 mb-2 hover:text-primary transition-colors mt-[5px] ">
             {product.name}
           </h3>
         </Link>
 
         <div className="flex items-center justify-between mb-4">
-          <span className="text-xl font-bold text-gray-900">
+          <span className="text-xs sm:text-base font-bold text-gray-900">
             ${product.price.toFixed(2)}
           </span>
           <div className="flex items-center">

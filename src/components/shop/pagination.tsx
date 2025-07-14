@@ -52,7 +52,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
           bg-white
           border border-gray-300
           transition-all duration-200
-          ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-50 hover:border-blue-400"}
+          ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-pink-50 hover:border-pink-400"}
         `}
       >
         <ChevronLeft className="w-4 h-4" />
@@ -74,8 +74,8 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
                   font-bold
                   transition-all duration-200
                   ${currentPage === page
-                    ? "bg-blue-600 text-white border-blue-600 shadow-md"
-                    : "bg-white text-black border border-gray-300 hover:bg-blue-50 hover:border-blue-400"}
+                    ? "bg-pink-600 text-white border-pink-600 shadow-md"
+                    : "bg-white text-black border border-gray-300 hover:bg-pink-50 hover:border-pink-400"}
                 `}
                 style={{
                   boxShadow: currentPage === page ? "0 2px 8px 0 #3b82f633" : undefined,
@@ -102,7 +102,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
           bg-white
           border border-gray-300
           transition-all duration-200
-          ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-50 hover:border-blue-400"}
+          ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-pink-50 hover:border-pink-400"}
         `}
       >
         <ChevronRight className="w-4 h-4" />

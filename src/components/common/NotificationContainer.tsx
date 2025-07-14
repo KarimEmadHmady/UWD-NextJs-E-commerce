@@ -12,9 +12,9 @@ export default function NotificationContainer() {
         <div
           key={n.id}
           className={`flex items-center px-4 py-3 rounded shadow-lg text-white animate-fade-in-down transition-all
-            ${n.type === 'success' ? 'bg-green-600' : ''}
+            ${n.type === 'success' ? 'bg-pink-600' : ''}
             ${n.type === 'error' ? 'bg-red-600' : ''}
-            ${n.type === 'info' ? 'bg-blue-600' : ''}
+            ${n.type === 'info' ? 'bg-pink-600' : ''}
             ${n.type === 'warning' ? 'bg-yellow-500 text-black' : ''}
           `}
           onClick={() => remove(n.id)}

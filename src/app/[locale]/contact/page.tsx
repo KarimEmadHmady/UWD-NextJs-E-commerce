@@ -41,8 +41,8 @@ export default function ContactPage() {
       icon: MapPin,
       title: "Visit Us",
       details: ["123 Business Street", "Cairo", "Egypt"],
-      color: "text-blue-600",
-      bgColor: "bg-blue-100",
+      color: "text-pink-600",
+      bgColor: "bg-pink-100",
     },
     {
       icon: Phone,
@@ -192,7 +192,7 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 hover:bg-blue-700 py-3">
+                  <Button type="submit" disabled={isSubmitting} className="w-full bg-pink-600 hover:bg-pink-700 py-3">
                     {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -242,11 +242,11 @@ export default function ContactPage() {
             </div>
 
             {/* FAQ Link */}
-            <Card className="bg-blue-50 border-blue-200">
+            <Card className="bg-pink-50 border-pink-200">
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-blue-900 mb-2">Frequently Asked Questions</h3>
-                <p className="text-blue-700 text-sm mb-4">Find quick answers to common questions in our FAQ section.</p>
-                <Button variant="outline" className="bg-transparent border-blue-300 text-blue-700 hover:bg-blue-100">
+                <h3 className="font-semibold text-pink-900 mb-2">Frequently Asked Questions</h3>
+                <p className="text-pink-700 text-sm mb-4">Find quick answers to common questions in our FAQ section.</p>
+                <Button variant="outline" className="bg-transparent border-pink-300 text-pink-700 hover:bg-pink-100">
                   View FAQ
                 </Button>
               </CardContent>

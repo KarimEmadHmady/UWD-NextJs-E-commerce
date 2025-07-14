@@ -9,10 +9,12 @@ import Pagination from "@/components/shop/pagination"
 import ShopProductCard from "@/components/product/ShopProductCard/ShopProductCard"
 import { Button } from "@/components/common/Button/Button"
 import { Input } from "@/components/common/input/input"
-import { products, Product } from "@/components/product/product-data"
+import { products as productsData } from "@/components/product/product-data"
 import { Toaster } from "sonner"
 import Link from "next/link"
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
+import { useProducts } from '@/hooks/useProducts';
+import { useEffect } from 'react';
 
 export default function ShopPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -21,6 +23,7 @@ export default function ShopPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [wishlist, setWishlist] = useState<number[]>([])
   const { start, stop } = useGlobalLoading();
+  const products = productsData;
 
   const toggleWishlist = (productId: number) => {
     setWishlist((prev) =>
@@ -69,7 +72,7 @@ export default function ShopPage() {
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-black pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-10 text-black pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -94,18 +97,33 @@ export default function ShopPage() {
             <div className="p-4">
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-                  {products.map((product) => (
-                    <ShopProductCard
-                      key={product.id}
-                      product={product}
-                    />
-                  ))}
+                  {products.map((product) => {
+                    const localProduct = {
+                      ...product,
+                      image: product.image,
+                      reviews: product.reviews,
+                      inStock: product.inStock,
+                      isNew: product.isNew,
+                      isSale: product.isSale,
+                      discount: product.discount,
+                    };
+                    return <ShopProductCard key={product.id} product={localProduct} />;
+                  })}
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {products.map((product) => (
-                    <ProductListItem key={product.id} product={product} />
-                  ))}
+                  {products.map((product) => {
+                    const localProduct = {
+                      ...product,
+                      image: product.image,
+                      reviews: product.reviews,
+                      inStock: product.inStock,
+                      isNew: product.isNew,
+                      isSale: product.isSale,
+                      discount: product.discount,
+                    };
+                    return <ProductListItem key={product.id} product={localProduct} />;
+                  })}
                 </div>
               )}
             </div>

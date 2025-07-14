@@ -102,7 +102,7 @@ export default function WishlistPage() {
             <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h2 className="text-2xl font-semibold text-gray-900 mb-2">Your wishlist is empty</h2>
             <p className="text-gray-600 mb-8">Start adding your favorite products to save them for later.</p>
-            <Button onClick={() => router.push("/shop")} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={() => router.push("/shop")} className="bg-pink-600 hover:bg-pink-700">
               Continue Shopping
             </Button>
           </div>

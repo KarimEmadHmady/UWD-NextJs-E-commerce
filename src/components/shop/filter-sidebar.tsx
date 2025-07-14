@@ -15,28 +15,26 @@ interface FilterSidebarProps {
 export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
   const [priceRange, setPriceRange] = useState([0, 5000])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([])
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [inStockOnly, setInStockOnly] = useState(false)
 
   const categories = [
-    { id: "laptops", name: "Laptops", count: 24 },
-    { id: "smartphones", name: "Smartphones", count: 18 },
-    { id: "tablets", name: "Tablets", count: 12 },
-    { id: "audio", name: "Audio", count: 31 },
-    { id: "wearables", name: "Wearables", count: 15 },
-    { id: "gaming", name: "Gaming", count: 28 },
-    { id: "accessories", name: "Accessories", count: 42 },
-  ]
+    { id: "cakes", name: "Cakes", count: 18 },
+    { id: "cheesecakes", name: "Cheesecakes", count: 12 },
+    { id: "oriental", name: "Oriental Sweets", count: 22 },
+    { id: "pastries", name: "Pastries", count: 15 },
+    { id: "cookies", name: "Cookies", count: 20 },
+    { id: "cupcakes", name: "Cupcakes", count: 10 },
+    { id: "tarts", name: "Tarts", count: 8 },
+    { id: "chocolates", name: "Chocolates", count: 14 },
+    { id: "pies", name: "Pies", count: 7 },
+    { id: "icecream", name: "Ice Cream", count: 9 },
+  ];
 
-  const brands = [
-    { id: "apple", name: "Apple", count: 45 },
-    { id: "samsung", name: "Samsung", count: 32 },
-    { id: "sony", name: "Sony", count: 28 },
-    { id: "microsoft", name: "Microsoft", count: 15 },
-    { id: "google", name: "Google", count: 12 },
-    { id: "dell", name: "Dell", count: 18 },
-  ]
+  const sizeOptions = ["Small", "Medium", "Large"];
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const pieceOptions = ["1 piece", "6 pieces", "12 pieces", "24 pieces"];
+  const [selectedPieces, setSelectedPieces] = useState<string[]>([]);
 
   const toggleCategory = (categoryId: string) => {
     setSelectedCategories((prev) =>
@@ -44,20 +42,24 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
     )
   }
 
-  const toggleBrand = (brandId: string) => {
-    setSelectedBrands((prev) => (prev.includes(brandId) ? prev.filter((id) => id !== brandId) : [...prev, brandId]))
-  }
+  const toggleSize = (size: string) => {
+    setSelectedSizes((prev) => prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]);
+  };
+  const togglePieces = (piece: string) => {
+    setSelectedPieces((prev) => prev.includes(piece) ? prev.filter((p) => p !== piece) : [...prev, piece]);
+  };
 
   const clearAllFilters = () => {
     setPriceRange([0, 5000])
     setSelectedCategories([])
-    setSelectedBrands([])
+    setSelectedSizes([])
+    setSelectedPieces([])
     setSelectedRating(null)
     setInStockOnly(false)
   }
 
   const activeFiltersCount =
-    selectedCategories.length + selectedBrands.length + (selectedRating ? 1 : 0) + (inStockOnly ? 1 : 0)
+    selectedCategories.length + selectedSizes.length + selectedPieces.length + (selectedRating ? 1 : 0) + (inStockOnly ? 1 : 0)
 
   return (
     <>
@@ -106,8 +108,8 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                 className="w-full"
               />
               <div className="flex justify-between text-sm text-gray-600 mt-2">
-                <span>E.L {priceRange[0]}</span>
-                <span>E.L {priceRange[1]}</span>
+                <span>EGP {priceRange[0]}</span>
+                <span>EGP {priceRange[1]}</span>
               </div>
             </div>
           </div>
@@ -134,23 +136,39 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
             </div>
           </div>
 
-          {/* Brands */}
+          {/* Size */}
           <div className="space-y-4">
-            <h3 className="font-medium text-gray-900">Brands</h3>
+            <h3 className="font-medium text-gray-900">Size</h3>
             <div className="space-y-3">
-              {brands.map((brand) => (
-                <div key={brand.id} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id={brand.id}
-                      checked={selectedBrands.includes(brand.id)}
-                      onCheckedChange={() => toggleBrand(brand.id)}
-                    />
-                    <label htmlFor={brand.id} className="text-sm text-gray-700 cursor-pointer">
-                      {brand.name}
-                    </label>
-                  </div>
-                  <span className="text-xs text-gray-500">({brand.count})</span>
+              {sizeOptions.map((size) => (
+                <div key={size} className="flex items-center">
+                  <Checkbox
+                    id={size}
+                    checked={selectedSizes.includes(size)}
+                    onCheckedChange={() => toggleSize(size)}
+                  />
+                  <label htmlFor={size} className="text-sm text-gray-700 cursor-pointer ml-3">
+                    {size}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pieces */}
+          <div className="space-y-4">
+            <h3 className="font-medium text-gray-900">Pieces</h3>
+            <div className="space-y-3">
+              {pieceOptions.map((piece) => (
+                <div key={piece} className="flex items-center">
+                  <Checkbox
+                    id={piece}
+                    checked={selectedPieces.includes(piece)}
+                    onCheckedChange={() => togglePieces(piece)}
+                  />
+                  <label htmlFor={piece} className="text-sm text-gray-700 cursor-pointer ml-3">
+                    {piece}
+                  </label>
                 </div>
               ))}
             </div>
@@ -166,7 +184,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                   onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
                   className={`
                     flex items-center gap-2 w-full p-2 rounded-lg transition-colors
-                    ${selectedRating === rating ? "bg-blue-50 border border-blue-200" : "hover:bg-gray-50"}
+                    ${selectedRating === rating ? "bg-pink-50 border border-pink-200" : "hover:bg-gray-50"}
                   `}
                 >
                   <div className="flex items-center">
@@ -195,7 +213,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
           </div>
 
           {/* Apply Filters Button */}
-          <Button className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer">Apply Filters</Button>
+          <Button className="w-full bg-pink-600 hover:bg-pink-700 cursor-pointer">Apply Filters</Button>
         </div>
       </div>
     </>

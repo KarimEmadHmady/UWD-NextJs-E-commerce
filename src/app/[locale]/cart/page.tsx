@@ -25,7 +25,7 @@ export default function CartPage() {
             <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h1 className="text-2xl font-semibold text-gray-900 mb-2">Your cart is empty</h1>
             <p className="text-gray-600 mb-8">Add some products to get started</p>
-            <Button onClick={() => router.push("/shop")} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={() => router.push("/shop")} className="bg-pink-600 hover:bg-pink-700">
               Continue Shopping
             </Button>
           </div>

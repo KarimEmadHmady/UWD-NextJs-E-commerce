@@ -77,7 +77,7 @@ export default function CheckoutPage() {
         return (
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center mb-8">
-              <CreditCard className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+              <CreditCard className="w-16 h-16 text-pink-600 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Information</h2>
               <p className="text-gray-600">Enter your payment details to complete the order</p>
             </div>
@@ -115,7 +115,7 @@ export default function CheckoutPage() {
                     <Input id="cvv" placeholder="123" />
                   </div>
                 </div>
-                <Button onClick={() => setCurrentStep(4)} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={() => setCurrentStep(4)} className="w-full bg-pink-600 hover:bg-pink-700 text-white">
                   Continue to Review
                 </Button>
               </CardContent>
@@ -200,7 +200,7 @@ export default function CheckoutPage() {
                       key={step.number}
                       className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
                         currentStep === step.number
-                          ? "bg-blue-50 border border-blue-200"
+                          ? "bg-pink-50 border border-pink-200"
                           : step.completed
                             ? "bg-green-50 border border-green-200"
                             : "bg-gray-50"
@@ -209,7 +209,7 @@ export default function CheckoutPage() {
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                           currentStep === step.number
-                            ? "bg-blue-600 text-white"
+                            ? "bg-pink-600 text-white"
                             : step.completed
                               ? "bg-green-600 text-white"
                               : "bg-gray-300 text-gray-600"
@@ -221,7 +221,7 @@ export default function CheckoutPage() {
                         <p
                           className={`font-medium ${
                             currentStep === step.number
-                              ? "text-blue-900"
+                              ? "text-pink-900"
                               : step.completed
                                 ? "text-green-900"
                                 : "text-gray-600"

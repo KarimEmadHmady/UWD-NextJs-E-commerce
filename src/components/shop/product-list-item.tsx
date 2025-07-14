@@ -127,7 +127,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
                 </div>
                 <Button
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                  className="bg-pink-600 hover:bg-pink-700 cursor-pointer"
                   onClick={() => {
                     handleAddToCart();
                     setIsQuickViewOpen(false);
@@ -215,7 +215,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
                 Quick View
               </Button>
               {product.inStock ? (
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 cursor-pointer" onClick={handleAddToCart}>
+                <Button size="sm" className="bg-pink-600 hover:bg-pink-700 cursor-pointer" onClick={handleAddToCart}>
                   <ShoppingCart className="w-4 h-4 mr-1" />
                   Add to Cart
                 </Button>

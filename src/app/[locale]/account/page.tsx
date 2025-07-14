@@ -72,7 +72,7 @@ export default function AccountPage() {
       case "delivered":
         return "bg-green-100 text-green-800"
       case "shipped":
-        return "bg-blue-100 text-blue-800"
+        return "bg-pink-100 text-pink-800"
       case "processing":
         return "bg-yellow-100 text-yellow-800"
       default:
@@ -120,8 +120,8 @@ export default function AccountPage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Package className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
+                    <Package className="w-6 h-6 text-pink-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">{user.totalOrders}</p>
@@ -249,8 +249,8 @@ export default function AccountPage() {
                       className="flex items-center justify-between p-6 border border-gray-200 rounded-lg"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <Package className="w-6 h-6 text-blue-600" />
+                        <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
+                          <Package className="w-6 h-6 text-pink-600" />
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900">{order.id}</p>
@@ -290,7 +290,7 @@ export default function AccountPage() {
                       <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
                       <p className="text-lg font-bold text-gray-900 mb-3">{formatPrice(item.price)}</p>
                       <div className="space-y-2">
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer" disabled={!item.inStock}>
+                        <Button className="w-full bg-pink-600 hover:bg-pink-700 cursor-pointer" disabled={!item.inStock}>
                           {item.inStock ? "Add to Cart" : "Out of Stock"}
                         </Button>
                         <Button variant="outline" className="w-full bg-transparent cursor-pointer">
@@ -451,8 +451,8 @@ export default function AccountPage() {
 //             <Card>
 //               <CardContent className="p-6">
 //                 <div className="flex items-center gap-4">
-//                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-//                     <Package className="w-6 h-6 text-blue-600" />
+//                   <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
+//                     <Package className="w-6 h-6 text-pink-600" />
 //                   </div>
 //                   <div>
 //                     <p className="text-2xl font-bold text-gray-900">0</p>

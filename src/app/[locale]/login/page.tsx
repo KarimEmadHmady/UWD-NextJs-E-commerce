@@ -78,14 +78,14 @@ export default function LoginPage() {
                     className="pl-10"
                   />
                 </div>
-                <Link href="#" className="text-sm text-blue-600 hover:underline text-right block">
+                <Link href="#" className="text-sm text-pink-600 hover:underline text-right block">
                   Forgot password?
                 </Link>
               </div>
               {error && (
                 <div className="text-red-600 text-sm text-center font-bold">{error}</div>
               )}
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 py-3" disabled={loading}>
+              <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700 py-3" disabled={loading}>
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -102,7 +102,7 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter className="flex justify-center text-sm text-gray-600">
             Don't have an account?{" "}
-            <Link href="/register" className="text-blue-600 hover:underline ml-1">
+            <Link href="/register" className="text-pink-600 hover:underline ml-1">
               Sign Up
             </Link>
           </CardFooter>

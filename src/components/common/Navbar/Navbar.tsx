@@ -203,10 +203,10 @@ export default function Navigation() {
           href={item.href}
           className={`
             flex items-center justify-between h-16 px-4 text-sm text-black transition-colors duration-250
-            hover:text-blue-600 md:hover:text-blue-600
+            hover:text-pink-600 md:hover:text-pink-600
             ${hasChildren ? "cursor-pointer" : ""}
             ${level > 0 ? "md:px-6 md:py-2 md:h-auto" : ""}
-            ${isOpen ? "text-blue-600" : ""}
+            ${isOpen ? "text-pink-600" : ""}
           `}
           onClick={(e) => {
             if (hasChildren && window.innerWidth <= 768) {
@@ -266,12 +266,12 @@ export default function Navigation() {
 
 
         {/* Logo */}
-        <Link href="/" className="flex items-center min-w-[50px] flex-shrink-0" aria-label="Home">
+        <Link href="/" className="flex items-center min-w-[100px] flex-shrink-0" aria-label="Home">
           <Image
-            src="/next.svg"
+            src="/logo.png"
             alt="Logo"
-            width={28}
-            height={16}
+            width={10}
+            height={100}
             className="object-contain h-6 w-auto"
             priority
           />
@@ -331,13 +331,13 @@ export default function Navigation() {
                 tabIndex={-1}
               >
                 <button
-                  className={`block w-full text-left px-4 py-2 text-sm ${lang === 'en' ? 'text-blue-600 font-bold' : 'text-black'} hover:bg-gray-50`}
+                  className={`block w-full text-left px-4 py-2 text-sm ${lang === 'en' ? 'text-pink-600 font-bold' : 'text-black'} hover:bg-gray-50`}
                   onClick={() => { handleLangSwitch('en'); setLangDropdownOpen(false); }}
                 >
                   EN
                 </button>
                 <button
-                  className={`block w-full text-left px-4 py-2 text-sm ${lang === 'ar' ? 'text-blue-600 font-bold' : 'text-black'} hover:bg-gray-50`}
+                  className={`block w-full text-left px-4 py-2 text-sm ${lang === 'ar' ? 'text-pink-600 font-bold' : 'text-black'} hover:bg-gray-50`}
                   onClick={() => { handleLangSwitch('ar'); setLangDropdownOpen(false); }}
                 >
                   AR
@@ -368,30 +368,30 @@ export default function Navigation() {
               </button>
             </li>
             <li>
-              <Link href="/search" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
+              <Link href="/search" className="p-1 text-lg text-black transition-colors duration-250 hover:text-pink-600 transition-transform duration-200 hover:scale-110">
                 <Search className="w-5 h-5" />
               </Link>
             </li>
             <li>
-              <Link href="/login" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
+              <Link href="/login" className="p-1 text-lg text-black transition-colors duration-250 hover:text-pink-600 transition-transform duration-200 hover:scale-110">
                 <User className="w-5 h-5" />
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
+              <Link href="/contact" className="p-1 text-lg text-black transition-colors duration-250 hover:text-pink-600 transition-transform duration-200 hover:scale-110">
                 <MapPin className="w-5 h-5" />
               </Link>
             </li>
             <li className="relative cursor-pointer">
               <button
                 type="button"
-                className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 cursor-pointer transition-transform duration-200 hover:scale-110"
+                className="p-1 text-lg text-black transition-colors duration-250 hover:text-pink-600 cursor-pointer transition-transform duration-200 hover:scale-110"
                 aria-label="Open cart"
                 onClick={() => setIsSideCartOpen(true)}
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-[5px] -right-[8px] bg-black text-white text-xs font-bold rounded-full  min-w-[18px] h-[18px] flex items-center justify-center border-2 bg-black ">
+                  <span className="absolute -top-[5px] -right-[8px] bg-pink-600 text-white text-xs font-bold rounded-full  min-w-[18px] h-[18px] flex items-center justify-center border-2 bg-black ">
                     {cartCount}
                   </span>
                 )}
@@ -425,7 +425,7 @@ export default function Navigation() {
             <li key={item.label} className="border-b border-gray-100 last:border-b-0">
               <Link
                 href={item.href}
-                className="block px-6 py-3 text-base font-medium text-black hover:text-blue-600 md:hover:text-bule-600 transition-colors duration-200"
+                className="block px-6 py-3 text-base font-medium text-black hover:text-pink-600 md:hover:text-bule-600 transition-colors duration-200"
                 onClick={toggleMobileMenu}
               >
                 {menuTranslations[item.label]?.[lang] || item.label}
@@ -438,14 +438,14 @@ export default function Navigation() {
         <div className="flex flex-col items-center justify-end mt-12 mb-8 gap-4">
           <div className="flex justify-center gap-4 mb-2">
             <button
-              className={`px-4 py-2 rounded-[10px] border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'en' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'}`}
+              className={`px-4 py-2 rounded-[10px] border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'en' ? 'bg-pink-600 text-white border-pink-600' : 'bg-white text-pink-600 border-pink-600 hover:bg-pink-50'}`}
               onClick={() => handleLangSwitch('en')}
               disabled={lang === 'en'}
             >
               EN
             </button>
             <button
-              className={`px-4 py-2 rounded-[10px] border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'ar' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'}`}
+              className={`px-4 py-2 rounded-[10px] border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'ar' ? 'bg-pink-600 text-white border-pink-600' : 'bg-white text-pink-600 border-pink-600 hover:bg-pink-50'}`}
               onClick={() => handleLangSwitch('ar')}
               disabled={lang === 'ar'}
             >
@@ -454,14 +454,14 @@ export default function Navigation() {
           </div>
           <div className="flex justify-center gap-4 mb-2">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-200 w-10 h-10">
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-blue-600 group-hover:text-blue-700 transition-colors duration-200">
+              className="group rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-pink-600 group-hover:text-pink-700 transition-colors duration-200">
                 <path fill="currentColor" d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/>
               </svg>
             </a>
             <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-200 w-10 h-10">
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-blue-400 group-hover:text-blue-500 transition-colors duration-200">
+              className="group rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-pink-400 group-hover:text-pink-500 transition-colors duration-200">
                 <path fill="currentColor" d="M24 4.557a9.83 9.83 0 0 1-2.828.775 4.932 4.932 0 0 0 2.165-2.724c-.951.564-2.005.974-3.127 1.195A4.916 4.916 0 0 0 16.616 3c-2.717 0-4.924 2.206-4.924 4.924 0 .386.044.763.127 1.124C7.728 8.807 4.1 6.884 1.671 3.965c-.423.724-.666 1.561-.666 2.475 0 1.708.87 3.216 2.188 4.099a4.904 4.904 0 0 1-2.229-.616c-.054 2.281 1.581 4.415 3.949 4.89a4.936 4.936 0 0 1-2.224.084c.627 1.956 2.444 3.377 4.6 3.417A9.867 9.867 0 0 1 0 21.543a13.94 13.94 0 0 0 7.548 2.212c9.057 0 14.009-7.513 14.009-14.009 0-.213-.005-.425-.014-.636A10.012 10.012 0 0 0 24 4.557z"/>
               </svg>
             </a>

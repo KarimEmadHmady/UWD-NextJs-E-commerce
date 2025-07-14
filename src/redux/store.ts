@@ -6,6 +6,7 @@ import langReducer from './features/lang/langSlice';
 import userReducer from './features/user/userSlice';
 import notificationReducer from './features/notifications/notificationSlice';
 import globalLoadingReducer from './features/globalLoading/globalLoadingSlice';
+import productsReducer from './features/products/productsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     user: userReducer,
     notifications: notificationReducer,
     globalLoading: globalLoadingReducer,
+    products: productsReducer,
   },
 });
 

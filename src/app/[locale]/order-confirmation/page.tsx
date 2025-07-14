@@ -74,22 +74,22 @@ export default function OrderConfirmationPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Package className="w-5 h-5 text-blue-600" />
+                  <Package className="w-5 h-5 text-pink-600" />
                   Order Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-6 h-6 text-blue-600" />
+                    <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-6 h-6 text-pink-600" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">Order Confirmed</h3>
                       <p className="text-sm text-gray-600">We've received your order and are processing it</p>
                     </div>
                   </div>
-                  <Badge className="bg-blue-100 text-blue-800">Processing</Badge>
+                  <Badge className="bg-pink-100 text-pink-800">Processing</Badge>
                 </div>
 
                 <div className="mt-6 space-y-4">
@@ -184,21 +184,21 @@ export default function OrderConfirmationPage() {
                   <h3 className="font-semibold text-gray-900 mb-3">What's Next?</h3>
                   <div className="space-y-3 text-sm text-gray-600">
                     <div className="flex items-start gap-2">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                      <div className="w-2 h-2 bg-pink-600 rounded-full mt-2"></div>
                       <span>You'll receive an email confirmation shortly</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                      <div className="w-2 h-2 bg-pink-600 rounded-full mt-2"></div>
                       <span>We'll notify you when your order ships</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                      <div className="w-2 h-2 bg-pink-600 rounded-full mt-2"></div>
                       <span>Track your package in real-time</span>
                     </div>
                   </div>
                 </div>
 
-                <Button onClick={() => router.push("/shop")} className="w-full mt-6 bg-blue-600 hover:bg-blue-700">
+                <Button onClick={() => router.push("/shop")} className="w-full mt-6 bg-pink-600 hover:bg-pink-700">
                   Continue Shopping
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>

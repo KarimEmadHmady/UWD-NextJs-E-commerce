@@ -153,19 +153,19 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
       <div className="p-4">
         <div className="mb-2">
           <p className="text-xs sm:text-sm text-gray-500">{product.category}</p>
-          <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 text-xs sm:text-base">
+          <h3 className="font-semibold text-gray-900 group-hover:text-pink-600 transition-colors duration-300 text-[10px] sm:text-sm mt-[5px] ">
             {product.name}
           </h3>
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between ">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-xs sm:text-lg text-gray-900">
-              E.L {product.price.toFixed(2)}
+            <span className="font-bold text-[10px] sm:text-base text-gray-900">
+              E.L{product.price.toFixed(2)}
             </span>
             {product.originalPrice && (
               <span className="text-xs sm:text-sm text-gray-500 line-through">
-                E.L {product.originalPrice.toFixed(2)}
+                E.L{product.originalPrice.toFixed(2)}
               </span>
             )}
           </div>
