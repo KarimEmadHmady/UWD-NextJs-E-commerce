@@ -26,7 +26,7 @@ export default function HomePage() {
               .</p>
 
               <form action="#" method="POST" className="mt-8 lg:mt-12">
-                  <div className="flex flex-col items-center sm:flex-row sm:justify-center">
+                  <div className="flex flex-col items-center sm:flex-row ">
 
                       <button type="submit" className="inline-flex items-center justify-center  w-[200px] px-4 py-4 mt-4 font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md sm:mt-0  sm:w-auto hover:bg-blue-700 focus:bg-blue-700">
                       Shop Now

@@ -37,17 +37,25 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
   }
 
   return (
-    <div className="flex items-center justify-center gap-2 py-8">
+    <div className="flex items-center justify-center gap-2 py-8 flex-wrap">
       {/* Previous Button */}
       <Button
         variant="outline"
         size="sm"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-3 text-black"
+        className={`
+          flex items-center justify-center rounded-full
+          px-2
+          h-9 w-9
+          text-black
+          bg-white
+          border border-gray-300
+          transition-all duration-200
+          ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-50 hover:border-blue-400"}
+        `}
       >
-        <ChevronLeft className="w-4 h-4 mr-1" />
-        Previous
+        <ChevronLeft className="w-4 h-4" />
       </Button>
 
       {/* Page Numbers */}
@@ -55,13 +63,23 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
         {getVisiblePages().map((page, index) => (
           <div key={index}>
             {page === "..." ? (
-              <span className="px-3 py-2 text-black">...</span>
+              <span className="px-2 sm:px-3 py-1 text-gray-400 select-none">...</span>
             ) : (
               <Button
                 variant={currentPage === page ? "default" : "outline"}
                 size="sm"
                 onClick={() => onPageChange(page as number)}
-                className="w-10 h-10 p-0"
+                className={`
+                  w-9 h-9 p-0 rounded-full
+                  font-bold
+                  transition-all duration-200
+                  ${currentPage === page
+                    ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                    : "bg-white text-black border border-gray-300 hover:bg-blue-50 hover:border-blue-400"}
+                `}
+                style={{
+                  boxShadow: currentPage === page ? "0 2px 8px 0 #3b82f633" : undefined,
+                }}
               >
                 {page}
               </Button>
@@ -76,10 +94,18 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
         size="sm"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-3 text-black"
+        className={`
+          flex items-center justify-center rounded-full
+          px-2
+          h-9 w-9
+          text-black
+          bg-white
+          border border-gray-300
+          transition-all duration-200
+          ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-50 hover:border-blue-400"}
+        `}
       >
-        Next
-        <ChevronRight className="w-4 h-4 ml-1" />
+        <ChevronRight className="w-4 h-4" />
       </Button>
     </div>
   )

@@ -9,7 +9,7 @@ import { useLocale } from "next-intl"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Search, User, MapPin, ShoppingCart, ChevronLeft, ChevronRight, ChevronDown, Menu, X, Heart } from "lucide-react"
+import { Search, User, MapPin, ShoppingCart, ChevronLeft, ChevronRight, ChevronDown, X, Heart } from "lucide-react"
 import dynamic from "next/dynamic";
 // Lazy load SideCart for better performance
 const SideCart = dynamic(() => import("@/components/cart/side-cart/side-cart"), { ssr: false });
@@ -372,17 +372,17 @@ export default function Navigation() {
               </button>
             </li>
             <li>
-              <Link href="#" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
+              <Link href="/search" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
                 <Search className="w-5 h-5" />
               </Link>
             </li>
             <li>
-              <Link href="#" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
+              <Link href="/login" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
                 <User className="w-5 h-5" />
               </Link>
             </li>
             <li>
-              <Link href="#" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
+              <Link href="/contact" className="p-1 text-lg text-black transition-colors duration-250 hover:text-blue-600 transition-transform duration-200 hover:scale-110">
                 <MapPin className="w-5 h-5" />
               </Link>
             </li>
