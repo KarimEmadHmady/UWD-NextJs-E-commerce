@@ -266,13 +266,13 @@ export default function Navigation() {
 
 
         {/* Logo */}
-        <Link href="/" className="flex items-center min-w-[100px] flex-shrink-0" aria-label="Home">
+        <Link href="/" className="flex items-center min-w-[150px] flex-shrink-0" aria-label="Home">
           <Image
             src="/logo.png"
             alt="Logo"
-            width={10}
-            height={100}
-            className="object-contain h-6 w-auto"
+            width={80}
+            height={80}
+            className="object-contain h-16 w-auto"
             priority
           />
         </Link>
