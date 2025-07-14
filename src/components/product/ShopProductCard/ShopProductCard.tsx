@@ -74,19 +74,27 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
     setTimeout(() => setIsAdding(false), 1000)
   }
 
+  const [isImgLoading, setIsImgLoading] = useState(true);
+
   return (
     <Link
       href={`/product/${product.id}`}
       className={`group relative bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1  ${isInWishlist ? "border-red-400 ring-2 ring-red-300 bg-red-50/40" : "border-gray-200"}  `}
     >
       <div className="relative aspect-square bg-gray-50 overflow-hidden">
-       
+        {isImgLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse z-10">
+            <div className="w-10 h-10 rounded-full border-4 border-b-2 border-gray-300 animate-spin" />
+          </div>
+        )}
         <Image
           src={product.image || "/placeholder.svg"}
           alt={product.name}
           fill
           className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
-          style={{ transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' }}
+          onLoadingComplete={() => setIsImgLoading(false)}
+          onError={() => setIsImgLoading(false)}
+          style={isImgLoading ? { visibility: 'hidden' } : {}}
         />
 
         {/* Badges */}

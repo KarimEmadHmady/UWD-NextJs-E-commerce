@@ -5,6 +5,7 @@ import wishlistReducer from './features/wishlist/wishlistSlice';
 import langReducer from './features/lang/langSlice';
 import userReducer from './features/user/userSlice';
 import notificationReducer from './features/notifications/notificationSlice';
+import globalLoadingReducer from './features/globalLoading/globalLoadingSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     lang: langReducer,
     user: userReducer,
     notifications: notificationReducer,
+    globalLoading: globalLoadingReducer,
   },
 });
 

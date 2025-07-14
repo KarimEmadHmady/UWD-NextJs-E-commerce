@@ -12,6 +12,7 @@ import { Input } from "@/components/common/input/input"
 import { products, Product } from "@/components/product/product-data"
 import { Toaster } from "sonner"
 import Link from "next/link"
+import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 
 export default function ShopPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -19,6 +20,7 @@ export default function ShopPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [wishlist, setWishlist] = useState<number[]>([])
+  const { start, stop } = useGlobalLoading();
 
   const toggleWishlist = (productId: number) => {
     setWishlist((prev) =>

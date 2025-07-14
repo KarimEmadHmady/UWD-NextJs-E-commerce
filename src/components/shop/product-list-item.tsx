@@ -36,6 +36,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
   const { notify } = useNotifications();
   const { addItem } = useCart();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [isImgLoading, setIsImgLoading] = useState(true);
 
   const handleWishlist = () => {
     const wishlistProduct: GlobalProduct = {
@@ -147,8 +148,20 @@ export default function ProductListItem({ product }: ProductListItemProps) {
       `}>
         {/* Product Image */}
         <div className="relative w-32 h-32 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
-          <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-contain p-2" />
-
+          {isImgLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse">
+              <div className="w-10 h-10 rounded-full border-4 border-b-2 border-gray-300 animate-spin" />
+            </div>
+          )}
+          <Image
+            src={product.image || "/placeholder.svg"}
+            alt={product.name}
+            fill
+            className="object-contain p-2"
+            onLoadingComplete={() => setIsImgLoading(false)}
+            onError={() => setIsImgLoading(false)}
+            style={isImgLoading ? { visibility: 'hidden' } : {}}
+          />
           {/* Badges */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
             {product.isNew && <Badge className="bg-green-500 text-white text-xs">New</Badge>}

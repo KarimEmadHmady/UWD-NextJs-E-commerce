@@ -4,6 +4,7 @@ import {routing} from '@/i18n/routing';
 import Navbar from '@/components/common/Navbar/Navbar';
 import ReduxProvider from '@/redux/ReduxProvider';
 import NotificationContainer from '@/components/common/NotificationContainer';
+import GlobalLoadingOverlay from '@/components/common/GlobalLoadingOverlay';
 
 export default async function LocaleLayout({
   children,
@@ -22,6 +23,7 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body>
         <ReduxProvider>
+          <GlobalLoadingOverlay />
           <NotificationContainer />
           <NextIntlClientProvider>
             <Navbar />

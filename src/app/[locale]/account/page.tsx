@@ -7,8 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/ca
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/avatar/avatar"
 import { Badge } from "@/components/common/Badge/Badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/common/tabs/tabs"
+import { useGlobalLoading } from '@/hooks/useGlobalLoading';
+
 export default function AccountPage() {
   const [activeTab, setActiveTab] = useState("overview")
+  const { start, stop } = useGlobalLoading();
 
   const user = {
     name: "Karim Emad",

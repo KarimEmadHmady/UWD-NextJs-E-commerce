@@ -6,6 +6,7 @@ import ScrollToTopButton from "@/components/common/ScrollToTopButton";
 import ReduxProvider from "@/redux/ReduxProvider";
 import { Toaster } from "sonner";
 import NotificationContainer from '@/components/common/NotificationContainer';
+import GlobalLoadingOverlay from '@/components/common/GlobalLoadingOverlay';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ReduxProvider>
+          <GlobalLoadingOverlay />
           <NotificationContainer />
           {children}
           <Footer/>

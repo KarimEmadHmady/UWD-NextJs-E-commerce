@@ -10,18 +10,29 @@ import { Input } from "@/components/common/input/input"
 import { Label } from "@/components/common/label/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/common/card/card"
 import { useUser } from '@/hooks/useUser';
+import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const { login, isAuthenticated, loading, error } = useUser();
+  const { start, stop } = useGlobalLoading();
 
   useEffect(() => {
     if (isAuthenticated) {
+      stop();
       router.push("/account");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, stop]);
+
+  useEffect(() => {
+    if (loading) {
+      start();
+    } else {
+      stop();
+    }
+  }, [loading, start, stop]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

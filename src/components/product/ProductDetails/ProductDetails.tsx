@@ -16,6 +16,7 @@ import type { Product } from "../product-data"
 import { convertToCartProduct } from "../product-data"
 import { useWishlist } from "@/hooks/useWishlist"
 import { Product as GlobalProduct } from "@/types/common"
+import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 
 interface ProductDetailsProps {
   product: Product
@@ -33,6 +34,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [isShareOpen, setIsShareOpen] = useState(false)
   const { notify } = useNotifications();
+  const { start, stop } = useGlobalLoading();
 
   // Share URL - replace with your actual domain in production
   const shareUrl = `https://your-domain.com/product/${product.id}`

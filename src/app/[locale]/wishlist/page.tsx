@@ -9,6 +9,7 @@ import { useCart } from "@/hooks/useCart"
 import { toast } from "sonner"
 import { useWishlist } from "@/hooks/useWishlist"
 import { useNotifications } from '@/hooks/useNotifications';
+import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 
 // Mock data for wishlist items
 const mockWishlistItems = [
@@ -53,6 +54,7 @@ export default function WishlistPage() {
   const { items: wishlistItems, removeItem: removeWishlistItem } = useWishlist()
   const { addItem, toggle } = useCart()
   const { notify } = useNotifications();
+  const { start, stop } = useGlobalLoading();
 
   const handleRemoveItem = (id: number) => {
     removeWishlistItem(id)
