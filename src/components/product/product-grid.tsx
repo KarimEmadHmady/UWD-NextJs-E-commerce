@@ -3,23 +3,44 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, ShoppingCart, Star, Eye } from "lucide-react"
-import type { Product } from "./product-data";
-import { products } from "./product-data";
-import { Button } from "../common/Button/Button";
-import { Badge } from "../common/Badge/Badge";
+import { Heart, Star, Eye } from "lucide-react"
+import type { Product } from "./product-data"
+import { products, convertToCartProduct } from "./product-data"
+import { Button } from "../common/Button/Button"
+import { Badge } from "../common/Badge/Badge"
+import { useCart } from "@/hooks/useCart"
+import { toast } from "sonner"
 
 export default function ProductGrid() {
   const [wishlist, setWishlist] = useState<number[]>([])
-  const [cart, setCart] = useState<number[]>([])
+  const { addItem } = useCart()
 
   const toggleWishlist = (productId: number) => {
-    setWishlist((prev) => (prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]))
+    setWishlist((prev) => 
+      prev.includes(productId) 
+        ? prev.filter((id) => id !== productId) 
+        : [...prev, productId]
+    )
   }
 
-  const addToCart = (productId: number) => {
-    setCart((prev) => [...prev, productId])
-    // يمكن إضافة toast notification هنا
+  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault() // Prevent navigation
+    e.stopPropagation() // Prevent event bubbling
+    
+    const commonProduct = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      description: product.description,
+      images: [product.image],
+      category: product.category,
+      rating: product.rating,
+      stock: product.inStock ? 10 : 0,
+      brand: 'Apple',
+      tags: [product.category]
+    }
+    addItem(commonProduct, 1)
+    toast.success("Added to cart successfully!")
   }
 
   const formatPrice = (price: number) => {
@@ -60,7 +81,7 @@ export default function ProductGrid() {
                 <Badge className="bg-red-500 hover:bg-red-600 text-white font-medium">-{product.discount}%</Badge>
               )}
               {!product.inStock && (
-                <Badge variant="secondary" className="bg-gray-100 text-red-600 font-medium ">
+                <Badge variant="secondary" className="bg-gray-100 text-red-600 font-medium">
                   Out of Stock
                 </Badge>
               )}
@@ -86,9 +107,15 @@ export default function ProductGrid() {
                   size="sm"
                   variant="secondary"
                   className={`w-10 h-10 rounded-full p-0 shadow-lg hover:shadow-xl transition-all duration-200 bg-white hover:bg-gray-50 border border-gray-200 cursor-pointer`}
-                  onClick={() => toggleWishlist(product.id)}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    toggleWishlist(product.id)
+                  }}
                 >
-                  <Heart className={`w-4 h-4 ${wishlist.includes(product.id) ? "fill-black" : "text-black"} cursor-pointer`} />
+                  <Heart 
+                    className={`w-4 h-4 ${wishlist.includes(product.id) ? "fill-red-500 text-red-500" : "text-black"} cursor-pointer`} 
+                  />
                 </Button>
 
                 {/* Quick View Button */}
@@ -103,12 +130,11 @@ export default function ProductGrid() {
 
               {/* Add to Cart Button */}
               {product.inStock && (
-                <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Button
-                    onClick={() => addToCart(product.id)}
-                    className="w-full bg-white hover:bg-gray-100 text-black rounded-lg py-2 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 cursor-pointer"
+                    onClick={(e) => handleAddToCart(e, product)}
+                    className="w-full bg-white/90 hover:bg-white text-black shadow-lg backdrop-blur-sm"
                   >
-                    <ShoppingCart className="w-4 h-4 mr-2 text-black cursor-pointer" />
                     Add to Cart
                   </Button>
                 </div>
@@ -117,55 +143,31 @@ export default function ProductGrid() {
 
             {/* Product Info */}
             <div className="p-4 space-y-3">
-              {/* Category */}
               <p className="text-sm text-gray-500 font-medium">{product.category}</p>
-
-              {/* Product Name */}
-              <h3 className="font-semibold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-gray-700 transition-colors">
+              <h3 className="font-semibold text-gray-900 text-lg leading-tight line-clamp-2">
                 {product.name}
               </h3>
-
-              {/* Rating */}
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1">{renderStars(product.rating)}</div>
-                <span className="text-sm text-gray-600">
-                  {product.rating} ({product.reviews})
-                </span>
-              </div>
-
-              {/* Price */}
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-bold text-gray-900">{formatPrice(product.price)}</span>
-                {product.originalPrice && (
-                  <span className="text-sm text-gray-400 line-through">{formatPrice(product.originalPrice)}</span>
-                )}
-              </div>
-
-              {/* Stock Status */}
-              {!product.inStock && (
-                <div className="pt-2">
-                  <Button disabled className="w-full bg-gray-100 text-red-600" variant="secondary">
-                    Out of Stock
-                  </Button>
+                <div className="flex items-center gap-1">
+                  {renderStars(product.rating)}
                 </div>
-              )}
+                <span className="text-sm text-gray-500">({product.reviews})</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-lg text-gray-900">
+                    {formatPrice(product.price)}
+                  </span>
+                  {product.isSale && product.originalPrice && (
+                    <span className="text-sm text-gray-500 line-through">
+                      {formatPrice(product.originalPrice)}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </Link>
         ))}
-      </div>
-
-      {/* Load More Button */}
-      <div className="text-center mt-12">
-        <Button
-          variant="outline"
-          size="lg"
-          className="inline-flex items-center gap-2 px-8 py-3 rounded-full border-2 border-gray-900 text-gray-900 font-bold text-lg shadow hover:bg-gray-900 hover:text-white transition-all duration-300 group cursor-pointer"
-        >
-          Load More Products
-          <svg className="w-5 h-5 ml-1 transition-transform duration-300 group-hover:translate-x-1 cursor-pointer" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </Button>
       </div>
     </div>
   )

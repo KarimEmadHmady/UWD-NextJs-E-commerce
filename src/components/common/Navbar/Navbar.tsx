@@ -2,8 +2,8 @@
 // src/components/common/Navbar/Navbar.tsx
 
 import { useState, useEffect, useRef } from "react"
-
 import { usePathname } from "next/navigation"
+import { useCart } from "@/hooks/useCart"
 import { useLocale } from "next-intl"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -53,8 +53,8 @@ export default function Navigation() {
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const menuRef = useRef<HTMLUListElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
-  // TODO: Replace with cart state from redux or context
-  const cartCount = 2;
+  const { items } = useCart();
+  const cartCount = items.reduce((total, item) => total + item.quantity, 0);
 
   // Menu translations
   const menuTranslations: Record<string, { en: string; ar: string }> = {

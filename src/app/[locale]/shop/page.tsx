@@ -6,10 +6,11 @@ import FilterSidebar from "@/components/shop/filter-sidebar"
 import ProductSort from "@/components/shop/product-sort"
 import ProductListItem from "@/components/shop/product-list-item"
 import Pagination from "@/components/shop/pagination"
+import ShopProductCard from "@/components/product/ShopProductCard/ShopProductCard"
 import { Button } from "@/components/common/Button/Button"
 import { Input } from "@/components/common/input/input"
 import { products, Product } from "@/components/product/product-data"
-
+import { Toaster } from "sonner"
 import Link from "next/link"
 
 export default function ShopPage() {
@@ -17,6 +18,15 @@ export default function ShopPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
+  const [wishlist, setWishlist] = useState<number[]>([])
+
+  const toggleWishlist = (productId: number) => {
+    setWishlist((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
+    )
+  }
 
   const totalPages = 8
   const totalProducts = 156
@@ -40,9 +50,12 @@ export default function ShopPage() {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Shop All Products</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Shop All Products
+            </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover our complete collection of premium products with the best deals and latest technology
+              Discover our complete collection of premium products with the best
+              deals and latest technology
             </p>
           </div>
 
@@ -79,68 +92,18 @@ export default function ShopPage() {
             <div className="p-4">
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-                  {products.map((product: Product) => (
-                    <Link
+                  {products.map((product) => (
+                    <ShopProductCard
                       key={product.id}
-                      href={`/product/${product.id}`}
-                      className="group relative bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    >
-                      {/* Product Card Content - Similar to ProductGrid */}
-                      <div className="relative aspect-square bg-gray-50 overflow-hidden">
-                        <img
-                          src={product.image || "/placeholder.svg"}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-
-                        {/* Badges */}
-                        <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
-                          {product.isNew && (
-                            <span className="bg-green-500 text-white text-xs font-medium px-2 py-1 rounded cursor-pointer">New</span>
-                          )}
-                          {product.isSale && product.discount && (
-                            <span className="bg-red-500 text-white text-xs font-medium px-2 py-1 rounded cursor-pointer">
-                              -{product.discount}%
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Quick Actions */}
-                        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <Button size="sm" variant="secondary" className="w-10 h-10 rounded-full p-0 shadow-lg cursor-pointer">
-                            <Search className="w-4 h-4 cursor-pointer" />
-                          </Button>
-                        </div>
-
-                        {/* Add to Cart Button */}
-                        {product.inStock && (
-                          <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded-lg py-2 shadow-lg cursor-pointer">
-                              Add to Cart
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Product Info */}
-                      <div className="p-4 space-y-3">
-                        <p className="text-sm text-gray-500 font-medium">{product.category}</p>
-                        <h3 className="font-semibold text-gray-900 text-lg leading-tight line-clamp-2">
-                          {product.name}
-                        </h3>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl font-bold text-gray-900">E.L {product.price}</span>
-                          {product.originalPrice && (
-                            <span className="text-sm text-gray-400 line-through">${product.originalPrice}</span>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
+                      product={product}
+                      onToggleWishlist={toggleWishlist}
+                      isInWishlist={wishlist.includes(product.id)}
+                    />
                   ))}
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {products.map((product: Product) => (
+                  {products.map((product) => (
                     <ProductListItem key={product.id} product={product} />
                   ))}
                 </div>
@@ -152,6 +115,7 @@ export default function ShopPage() {
           </div>
         </div>
       </div>
+      <Toaster position="top-center" richColors />
     </div>
   )
 }

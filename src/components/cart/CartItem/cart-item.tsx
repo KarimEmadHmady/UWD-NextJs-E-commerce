@@ -6,24 +6,13 @@ import { useState } from "react"
 import Image from "next/image"
 import { Minus, Plus, Trash2, Heart } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
-
-interface CartItem {
-  id: number
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  quantity: number
-  color?: string
-  size?: string
-  inStock: boolean
-}
+import type { CartItem as CartItemType } from '@/types/common'
 
 interface CartItemProps {
-  item: CartItem
-  onUpdateQuantity: (id: number, quantity: number) => void
-  onRemove: (id: number) => void
-  onMoveToWishlist: (id: number) => void
+  item: CartItemType;
+  onUpdateQuantity: (id: number, quantity: number) => void;
+  onRemove: (id: number) => void;
+  onMoveToWishlist: (id: number) => void;
 }
 
 export default function CartItemComponent({ item, onUpdateQuantity, onRemove, onMoveToWishlist }: CartItemProps) {
@@ -45,7 +34,12 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
     <div className="flex gap-4 p-6 bg-white border border-gray-200 rounded-lg">
       {/* Product Image */}
       <div className="relative w-24 h-24 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
-        <Image src={item.image || "/placeholder.svg"} alt={item.name} fill className="object-contain p-2" />
+        <Image 
+          src={item.images?.[0] || "/placeholder.svg"} 
+          alt={item.name} 
+          fill 
+          className="object-contain p-2" 
+        />
       </div>
 
       {/* Product Details */}
@@ -54,8 +48,8 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
           <div>
             <h3 className="font-semibold text-gray-900 text-lg mb-1 line-clamp-2">{item.name}</h3>
             <div className="flex items-center gap-4 text-sm text-gray-600">
-              {item.color && <span>Color: {item.color}</span>}
-              {item.size && <span>Size: {item.size}</span>}
+              <span>Category: {item.category}</span>
+              <span>Brand: {item.brand}</span>
             </div>
           </div>
           <Button
@@ -69,18 +63,15 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
         </div>
 
         {/* Stock Status */}
-        {!item.inStock && <p className="text-red-500 text-sm mb-2">Out of stock</p>}
+        {item.stock <= 0 && <p className="text-red-500 text-sm mb-2">Out of stock</p>}
 
         {/* Price and Quantity */}
         <div className="flex flex-col lg:flex-row items-center justify-between flex-wrap">
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold text-gray-900">{formatPrice(item.price)}</span>
-            {item.originalPrice && (
-              <span className="text-sm text-gray-400 line-through">{formatPrice(item.originalPrice)}</span>
-            )}
           </div>
 
-          <div className="flex items-center gap-4 ">
+          <div className="flex items-center gap-4">
             {/* Quantity Controls */}
             <div className="flex items-center border border-gray-300 rounded-lg p-1">
               <Button
@@ -101,14 +92,12 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
                 variant="ghost"
                 size="sm"
                 onClick={() => handleQuantityChange(item.quantity + 1)}
-                disabled={isUpdating || !item.inStock}
+                disabled={isUpdating || item.stock <= item.quantity}
                 className="px-1 h-6 text-xs lg:px-2 lg:h-8 lg:text-sm cursor-pointer"
               >
                 <Plus className="w-4 h-4 cursor-pointer" />
               </Button>
             </div>
-
-
 
             {/* Move to Wishlist */}
             <Button

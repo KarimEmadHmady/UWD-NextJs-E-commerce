@@ -1,18 +1,29 @@
-export interface Product {
-  id: number
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  rating: number
-  reviews: number
-  category: string
-  description: string
-  isNew?: boolean
-  isSale?: boolean
-  discount?: number
-  inStock: boolean
+import type { CartItem, Product as CommonProduct } from '@/types/common'
+
+export interface Product extends Omit<CommonProduct, 'images' | 'stock' | 'brand' | 'tags'> {
+  image: string;
+  reviews: number;
+  originalPrice?: number;
+  isNew?: boolean;
+  isSale?: boolean;
+  discount?: number;
+  inStock: boolean;
 }
+
+// Convert product for cart
+export const convertToCartProduct = (product: Product): CartItem => ({
+  id: product.id,
+  name: product.name,
+  price: product.price,
+  description: product.description,
+  images: [product.image],
+  category: product.category,
+  quantity: 1,
+  stock: product.inStock ? 10 : 0,
+  brand: 'Apple',
+  tags: [product.category],
+  rating: product.rating
+})
 
 export const products: Product[] = [
   {

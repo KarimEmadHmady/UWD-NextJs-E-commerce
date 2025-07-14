@@ -1,75 +1,25 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, ShoppingBag } from "lucide-react"
 import CartItemComponent from "@/components/cart/CartItem/cart-item"
 import CartSummary from "@/components/cart/CartSummary/cart-summary"
 import { Button } from "@/components/common/Button/Button"
-// Mock cart data
-const mockCartItems = [
-  {
-    id: 1,
-    name: "MacBook Pro M3 14-inch",
-    price: 1999.99,
-    originalPrice: 2299.99,
-    image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
-    quantity: 1,
-    color: "Space Gray",
-    size: "14-inch",
-    inStock: true,
-  },
-  {
-    id: 2,
-    name: "iPhone 15 Pro Max",
-    price: 1199.99,
-    image: "https://images.unsplash.com/photo-1519985176271-adb1088fa94c?auto=format&fit=crop&w=400&q=80",
-    quantity: 2,
-    color: "Natural Titanium",
-    size: "256GB",
-    inStock: true,
-  },
-  {
-    id: 3,
-    name: "AirPods Pro 2nd Gen",
-    price: 249.99,
-    image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
-    quantity: 1,
-    inStock: false,
-  },
-]
+import { useCart } from "@/hooks/useCart"
+import type { Product } from "@/types/common"
 
 export default function CartPage() {
   const router = useRouter()
-  const [cartItems, setCartItems] = useState(mockCartItems)
-
-  const updateQuantity = (id: number, quantity: number) => {
-    setCartItems((items) => items.map((item) => (item.id === id ? { ...item, quantity } : item)))
-  }
-
-  const removeItem = (id: number) => {
-    setCartItems((items) => items.filter((item) => item.id !== id))
-  }
+  const { items, subtotal, shipping, tax, total, updateItemQuantity, removeItem } = useCart()
 
   const moveToWishlist = (id: number) => {
-    // Handle move to wishlist logic
+    // Handle move to wishlist logic - will be implemented later
     removeItem(id)
   }
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = subtotal > 100 ? 0 : 15.99
-  const tax = subtotal * 0.08
-  const discount = 0
-  const total = subtotal + shipping + tax - discount
-
-  const handleCheckout = () => {
-    router.push("/checkout")
-  }
-
-  if (cartItems.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
-       
         <div className="max-w-4xl mx-auto px-4 py-16">
           <div className="text-center">
             <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -84,10 +34,12 @@ export default function CartPage() {
     )
   }
 
+  const handleCheckout = () => {
+    router.push("/checkout")
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-    
-
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -96,18 +48,20 @@ export default function CartPage() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-            <p className="text-gray-600">{cartItems.length} items in your cart</p>
+            <p className="text-gray-600">{items.length} items in your cart</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cartItems.map((item) => (
+            {items.map((item) => (
               <CartItemComponent
                 key={item.id}
-                item={item}
-                onUpdateQuantity={updateQuantity}
+                item={{
+                  ...item,
+                }}
+                onUpdateQuantity={updateItemQuantity}
                 onRemove={removeItem}
                 onMoveToWishlist={moveToWishlist}
               />
@@ -128,7 +82,7 @@ export default function CartPage() {
               subtotal={subtotal}
               shipping={shipping}
               tax={tax}
-              discount={discount}
+              discount={0}
               total={total}
               onCheckout={handleCheckout}
             />

@@ -2,12 +2,13 @@
 import React from "react";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "secondary";
+  variant?: "default" | "secondary" | "destructive";
 }
 
 const variants = {
   default: "bg-blue-100 text-blue-800 border border-blue-200",
-  secondary: "bg-green-100 text-green-800 border border-green-200",
+  secondary: "bg-red-100 text-red-800 border border-red-200",
+  destructive: "bg-green-100 text-green-800 border border-green-200",
 };
 
 export const Badge: React.FC<BadgeProps> = ({
@@ -22,4 +23,4 @@ export const Badge: React.FC<BadgeProps> = ({
   >
     {children}
   </span>
-); 
+);
