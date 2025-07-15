@@ -26,6 +26,14 @@ export default function ShippingStep({ onShippingSelect }: ShippingStepProps) {
 
   const shippingOptions: ShippingOption[] = [
     {
+      id: "pickup",
+      name: "Pickup from Store",
+      description: "Pick up your order from our store location",
+      price: 0,
+      estimatedDays: "Available immediately",
+      icon: <Shield className="w-5 h-5 text-blue-600" />, // استخدم أيقونة مختلفة
+    },
+    {
       id: "standard",
       name: "Standard Shipping",
       description: "Regular delivery service",

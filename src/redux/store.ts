@@ -10,6 +10,7 @@ import productsReducer from './features/products/productsSlice';
 import categoryReducer from './features/category/categorySlice';
 import searchReducer from './features/search/searchSlice';
 import filterReducer from './features/filter/filterSlice';
+import checkoutReducer from './features/checkout/checkoutSlice';
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +24,7 @@ export const store = configureStore({
     category: categoryReducer,
     search: searchReducer,
     filter: filterReducer,
+    checkout: checkoutReducer,
   },
 });
 

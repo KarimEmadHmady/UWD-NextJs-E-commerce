@@ -2,13 +2,18 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, MapPin, Truck, CreditCard, CheckCircle } from "lucide-react"
+import { ArrowLeft, MapPin, Truck, CreditCard, CheckCircle, ShoppingCart } from "lucide-react"
 import LocationStep from "@/components/checkout/location-step"
 import ShippingStep from "@/components/checkout/shipping-step"
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Input } from "@/components/common/input/input"
 import { Label } from "@/components/common/label/label"
+import { useDispatch } from 'react-redux';
+import { setAddress, setShippingMethod, setPaymentMethod, setReview } from '@/redux/features/checkout/checkoutSlice';
+import { useCheckout } from '@/hooks/useCheckout';
+import { useCart } from '@/hooks/useCart';
+import CustomerInfoStep from '@/components/checkout/customer-info-step';
 
 interface LocationData {
   latitude: number
@@ -28,22 +33,48 @@ interface ShippingOption {
 
 export default function CheckoutPage() {
   const router = useRouter()
+  const dispatch = useDispatch();
+  const { address, shippingMethod, paymentMethod, review } = useCheckout();
+  const { items: cartItems } = useCart();
   const [currentStep, setCurrentStep] = useState(1)
-  const [location, setLocation] = useState<LocationData | null>({
-    latitude: 30.0444,
-    longitude: 31.2357,
-    address: "123 Business Street",
-    city: "cairo",
-    country: "Egypt"
-  })
-  const [shippingOption, setShippingOption] = useState<ShippingOption | null>(null)
+  // بيانات فورم البطاقة
+  const [cardDetails, setCardDetails] = useState({ number: '', expiry: '', cvv: '' });
+  const [cardError, setCardError] = useState('');
+  const [location, setLocation] = useState<any>(null);
+  const [customerInfo, setCustomerInfo] = useState<any>(null);
 
-  // Mock order data
+  // حساب subtotal من السلة
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+  const tax = subtotal * 0.08; // مثال: 8% ضريبة
+  let shippingCost = 0;
+  if (
+    shippingMethod === 'Express' ||
+    shippingMethod === 'express' ||
+    shippingMethod === 'Express Shipping'
+  ) shippingCost = 100;
+  else if (
+    shippingMethod === 'Standard' ||
+    shippingMethod === 'standard' ||
+    shippingMethod === 'Standard Shipping'
+  ) shippingCost = 50;
+  else if (
+    shippingMethod === 'Pickup from Store' ||
+    shippingMethod === 'pickup' ||
+    shippingMethod === 'Pickup' ||
+    shippingMethod === 'pickup from store'
+  ) shippingCost = 0;
+  else if (
+    shippingMethod === 'overnight' ||
+    shippingMethod === 'Overnight Shipping'
+  ) shippingCost = 150;
+  else shippingCost = 0;
+  const total = subtotal + tax + shippingCost;
+
   const orderSummary = {
-    subtotal: 3449.97,
-    tax: 275.99,
-    shipping: shippingOption?.price || 0,
-    total: 3449.97 + 275.99 + (shippingOption?.price || 0),
+    subtotal,
+    tax,
+    shipping: shippingCost,
+    total,
   }
 
   const formatPrice = (price: number) => {
@@ -52,27 +83,81 @@ export default function CheckoutPage() {
 
   const steps = [
     { number: 1, title: "Location", icon: MapPin, completed: !!location },
-    { number: 2, title: "Shipping", icon: Truck, completed: !!shippingOption },
-    { number: 3, title: "Payment", icon: CreditCard, completed: false },
-    { number: 4, title: "Review", icon: CheckCircle, completed: false },
-  ]
+    { number: 2, title: "Customer Info & Shipping", icon: Truck, completed: !!customerInfo && !!shippingMethod },
+    { number: 3, title: "Payment", icon: CreditCard, completed: !!paymentMethod },
+    { number: 4, title: "Review", icon: CheckCircle, completed: !!review },
+  ];
+  const canGoToStep = (stepNum: number) => {
+    if (stepNum === 1) return true;
+    if (stepNum === 2) return !!location;
+    if (stepNum === 3) return !!location && !!customerInfo && !!shippingMethod;
+    if (stepNum === 4) return !!location && !!customerInfo && !!shippingMethod && !!paymentMethod;
+    return false;
+  };
 
-  const handleLocationSet = (locationData: LocationData) => {
-    setLocation(locationData)
-    setCurrentStep(2)
+  const handleLocationSet = (loc: any) => {
+    setLocation(loc);
+    setCurrentStep(2);
+  };
+
+  const handleShippingSelect = (option: any) => {
+    dispatch(setShippingMethod(option.name));
+    setCurrentStep(3);
   }
 
-  const handleShippingSelect = (option: ShippingOption) => {
-    setShippingOption(option)
-    setCurrentStep(3)
+  const handlePaymentSelect = (method: 'card' | 'cash' | 'pickup') => {
+    dispatch(setPaymentMethod(method));
+    setCardError('');
+    setCardDetails({ number: '', expiry: '', cvv: '' });
+    // لا تنتقل مباشرة للخطوة التالية إذا كانت بطاقة
+    if (method !== 'card') setCurrentStep(4);
+  };
+
+  const handleCustomerInfoSet = (info: any, shipping: string) => {
+    setCustomerInfo(info);
+    dispatch(setShippingMethod(shipping));
+    if (shipping === 'Pickup from Store') {
+      dispatch(setPaymentMethod('pickup'));
+      setCurrentStep(4); // انتقل مباشرة للريفيو
+    } else {
+      setCurrentStep(3);
+    }
+  };
+
+  const handleCardInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCardDetails({ ...cardDetails, [e.target.id]: e.target.value });
+  };
+
+  const handleCardContinue = () => {
+    // تحقق من صحة بيانات البطاقة
+    if (!/^\d{16}$/.test(cardDetails.number)) {
+      setCardError('Card number must be 16 digits');
+      return;
+    }
+    if (!/^\d{2}\/\d{2}$/.test(cardDetails.expiry)) {
+      setCardError('Expiry must be MM/YY');
+      return;
+    }
+    if (!/^\d{3}$/.test(cardDetails.cvv)) {
+      setCardError('CVV must be 3 digits');
+      return;
+    }
+    setCardError('');
+    setCurrentStep(4);
+  };
+
+  const handleReview = (reviewData: any) => {
+    dispatch(setReview(reviewData));
+    // بعد الريفيو، يمكنك توجيه المستخدم لصفحة التأكيد
+    router.push('/order-confirmation');
   }
 
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <LocationStep onLocationSet={handleLocationSet} />
+        return <LocationStep onLocationSet={handleLocationSet} initialLocation={location || undefined} />;
       case 2:
-        return <ShippingStep onShippingSelect={handleShippingSelect} />
+        return <CustomerInfoStep onCustomerInfoSet={handleCustomerInfoSet} initialInfo={customerInfo || undefined} initialShippingMethod={shippingMethod || undefined} />;
       case 3:
         return (
           <div className="max-w-2xl mx-auto space-y-6">
@@ -81,43 +166,31 @@ export default function CheckoutPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Information</h2>
               <p className="text-gray-600">Enter your payment details to complete the order</p>
             </div>
-
             <Card>
               <CardHeader>
                 <CardTitle>Payment Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-gray-900">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" placeholder="John" />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" placeholder="Doe" />
-                  </div>
+                <div className="flex flex-col gap-4">
+                  <Button onClick={() => handlePaymentSelect('card')} className={`w-full ${paymentMethod === 'card' ? 'bg-pink-600 text-white' : 'bg-white text-pink-600 border border-pink-600'}`}>Pay by Card</Button>
+                  <Button onClick={() => handlePaymentSelect('cash')} className={`w-full ${paymentMethod === 'cash' ? 'bg-pink-600 text-white' : 'bg-white text-pink-600 border border-pink-600'}`}>Cash on Delivery</Button>
+                  <Button onClick={() => handlePaymentSelect('pickup')} className={`w-full ${paymentMethod === 'pickup' ? 'bg-pink-600 text-white' : 'bg-white text-pink-600 border border-pink-600'}`}>Pickup from Store</Button>
                 </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="john@example.com" />
-                </div>
-                <div>
-                  <Label htmlFor="cardNumber">Card Number</Label>
-                  <Input id="cardNumber" placeholder="1234 5678 9012 3456" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="expiry">Expiry Date</Label>
-                    <Input id="expiry" placeholder="MM/YY" />
+                {paymentMethod === 'card' && (
+                  <div className="mt-6 space-y-4">
+                    <Input id="number" placeholder="Card Number (16 digits)" value={cardDetails.number} onChange={handleCardInput} maxLength={16} />
+                    <div className="flex gap-4">
+                      <Input id="expiry" placeholder="MM/YY" value={cardDetails.expiry} onChange={handleCardInput} maxLength={5} />
+                      <Input id="cvv" placeholder="CVV" value={cardDetails.cvv} onChange={handleCardInput} maxLength={3} />
+                    </div>
+                    {cardError && <div className="text-red-500 text-sm">{cardError}</div>}
+                    <Button onClick={handleCardContinue} className="w-full bg-pink-600 hover:bg-pink-700 text-white mt-2">Continue to Review</Button>
                   </div>
-                  <div>
-                    <Label htmlFor="cvv">CVV</Label>
-                    <Input id="cvv" placeholder="123" />
-                  </div>
-                </div>
-                <Button onClick={() => setCurrentStep(4)} className="w-full bg-pink-600 hover:bg-pink-700 text-white">
-                  Continue to Review
-                </Button>
+                )}
+                {paymentMethod !== 'card' && (
+                  <Button onClick={() => setCurrentStep(4)} className="w-full bg-pink-600 hover:bg-pink-700 text-white mt-4">Continue to Review</Button>
+                )}
+                <Button variant="outline" onClick={() => setCurrentStep(2)} className="w-full mt-2">Back</Button>
               </CardContent>
             </Card>
           </div>
@@ -130,20 +203,42 @@ export default function CheckoutPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Review Your Order</h2>
               <p className="text-gray-600">Please review your order details before placing the order</p>
             </div>
-
             {/* Order Review */}
             <Card>
               <CardHeader>
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-gray-900">
+                {/* بيانات العميل والموقع */}
+                <div className="mb-4 space-y-2">
+                  <h4 className="font-semibold mb-1">Customer Info</h4>
+                  {customerInfo && (
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li><b>Name:</b> {customerInfo.name}</li>
+                      <li><b>Phone:</b> {customerInfo.phone}</li>
+                      <li><b>Address:</b> {customerInfo.address}</li>
+                      <li><b>City:</b> {customerInfo.city}</li>
+                      <li><b>Country:</b> {customerInfo.country}</li>
+                    </ul>
+                  )}
+                  {location && (
+                    <ul className="text-sm text-gray-700 space-y-1 mt-2">
+                      <li><b>Location:</b> {location.address}</li>
+                    </ul>
+                  )}
+                  <ul className="text-sm text-gray-700 space-y-1 mt-2">
+                    <li><b>Shipping Method:</b> {shippingMethod}</li>
+                    <li><b>Payment Method:</b> {paymentMethod}</li>
+                  </ul>
+                </div>
+                {/* ملخص الطلب */}
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
                     <span>{formatPrice(orderSummary.subtotal)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Shipping ({shippingOption?.name})</span>
+                    <span>Shipping ({shippingMethod})</span>
                     <span>{formatPrice(orderSummary.shipping)}</span>
                   </div>
                   <div className="flex justify-between">
@@ -156,12 +251,24 @@ export default function CheckoutPage() {
                     <span>{formatPrice(orderSummary.total)}</span>
                   </div>
                 </div>
+                <div className="mt-4">
+                  <h4 className="font-semibold mb-2">Products</h4>
+                  <ul className="space-y-2">
+                    {cartItems.map((item) => (
+                      <li key={item.id} className="flex justify-between text-sm">
+                        <span>{item.name} x{item.quantity || 1}</span>
+                        <span>{formatPrice(item.price * (item.quantity || 1))}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
                 <Button
-                  onClick={() => router.push("/order-confirmation")}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => handleReview({})}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white mt-4"
                 >
                   Place Order
                 </Button>
+                <Button variant="outline" onClick={() => setCurrentStep(3)} className="w-full mt-2">Back</Button>
               </CardContent>
             </Card>
           </div>
@@ -169,6 +276,22 @@ export default function CheckoutPage() {
       default:
         return null
     }
+  }
+
+  // إذا كانت السلة فارغة
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+        <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md w-full">
+          <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-pink-500" />
+          <h2 className="text-2xl font-bold mb-2 text-gray-900">Your cart is empty</h2>
+          <p className="text-gray-600 mb-6">You can't proceed to checkout without any products in your cart.</p>
+          <Button onClick={() => router.push('/shop')} className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full text-lg font-semibold shadow">
+            Go Shopping Now
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -204,7 +327,11 @@ export default function CheckoutPage() {
                           : step.completed
                             ? "bg-green-50 border border-green-200"
                             : "bg-gray-50"
-                      }`}
+                      } ${canGoToStep(step.number) ? 'cursor-pointer hover:shadow-md' : 'cursor-not-allowed opacity-60'}`}
+                      onClick={() => {
+                        if (canGoToStep(step.number)) setCurrentStep(step.number);
+                      }}
+                      title={canGoToStep(step.number) ? `Go to ${step.title}` : 'Complete previous steps first'}
                     >
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${

@@ -6,11 +6,13 @@ import { CheckCircle, Package, Truck, MapPin, Calendar, Download, Share2, ArrowR
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Badge } from "@/components/common/Badge/Badge"
+import { useCheckout } from '@/hooks/useCheckout';
 
 export default function OrderConfirmationPage() {
   const router = useRouter()
   const [orderNumber] = useState("SWEETS-2024-001234")
   const [estimatedDelivery] = useState("March 15, 2024")
+  const { address, shippingMethod, paymentMethod, review } = useCheckout();
 
   const orderItems = [
     {
