@@ -348,7 +348,7 @@ export default function Navigation() {
         </div>
 
         {/* Action Icons */}
-        <div className="min-w-[150px] flex-shrink-0">
+        <div className="min-w-[90px] flex-shrink-0">
           
           <ul className="flex justify-end gap-2 list-none items-center">
             {/* Wishlist Icon */}

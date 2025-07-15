@@ -13,7 +13,7 @@ export default function HomePage() {
   return (
     <>
       {/* hero */}
-      <section className="relative py-10 overflow-hidden bg-black sm:py-16 lg:py-24 xl:py-32 h-[40vh] sm:h-[70vh] m-6 rounded-[30px] flex items-center justify-center sm:block">
+      <section className="relative py-10 overflow-hidden bg-black sm:py-16 lg:py-24 xl:py-32 h-[48vh] sm:h-[70vh] m-6 rounded-[30px] flex items-center justify-center sm:block">
         <div className="absolute inset-0 ">
             <img className="object-cover w-full h-full md:object-left md:scale-150 md:origin-top-left" src="https://images.unsplash.com/photo-1540332788463-be4cdbc4be88?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Delicious Sweets" />
         </div>
