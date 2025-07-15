@@ -11,6 +11,7 @@ import { Label } from "@/components/common/label/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/common/card/card"
 import { useUser } from '@/hooks/useUser';
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
+import RevealOnScroll from "@/components/common/RevealOnScroll"
 
 /**
  * LoginPage component - Provides a login form for users to authenticate and access their account.
@@ -45,6 +46,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <RevealOnScroll>
       <main className="flex-1 flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
@@ -112,6 +114,7 @@ export default function LoginPage() {
           </CardFooter>
         </Card>
       </main>
+      </RevealOnScroll>
     </div>
   )
 }

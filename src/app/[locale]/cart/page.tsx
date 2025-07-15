@@ -7,6 +7,7 @@ import CartSummary from "@/components/cart/CartSummary/cart-summary"
 import { Button } from "@/components/common/Button/Button"
 import { useCart } from "@/hooks/useCart"
 import type { Product } from "@/types/common"
+import RevealOnScroll from "@/components/common/RevealOnScroll"
 
 /**
  * CartPage component - Displays the user's shopping cart with items, summary, and checkout option.
@@ -43,10 +44,10 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50 ">
+      <RevealOnScroll alwaysAnimate>
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-8 pt-5">
           <Button variant="ghost" onClick={() => router.back()} className="p-2">
             <ArrowLeft className="w-5 h-5" />
           </Button>
@@ -92,7 +93,8 @@ export default function CartPage() {
             />
           </div>
         </div>
+      </RevealOnScroll>
       </div>
-    </div>
+   
   )
 }

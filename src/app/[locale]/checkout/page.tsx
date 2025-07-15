@@ -20,6 +20,7 @@ import { selectUser } from '@/redux/features/user/userSelectors';
 import { clearCart } from '@/redux/features/cart/cartSlice';
 import { useAddress } from '@/hooks/useAddress';
 import { useEffect } from 'react';
+import RevealOnScroll from "@/components/common/RevealOnScroll"
 
 interface LocationData {
   latitude: number
@@ -224,6 +225,7 @@ export default function CheckoutPage() {
       case 3:
         return (
           <div className="max-w-2xl mx-auto space-y-6">
+             <RevealOnScroll alwaysAnimate>
             <div className="text-center mb-8">
               <CreditCard className="w-16 h-16 text-pink-600 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Information</h2>
@@ -256,11 +258,13 @@ export default function CheckoutPage() {
                 <Button variant="outline" onClick={() => setCurrentStep(2)} className="w-full mt-2">Back</Button>
               </CardContent>
             </Card>
+            </RevealOnScroll>
           </div>
         )
       case 4:
         return (
           <div className="max-w-2xl mx-auto space-y-6">
+            <RevealOnScroll alwaysAnimate>
             <div className="text-center mb-8">
               <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Review Your Order</h2>
@@ -334,6 +338,7 @@ export default function CheckoutPage() {
                 <Button variant="outline" onClick={() => setCurrentStep(3)} className="w-full mt-2">Back</Button>
               </CardContent>
             </Card>
+            </RevealOnScroll>
           </div>
         )
       default:
@@ -345,6 +350,7 @@ export default function CheckoutPage() {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+        <RevealOnScroll>
         <div className=" p-8 rounded-xl text-center max-w-md w-full">
           <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-pink-500" />
           <h2 className="text-2xl font-bold mb-2 text-gray-900">Your cart is empty</h2>
@@ -353,13 +359,14 @@ export default function CheckoutPage() {
             Go Shopping Now
           </Button>
         </div>
+        </RevealOnScroll>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-
+      <RevealOnScroll>
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -455,6 +462,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-3">{renderStepContent()}</div>
         </div>
       </div>
+      </RevealOnScroll>
     </div>
   )
 }

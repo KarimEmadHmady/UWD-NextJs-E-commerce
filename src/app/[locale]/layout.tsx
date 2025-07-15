@@ -5,6 +5,7 @@ import Navbar from '@/components/common/Navbar/Navbar';
 import ReduxProvider from '@/redux/ReduxProvider';
 import NotificationContainer from '@/components/common/NotificationContainer';
 import GlobalLoadingOverlay from '@/components/common/GlobalLoadingOverlay';
+import PageTransitionProvider from '../../components/common/PageTransitionProvider';
 
 /**
  * LocaleLayout component - Provides locale-based layout for the app.
@@ -31,7 +32,9 @@ export default async function LocaleLayout({
           <NotificationContainer />
           <NextIntlClientProvider>
             <Navbar />
-            {children}
+            <PageTransitionProvider>
+              {children}
+            </PageTransitionProvider>
           </NextIntlClientProvider>
         </ReduxProvider>
       </body>

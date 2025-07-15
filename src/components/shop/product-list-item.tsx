@@ -9,6 +9,7 @@ import { useWishlist } from "@/hooks/useWishlist"
 import { useNotifications } from '@/hooks/useNotifications';
 import { useCart } from '@/hooks/useCart';
 import { Product as GlobalProduct } from "@/types/common"
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface Product {
   id: number
@@ -96,9 +97,22 @@ export default function ProductListItem({ product }: ProductListItemProps) {
   return (
     <>
       {/* Modal Quick View */}
+      <AnimatePresence>
       {isQuickViewOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative animate-fade-in">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        >
+          <motion.div
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 40, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative"
+          >
             <button
               className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
               onClick={() => setIsQuickViewOpen(false)}
@@ -139,9 +153,10 @@ export default function ProductListItem({ product }: ProductListItemProps) {
                 </Button>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       <div className={`flex gap-4 p-4 rounded-lg hover:shadow-md transition-shadow bg-white border
         ${isWishlisted ? "border-red-400 ring-2 ring-red-300 bg-red-50/40" : "border-gray-200"}

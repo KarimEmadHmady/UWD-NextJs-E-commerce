@@ -18,6 +18,7 @@ import { useEffect } from 'react';
 import { useFilter } from '@/hooks/useFilter';
 import { setCategories, setQuantities, setSizes, setBrands, clearFilters } from '@/redux/features/filter/filterSlice';
 import { useDispatch } from 'react-redux';
+import RevealOnScroll from '@/components/common/RevealOnScroll';
 
 /**
  * ShopPage component - Displays all products with filtering, search, sorting, pagination, and grid/list view.
@@ -66,101 +67,106 @@ export default function ShopPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumbs */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <nav className="flex items-center space-x-2 text-sm">
-            <Home className="w-4 h-4 text-gray-400" />
-            <ChevronRight className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-600">Sweets</span>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
-            <span className="font-medium text-gray-900">All Sweets</span>
-          </nav>
-        </div>
-      </div>
-
-      {/* Page Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Shop All Sweets
-            </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover our complete collection of delicious sweets, cakes, pastries, and more. Perfect for every occasion!
-            </p>
-          </div>
-
-          {/* Search Bar */}
-          <div className="max-w-md mx-auto relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              type="text"
-              placeholder="Search sweets..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-black pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            />
+      <RevealOnScroll alwaysAnimate>
+        {/* Breadcrumbs */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <nav className="flex items-center space-x-2 text-sm">
+              <Home className="w-4 h-4 text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-600">Sweets</span>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <span className="font-medium text-gray-900">All Sweets</span>
+            </nav>
           </div>
         </div>
-      </div>
-
+      </RevealOnScroll>
+      <RevealOnScroll delay={0.1}>
+        {/* Page Header */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Shop All Sweets
+              </h1>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Discover our complete collection of delicious sweets, cakes, pastries, and more. Perfect for every occasion!
+              </p>
+            </div>
+            {/* Search Bar */}
+            <div className="max-w-md mx-auto relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                type="text"
+                placeholder="Search sweets..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 text-black pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+        </div>
+      </RevealOnScroll>
       <div className="max-w-7xl mx-auto">
         <div className="flex">
-          {/* Filter Sidebar */}
-          <FilterSidebar isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} />
-
-          {/* Main Content */}
+          <RevealOnScroll delay={0.2}>
+            {/* Filter Sidebar */}
+            <FilterSidebar isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} />
+          </RevealOnScroll>
           <div className="flex-1 min-w-0">
-            {/* Sort and View Controls */}
-            <ProductSort
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              onFilterToggle={() => setIsFilterOpen(true)}
-              totalProducts={totalProducts}
-            />
-
-            {/* Products Grid/List */}
-            <div className="p-4">
-              {viewMode === "grid" ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-                  {paginatedProducts.map((product) => {
-                    const localProduct = {
-                      ...product,
-                      image: product.image,
-                      reviews: product.reviews,
-                      inStock: product.inStock,
-                      isNew: product.isNew,
-                      isSale: product.isSale,
-                      discount: product.discount,
-                    };
-                    return <ShopProductCard key={product.id} product={localProduct} />;
-                  })}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {paginatedProducts.map((product) => {
-                    const localProduct = {
-                      ...product,
-                      image: product.image,
-                      reviews: product.reviews,
-                      inStock: product.inStock,
-                      isNew: product.isNew,
-                      isSale: product.isSale,
-                      discount: product.discount,
-                    };
-                    return <ProductListItem key={product.id} product={localProduct} />;
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Pagination */}
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            <RevealOnScroll delay={0.3}>
+              {/* Sort and View Controls */}
+              <ProductSort
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                onFilterToggle={() => setIsFilterOpen(true)}
+                totalProducts={totalProducts}
+              />
+            </RevealOnScroll>
+            <RevealOnScroll delay={0.4}>
+              {/* Products Grid/List */}
+              <div className="p-4">
+                {viewMode === "grid" ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                    {paginatedProducts.map((product) => {
+                      const localProduct = {
+                        ...product,
+                        image: product.image,
+                        reviews: product.reviews,
+                        inStock: product.inStock,
+                        isNew: product.isNew,
+                        isSale: product.isSale,
+                        discount: product.discount,
+                      };
+                      return <ShopProductCard key={product.id} product={localProduct} />;
+                    })}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {paginatedProducts.map((product) => {
+                      const localProduct = {
+                        ...product,
+                        image: product.image,
+                        reviews: product.reviews,
+                        inStock: product.inStock,
+                        isNew: product.isNew,
+                        isSale: product.isSale,
+                        discount: product.discount,
+                      };
+                      return <ProductListItem key={product.id} product={localProduct} />;
+                    })}
+                  </div>
+                )}
+              </div>
+            </RevealOnScroll>
+            <RevealOnScroll delay={0.5}>
+              {/* Pagination */}
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            </RevealOnScroll>
           </div>
         </div>
       </div>
       <Toaster position="top-center" richColors />
     </div>
-  )
+  );
 }

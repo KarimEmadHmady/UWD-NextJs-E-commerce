@@ -9,6 +9,7 @@ import { Input } from "@/components/common/input/input"
 import { Textarea } from "@/components/common/textarea/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Label } from "@/components/common/label/label"
+import RevealOnScroll from "@/components/common/RevealOnScroll"
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -95,7 +96,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gray-50">
 
-
+     <RevealOnScroll>
 
       <div className="max-w-7xl mx-auto px-4 py-16">
         {/* Contact Info Cards */}
@@ -266,6 +267,7 @@ export default function ContactPage() {
           </Card>
         </div>
       </div>
+      </RevealOnScroll>
     </div>
   )
 }

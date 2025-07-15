@@ -12,6 +12,7 @@ import { useAddress } from '@/hooks/useAddress';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/features/user/userSelectors';
 import { useWishlist } from '@/hooks/useWishlist';
+import RevealOnScroll from "@/components/common/RevealOnScroll"
 
 /**
  * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
@@ -92,7 +93,7 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-
+      <RevealOnScroll alwaysAnimate>
        {/* Breadcrumbs */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -402,6 +403,7 @@ export default function AccountPage() {
           </TabsContent>
         </Tabs>
       </div>
+      </RevealOnScroll>
     </div>
   )
 }
@@ -411,185 +413,3 @@ export default function AccountPage() {
 
 
 
-
-
-// "use client"
-
-// import { useEffect, useState } from "react"
-// import { useRouter } from "next/navigation"
-// import { User, Package, Heart, Settings, MapPin, CreditCard, Bell, Shield, LogOut,  Home, ChevronRight } from "lucide-react"
-// import { Button } from "@/components/common/Button/Button"
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/avatar/avatar"
-// import { Badge } from "@/components/common/Badge/Badge"
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/common/tabs/tabs"
-// import { useUser } from '@/hooks/useUser';
-
-// export default function AccountPage() {
-//   const [activeTab, setActiveTab] = useState("overview")
-//   const router = useRouter();
-//   const { user, isAuthenticated, loading, error, logout } = useUser();
-
-//   useEffect(() => {
-//     if (!loading && !isAuthenticated) {
-//       router.push("/login");
-//     }
-//   }, [isAuthenticated, loading, router]);
-
-//   if (loading) {
-//     return <div className="min-h-screen flex items-center justify-center text-xl font-bold">Loading...</div>;
-//   }
-//   if (error) {
-//     return <div className="min-h-screen flex items-center justify-center text-xl text-red-600 font-bold">{error}</div>;
-//   }
-//   if (!user) {
-//     return null;
-//   }
-
-//   // بيانات وهمية للأقسام الأخرى (يمكن ربطها لاحقاً)
-//   const recentOrders = [];
-//   const wishlistItems = [];
-//   const formatPrice = (price: number) => `EGP ${price}`;
-//   const getStatusColor = (status: string) => "bg-gray-100 text-gray-800";
-
-//   return (
-//     <div className="min-h-screen bg-gray-50">
-//       {/* Breadcrumbs */}
-//       <div className="bg-white border-b border-gray-200">
-//         <div className="max-w-7xl mx-auto px-4 py-4">
-//           <nav className="flex items-center space-x-2 text-sm">
-//             <Home className="w-4 h-4 text-gray-400" />
-//             <ChevronRight className="w-4 h-4 text-gray-400" />
-//             <span className="text-gray-600">Profile</span>
-//           </nav>
-//         </div>
-//       </div>
-//       <div className="max-w-7xl mx-auto px-4 py-8">
-//         {/* Header */}
-//         <div className="mb-8">
-//           <div className="flex items-center gap-6 mb-6">
-//             <Avatar className="w-20 h-20">
-//               <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-//               <AvatarFallback className="text-xl">
-//                 {user.name
-//                   .split(" ")
-//                   .map((n) => n[0])
-//                   .join("")}
-//               </AvatarFallback>
-//             </Avatar>
-//             <div>
-//               <h1 className="text-3xl font-bold text-gray-900">{user.name}</h1>
-//               <p className="text-gray-600">{user.email}</p>
-//               {/* <p className="text-sm text-gray-500">Member since {user.joinDate}</p> */}
-//               <Button variant="outline" className="mt-2" onClick={logout}>
-//                 <LogOut className="w-4 h-4 mr-2" /> Logout
-//               </Button>
-//             </div>
-//           </div>
-//           {/* Quick Stats (بيانات وهمية مؤقتة) */}
-//           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-//             <Card>
-//               <CardContent className="p-6">
-//                 <div className="flex items-center gap-4">
-//                   <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
-//                     <Package className="w-6 h-6 text-pink-600" />
-//                   </div>
-//                   <div>
-//                     <p className="text-2xl font-bold text-gray-900">0</p>
-//                     <p className="text-sm text-gray-600">Total Orders</p>
-//                   </div>
-//                 </div>
-//               </CardContent>
-//             </Card>
-//             <Card>
-//               <CardContent className="p-6">
-//                 <div className="flex items-center gap-4">
-//                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-//                     <CreditCard className="w-6 h-6 text-green-600" />
-//                   </div>
-//                   <div>
-//                     <p className="text-2xl font-bold text-gray-900">{formatPrice(0)}</p>
-//                     <p className="text-sm text-gray-600">Total Spent</p>
-//                   </div>
-//                 </div>
-//               </CardContent>
-//             </Card>
-//             <Card>
-//               <CardContent className="p-6">
-//                 <div className="flex items-center gap-4">
-//                   <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-//                     <Heart className="w-6 h-6 text-purple-600" />
-//                   </div>
-//                   <div>
-//                     <p className="text-2xl font-bold text-gray-900">0</p>
-//                     <p className="text-sm text-gray-600">Wishlist Items</p>
-//                   </div>
-//                 </div>
-//               </CardContent>
-//             </Card>
-//           </div>
-//         </div>
-//         {/* Tabs (محتوى وهمي مؤقت) */}
-//         <Tabs value={activeTab} onValueChange={setActiveTab}>
-//           <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 text-gray-900 cursor-pointer">
-//             <TabsTrigger value="overview" className="data-[state=active]:text-black">Overview</TabsTrigger>
-//             <TabsTrigger value="orders" className="data-[state=active]:text-black">Orders</TabsTrigger>
-//             <TabsTrigger value="wishlist" className="data-[state=active]:text-black">Wishlist</TabsTrigger>
-//             <TabsTrigger value="addresses" className="data-[state=active]:text-black">Addresses</TabsTrigger>
-//             <TabsTrigger value="settings" className="data-[state=active]:text-black">Settings</TabsTrigger>
-//           </TabsList>
-//           <TabsContent value="overview" className="mt-6 ">
-//             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-//               {/* Recent Orders */}
-//               <Card>
-//                 <CardHeader>
-//                   <CardTitle>Recent Orders</CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <div className="space-y-4">
-//                     {/* لا توجد طلبات حالياً */}
-//                     <div className="text-gray-500 text-center">No recent orders.</div>
-//                   </div>
-//                   <Button variant="outline" className="w-full mt-4 bg-transparent cursor-pointer">
-//                     View All Orders
-//                   </Button>
-//                 </CardContent>
-//               </Card>
-//               {/* Quick Actions */}
-//               <Card>
-//                 <CardHeader>
-//                   <CardTitle>Quick Actions</CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <div className="space-y-3">
-//                     <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
-//                       <Package className="w-4 h-4 mr-3" />
-//                       Track an Order
-//                     </Button>
-//                     <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
-//                       <Heart className="w-4 h-4 mr-3" />
-//                       View Wishlist
-//                     </Button>
-//                     <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
-//                       <MapPin className="w-4 h-4 mr-3" />
-//                       Manage Addresses
-//                     </Button>
-//                     <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
-//                       <CreditCard className="w-4 h-4 mr-3" />
-//                       Payment Methods
-//                     </Button>
-//                     <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
-//                       <Settings className="w-4 h-4 mr-3" />
-//                       Account Settings
-//                     </Button>
-//                   </div>
-//                 </CardContent>
-//               </Card>
-//             </div>
-//           </TabsContent>
-//           {/* باقي التابات محتوى وهمي */}
-//         </Tabs>
-//       </div>
-//     </div>
-//   )
-// }

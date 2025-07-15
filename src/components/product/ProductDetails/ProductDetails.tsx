@@ -17,6 +17,7 @@ import { convertToCartProduct } from "../product-data"
 import { useWishlist } from "@/hooks/useWishlist"
 import { Product as GlobalProduct } from "@/types/common"
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
+import Skeleton from '@/components/common/Skeleton';
 
 interface ProductDetailsProps {
   product: Product
@@ -35,6 +36,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const [isShareOpen, setIsShareOpen] = useState(false)
   const { notify } = useNotifications();
   const { start, stop } = useGlobalLoading();
+  const [isImgLoading, setIsImgLoading] = useState(true);
 
   // Share URL - replace with your actual domain in production
   const shareUrl = `https://your-domain.com/product/${product.id}`
@@ -127,6 +129,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm rounded-full p-2 z-10">
                 <ZoomIn className="w-5 h-5 text-gray-600" />
               </div>
+              {isImgLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse z-10">
+                  <div className="w-12 h-12 rounded-full border-4 border-b-2 border-gray-300 animate-spin" />
+                </div>
+              )}
               <Image
                 src={productImages[selectedImage] || "/placeholder.svg"}
                 alt={product.name}
@@ -135,6 +142,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 quality={100}
                 priority
                 sizes="(max-width: 768px) 100vw, 50vw"
+                onLoadingComplete={() => setIsImgLoading(false)}
+                onError={() => setIsImgLoading(false)}
+                style={isImgLoading ? { visibility: 'hidden' } : {}}
               />
             </div>
             <Lightbox

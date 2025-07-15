@@ -1,12 +1,13 @@
 import { ChevronRight, Home } from 'lucide-react'
 import React from 'react'
 import Image from 'next/image'
+import RevealOnScroll from '@/components/common/RevealOnScroll'
 
 
 export default function Categore() {
   return (
     <div>
-
+      <RevealOnScroll alwaysAnimate>
                {/* Breadcrumbs */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -97,6 +98,7 @@ export default function Categore() {
           </div>
         </div>
       </div>
+      </RevealOnScroll>
     </div>
   )
 }
