@@ -38,14 +38,14 @@ const cartSlice = createSlice({
       }
       state.subtotal = state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
       state.tax = state.subtotal * 0.14; // 14% VAT for Egypt
-      state.shipping = state.subtotal > 1000 ? 0 : 50; // Free shipping over 1000 EGP
+      state.shipping = 0;
       state.total = state.subtotal + state.tax + state.shipping;
     },
     removeFromCart: (state, action: PayloadAction<number>) => {
       state.items = state.items.filter((item) => item.id !== action.payload);
       state.subtotal = state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
       state.tax = state.subtotal * 0.14;
-      state.shipping = state.subtotal > 1000 ? 0 : 50;
+      state.shipping = 0;
       state.total = state.subtotal + state.tax + state.shipping;
     },
     updateQuantity: (state, action: PayloadAction<{ id: number; quantity: number }>) => {
@@ -55,7 +55,7 @@ const cartSlice = createSlice({
       }
       state.subtotal = state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
       state.tax = state.subtotal * 0.14;
-      state.shipping = state.subtotal > 1000 ? 0 : 50;
+      state.shipping = 0;
       state.total = state.subtotal + state.tax + state.shipping;
     },
     clearCart: (state) => {

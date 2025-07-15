@@ -95,14 +95,14 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
             </Button>
             <Button
               variant={shippingMethod === 'Pickup from Store' ? 'default' : 'outline'}
-              className={shippingMethod === 'Pickup from Store' ? 'bg-blue-600 text-white' : ''}
+              className={shippingMethod === 'Pickup from Store' ? 'bg-pink-600 text-white' : ''}
               onClick={() => setShippingMethod('Pickup from Store')}
             >
               Pickup from Store (Free)
             </Button>
           </div>
           {shippingMethod === 'Pickup from Store' && (
-            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded text-blue-800 text-sm">
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded text-pink-800 text-sm">
               When you choose pickup from store, no shipping fees will be charged. You can collect your order directly from our branch.
             </div>
           )}

@@ -14,6 +14,10 @@ import { setAddress, setShippingMethod, setPaymentMethod, setReview } from '@/re
 import { useCheckout } from '@/hooks/useCheckout';
 import { useCart } from '@/hooks/useCart';
 import CustomerInfoStep from '@/components/checkout/customer-info-step';
+import { useOrders } from '@/hooks/useOrders';
+import { useSelector } from 'react-redux';
+import { selectUser } from '@/redux/features/user/userSelectors';
+import { clearCart } from '@/redux/features/cart/cartSlice';
 
 interface LocationData {
   latitude: number
@@ -42,6 +46,8 @@ export default function CheckoutPage() {
   const [cardError, setCardError] = useState('');
   const [location, setLocation] = useState<any>(null);
   const [customerInfo, setCustomerInfo] = useState<any>(null);
+  const { createOrder } = useOrders();
+  const user = useSelector(selectUser);
 
   // حساب subtotal من السلة
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
@@ -147,8 +153,21 @@ export default function CheckoutPage() {
   };
 
   const handleReview = (reviewData: any) => {
+    // بناء بيانات الأوردر
+    const order = {
+      id: Date.now().toString(),
+      userId: user?.id || 'guest',
+      items: cartItems,
+      total: orderSummary.total,
+      shippingMethod,
+      paymentMethod,
+      address: location?.address || '',
+      status: 'processing',
+      createdAt: new Date().toISOString(),
+    };
+    createOrder(order);
     dispatch(setReview(reviewData));
-    // بعد الريفيو، يمكنك توجيه المستخدم لصفحة التأكيد
+    dispatch(clearCart());
     router.push('/order-confirmation');
   }
 
@@ -282,11 +301,11 @@ export default function CheckoutPage() {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md w-full">
+        <div className=" p-8 rounded-xl text-center max-w-md w-full">
           <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-pink-500" />
           <h2 className="text-2xl font-bold mb-2 text-gray-900">Your cart is empty</h2>
           <p className="text-gray-600 mb-6">You can't proceed to checkout without any products in your cart.</p>
-          <Button onClick={() => router.push('/shop')} className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full text-lg font-semibold shadow">
+          <Button onClick={() => router.push('/shop')} className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full font-semibold shadow">
             Go Shopping Now
           </Button>
         </div>

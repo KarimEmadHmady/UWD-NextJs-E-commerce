@@ -5,6 +5,7 @@ import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "../common/Button/Button"
 import { useCategory } from '../../hooks/useCategory';
+import { useRouter } from 'next/navigation';
 
 interface Category {
   id: number
@@ -89,8 +90,10 @@ const categories: Category[] = [
 
 export default function CategorySection() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const { categories, loading, error } = useCategory();
+  const { categories: reduxCategories, loading, error } = useCategory();
+  const categoriesToShow = reduxCategories && reduxCategories.length > 0 ? reduxCategories : categories;
   const [scrollPosition, setScrollPosition] = useState(0)
+  const router = useRouter();
 
   const scrollLeft = () => {
     const container = document.getElementById("categories-container")
@@ -146,13 +149,13 @@ export default function CategorySection() {
             className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 w-full"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {categories.map((category) => (
+            {categoriesToShow.map((category) => (
               <div
                 key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
+                onClick={() => setSelectedCategory(category.id.toString())}
                 className={
                   `flex-shrink-0 group cursor-pointer transition-all duration-200 ` +
-                  (selectedCategory === category.id ? "scale-105" : "hover:scale-105")
+                  (selectedCategory === category.id.toString() ? "scale-105" : "hover:scale-105")
                 }
                 style={{ minWidth: 120, maxWidth: 140 }}
               >
@@ -161,7 +164,7 @@ export default function CategorySection() {
                   <div
                     className={
                       `relative w-16 h-16 rounded-full bg-gray-100 p-2 overflow-hidden flex items-center justify-center transition-all duration-300 ` +
-                      (selectedCategory === category.id ? "ring-2 ring-pink-500 ring-offset-2" : "")
+                      (selectedCategory === category.id.toString() ? "ring-2 ring-pink-500 ring-offset-2" : "")
                     }
                   >
                     <Image
@@ -191,6 +194,7 @@ export default function CategorySection() {
             variant="ghost"
             size="sm"
             className="text-black hover:text-gray-900 text-xs font-semibold rounded-full flex items-center gap-1 px-3 py-1.5 border border-gray-200 hover:bg-gray-100 transition-all duration-150 shadow-none"
+            onClick={() => router.push('/categore')}
           >
             View All Categories
             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="ml-1 text-black"><path d="M9 6l6 6-6 6"/></svg>

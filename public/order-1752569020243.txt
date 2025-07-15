@@ -1,0 +1,13 @@
+Order #1752569020243
+Date: 7/15/2025, 11:43:40 AM
+Address: 4, Emad Al Din Kamel Street, Al Manteqah Al Oula, Nasr City, Cairo, 11765, Egypt
+Shipping: Pickup from Store
+Payment: pickup
+
+Items:
+- Chocolate Cake x1 = E.L 120.00
+
+Subtotal: E.L 120.00
+Shipping: Free
+Tax: E.L 9.60
+Total: E.L 129.60

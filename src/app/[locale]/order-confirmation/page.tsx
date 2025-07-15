@@ -2,48 +2,39 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle, Package, Truck, MapPin, Calendar, Download, Share2, ArrowRight } from "lucide-react"
+import { CheckCircle, Package, Truck, MapPin, Calendar, Download, Share2, ArrowRight, Facebook, MessageCircle } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Badge } from "@/components/common/Badge/Badge"
 import { useCheckout } from '@/hooks/useCheckout';
+import { useOrders } from '@/hooks/useOrders';
 
 export default function OrderConfirmationPage() {
   const router = useRouter()
-  const [orderNumber] = useState("SWEETS-2024-001234")
-  const [estimatedDelivery] = useState("March 15, 2024")
-  const { address, shippingMethod, paymentMethod, review } = useCheckout();
+  const { orders } = useOrders();
+  const latestOrder = orders && orders.length > 0 ? orders[0] : null;
 
-  const orderItems = [
-    {
-      id: 1,
-      name: "Kunafa with Cream",
-      price: 120.00,
-      quantity: 2,
-      image: "https://images.unsplash.com/photo-1533910534207-90f31029a78e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0",
-    },
-    {
-      id: 2,
-      name: "Chocolate Cake",
-      price: 200.00,
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1559656914-a30970c1affd?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0",
-    },
-    {
-      id: 3,
-      name: "Basbousa",
-      price: 80.00,
-      quantity: 3,
-      image: "https://images.unsplash.com/photo-1657679358567-c01939c7ad42?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0",
-    },
-  ]
-
-  const orderSummary = {
-    subtotal: 680.00,
-    shipping: 0,
-    tax: 54.40,
-    total: 734.40,
+  if (!latestOrder) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+        <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md w-full">
+          <h2 className="text-2xl font-bold mb-2 text-gray-900">No order found</h2>
+          <p className="text-gray-600 mb-6">You have not placed any order yet.</p>
+          <Button onClick={() => router.push('/shop')} className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full text-lg font-semibold shadow">
+            Go Shopping Now
+          </Button>
+        </div>
+      </div>
+    );
   }
+
+  const orderItems = latestOrder.items;
+  const orderSummary = {
+    subtotal: orderItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0),
+    shipping: latestOrder.shippingMethod === 'Express' ? 100 : latestOrder.shippingMethod === 'Standard' ? 50 : 0,
+    tax: orderItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0) * 0.08,
+    total: latestOrder.total,
+  };
 
   const formatPrice = (price: number) => {
     return `E.L ${price.toFixed(2)}`
@@ -56,6 +47,40 @@ export default function OrderConfirmationPage() {
     }, 2000)
     return () => clearTimeout(timer)
   }, [])
+
+  const [showShare, setShowShare] = useState(false);
+  const [showTrackMsg, setShowTrackMsg] = useState(false);
+
+  // دالة تحميل الملخص كنص
+  const handleDownload = () => {
+    const lines = [
+      `Order #${latestOrder.id}`,
+      `Date: ${new Date(latestOrder.createdAt).toLocaleString()}`,
+      `Address: ${latestOrder.address}`,
+      `Shipping: ${latestOrder.shippingMethod}`,
+      `Payment: ${latestOrder.paymentMethod}`,
+      '',
+      'Items:',
+      ...orderItems.map(item => `- ${item.name} x${item.quantity} = E.L ${(item.price * (item.quantity || 1)).toFixed(2)}`),
+      '',
+      `Subtotal: ${formatPrice(orderSummary.subtotal)}`,
+      `Shipping: ${orderSummary.shipping === 0 ? 'Free' : formatPrice(orderSummary.shipping)}`,
+      `Tax: ${formatPrice(orderSummary.tax)}`,
+      `Total: ${formatPrice(orderSummary.total)}`,
+    ];
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `order-${latestOrder.id}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // دالة مشاركة عبر واتساب أو فيسبوك
+  const shareText = encodeURIComponent(`Order #${latestOrder.id}\nTotal: ${formatPrice(orderSummary.total)}\nThank you for your order!`);
+  const whatsappUrl = `https://wa.me/?text=${shareText}`;
+  const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=&quote=${shareText}`;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,9 +95,9 @@ export default function OrderConfirmationPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Sweets Order Confirmed!</h1>
           <p className="text-lg text-gray-600 mb-4">Thank you for your order. Your delicious sweets are being prepared!</p>
           <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
-            <span>Order #{orderNumber}</span>
+            <span>Order #{latestOrder.id}</span>
             <span>•</span>
-            <span>Estimated delivery: {estimatedDelivery}</span>
+            <span>Estimated delivery: Soon</span>
           </div>
         </div>
 
@@ -104,15 +129,15 @@ export default function OrderConfirmationPage() {
                 <div className="mt-6 space-y-4">
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <Calendar className="w-4 h-4" />
-                    <span>Order placed: {new Date().toLocaleDateString()}</span>
+                    <span>Order placed: {new Date(latestOrder.createdAt).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <Truck className="w-4 h-4" />
-                    <span>Expected delivery: {estimatedDelivery}</span>
+                    <span>Expected delivery: Soon</span>
                   </div>
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <MapPin className="w-4 h-4" />
-                    <span>Delivering to: 123 Sweet Street, Candy City</span>
+                    <span>Delivering to: {latestOrder.address}</span>
                   </div>
                 </div>
               </CardContent>
@@ -146,19 +171,46 @@ export default function OrderConfirmationPage() {
             </Card>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button onClick={() => router.push("/account/orders")} className="flex-1 text-black  hover:bg-gray-50 border-[1px] border-gray-200 cursor-pointer border-inputborder-input">
+            <div className="flex flex-col sm:flex-row gap-4 relative">
+              <Button onClick={() => { setShowTrackMsg(true); setTimeout(() => setShowTrackMsg(false), 2000); }} className="flex-1 text-black  hover:bg-gray-50 border-[1px] border-gray-200 cursor-pointer border-inputborder-input">
                 <Package className="w-4 h-4 mr-2 text-black" />
                 Track Sweets Order
               </Button>
-              <Button variant="outline" className="flex-1 bg-transparent">
+              <Button variant="outline" className="flex-1 bg-transparent" onClick={handleDownload}>
                 <Download className="w-4 h-4 mr-2" />
                 Download Invoice
               </Button>
-              <Button variant="outline" className="flex-1 bg-transparent">
+              <Button variant="outline" className="flex-1 bg-transparent" onClick={() => setShowShare(v => !v)}>
                 <Share2 className="w-4 h-4 mr-2" />
                 Share Sweets Order
               </Button>
+              {showShare && (
+                <div className="absolute top-14 right-0 min-w-[180px] bg-white border border-gray-200 rounded-xl shadow-lg p-2 z-20 flex flex-col gap-2 animate-fade-in">
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-green-50 transition"
+                  >
+                    <MessageCircle className="w-5 h-5 text-green-500 " />
+                    <span className="font-medium text-black">WhatsApp</span>
+                  </a>
+                  <a
+                    href={facebookUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 transition"
+                  >
+                    <Facebook className="w-5 h-5 text-blue-600" />
+                    <span className="font-medium text-black">Facebook</span>
+                  </a>
+                </div>
+              )}
+              {showTrackMsg && (
+                <div className="absolute top-14 left-0 bg-pink-50 border border-pink-200 text-pink-700 px-4 py-2 rounded shadow text-sm z-10">
+                  Order tracking is under development!
+                </div>
+              )}
             </div>
           </div>
 
