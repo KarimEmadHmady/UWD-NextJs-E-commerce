@@ -8,10 +8,30 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/avatar/
 import { Badge } from "@/components/common/Badge/Badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/common/tabs/tabs"
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
+import { useAddress } from '@/hooks/useAddress';
+import { useSelector } from 'react-redux';
+import { selectUser } from '@/redux/features/user/userSelectors';
 
 export default function AccountPage() {
   const [activeTab, setActiveTab] = useState("overview")
   const { start, stop } = useGlobalLoading();
+  const { addresses, defaultAddress, add, update, remove, setDefault } = useAddress();
+  const userRedux = useSelector(selectUser);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [addressForm, setAddressForm] = useState({
+    name: '', phone: '', street: '', city: '', region: '', country: '', notes: ''
+  });
+  const handleAddressFormChange = (e: any) => setAddressForm({ ...addressForm, [e.target.name]: e.target.value });
+  const handleAddAddress = () => {
+    add({
+      id: Date.now().toString(),
+      userId: userRedux?.id || 'guest',
+      ...addressForm,
+      isDefault: addresses.length === 0,
+    });
+    setShowAddressForm(false);
+    setAddressForm({ name: '', phone: '', street: '', city: '', region: '', country: '', notes: '' });
+  };
 
   const user = {
     name: "Karim Emad",
@@ -314,18 +334,44 @@ export default function AccountPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between">
+                  <>
+                  {addresses.length === 0 && <div className="text-gray-500 text-center">No addresses saved yet.</div>}
+                  {addresses.map(addr => (
+                    <div key={addr.id} className="p-4 border border-gray-200 rounded-lg flex items-start justify-between">
                       <div>
-                        <p className="font-semibold text-gray-900">Home</p>
-                        <p className="text-gray-600">12 Abbas El Akkad Street</p>
-                        <p className="text-gray-600">Nasr City, Cairo 11371</p>
-                        <p className="text-gray-600">Egypt</p>
+                        <p className="font-semibold text-gray-900">{addr.name}</p>
+                        <p className="text-gray-600">{addr.street}</p>
+                        <p className="text-gray-600">{addr.city}, {addr.region}</p>
+                        <p className="text-gray-600">{addr.country}</p>
+                        <p className="text-gray-500 text-xs">{addr.phone}</p>
+                        {addr.notes && <p className="text-gray-400 text-xs">{addr.notes}</p>}
                       </div>
-                      <Badge>Default</Badge>
+                      <div className="flex flex-col items-end gap-2">
+                        {addr.isDefault && <Badge className="mb-1">Default</Badge>}
+                        {!addr.isDefault && <Button size="sm" variant="outline" className="text-xs mb-1" onClick={() => setDefault(addr.id)}>Set Default</Button>}
+                        <Button size="sm" variant="outline" className="text-xs text-red-600 border-red-200 hover:bg-red-50" onClick={() => remove(addr.id)}>Delete</Button>
+                      </div>
                     </div>
-                  </div>
-                  <Button variant="outline" className="w-full bg-transparent cursor-pointer">
+                  ))}
+                  </>
+                  {showAddressForm && (
+                    <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+                        <input name="name" placeholder="Name" value={addressForm.name} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
+                        <input name="phone" placeholder="Phone" value={addressForm.phone} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
+                        <input name="street" placeholder="Street" value={addressForm.street} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
+                        <input name="city" placeholder="City" value={addressForm.city} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
+                        <input name="region" placeholder="Region" value={addressForm.region} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
+                        <input name="country" placeholder="Country" value={addressForm.country} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
+                        <input name="notes" placeholder="Notes (optional)" value={addressForm.notes} onChange={handleAddressFormChange} className="border rounded px-2 py-1 col-span-2" />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" className="bg-pink-600 text-white" onClick={handleAddAddress}>Save</Button>
+                        <Button size="sm" variant="outline" onClick={() => setShowAddressForm(false)}>Cancel</Button>
+                      </div>
+                    </div>
+                  )}
+                  <Button variant="outline" className="w-full bg-transparent cursor-pointer" onClick={() => setShowAddressForm(true)}>
                     Add New Address
                   </Button>
                 </div>

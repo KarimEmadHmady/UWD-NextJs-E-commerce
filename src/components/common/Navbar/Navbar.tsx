@@ -463,8 +463,9 @@ export default function Navigation() {
             </a>
             <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
               className="group rounded-full  flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-pink-400 group-hover:text-pink-500 transition-colors duration-200">
-                <path fill="currentColor" d="M24 4.557a9.83 9.83 0 0 1-2.828.775 4.932 4.932 0 0 0 2.165-2.724c-.951.564-2.005.974-3.127 1.195A4.916 4.916 0 0 0 16.616 3c-2.717 0-4.924 2.206-4.924 4.924 0 .386.044.763.127 1.124C7.728 8.807 4.1 6.884 1.671 3.965c-.423.724-.666 1.561-.666 2.475 0 1.708.87 3.216 2.188 4.099a4.904 4.904 0 0 1-2.229-.616c-.054 2.281 1.581 4.415 3.949 4.89a4.936 4.936 0 0 1-2.224.084c.627 1.956 2.444 3.377 4.6 3.417A9.867 9.867 0 0 1 0 21.543a13.94 13.94 0 0 0 7.548 2.212c9.057 0 14.009-7.513 14.009-14.009 0-.213-.005-.425-.014-.636A10.012 10.012 0 0 0 24 4.557z"/>
+              {/* X Icon instead of Twitter */}
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="text-pink-600 group-hover:text-pink-600 transition-colors duration-200">
+                <path d="M4 4L20 20M20 4L4 20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
               </svg>
             </a>
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"

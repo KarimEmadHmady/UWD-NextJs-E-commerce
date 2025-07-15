@@ -11,7 +11,7 @@ export default function Footer() {
 
                 <ul className="flex items-center space-x-3 mt-9">
                     <li>
-                        <a href="#" title="Instagram" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-pink-600 focus:bg-pink-600">
+                        <a href="https://www.instagram.com/" title="Instagram" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-pink-600 focus:bg-pink-600">
                             {/* Instagram Icon */}
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M11.999 7.377a4.623 4.623 0 1 0 0 9.248 4.623 4.623 0 0 0 0-9.248zm0 7.627a3.004 3.004 0 1 1 0-6.008 3.004 3.004 0 0 1 0 6.008z"></path>
@@ -21,7 +21,7 @@ export default function Footer() {
                         </a>
                     </li>
                     <li>
-                        <a href="#" title="Facebook" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-pink-600 focus:bg-pink-600">
+                        <a href="https://facebook.com" title="Facebook" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-pink-600 focus:bg-pink-600">
                             {/* Facebook Icon */}
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M13.397 20.997v-8.196h2.765l.411-3.209h-3.176V7.548c0-.926.258-1.56 1.587-1.56h1.684V3.127A22.336 22.336 0 0 0 14.201 3c-2.444 0-4.122 1.492-4.122 4.231v2.355H7.332v3.209h2.753v8.202h3.312z"></path>
@@ -29,10 +29,18 @@ export default function Footer() {
                         </a>
                     </li>
                     <li>
-                        <a href="#" title="WhatsApp" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-pink-600 focus:bg-pink-600">
-                            {/* WhatsApp Icon */}
-                            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19.633 7.997c.013.175.013.349.013.523 0 5.325-4.053 11.461-11.46 11.461-2.282 0-4.402-.661-6.186-1.809.324.037.636.05.973.05a8.07 8.07 0 0 0 5.001-1.721 4.036 4.036 0 0 1-3.767-2.793c.249.037.499.062.761.062.361 0 .724-.05 1.061-.137a4.027 4.027 0 0 1-3.23-3.953v-.05c.537.299 1.16.486 1.82.511a4.022 4.022 0 0 1-1.796-3.354c0-.748.199-1.434.548-2.032a11.457 11.457 0 0 0 8.306 4.215c-.062-.3-.1-.611-.1-.923a4.026 4.026 0 0 1 4.028-4.028c1.16 0 2.207.486 2.943 1.272a7.957 7.957 0 0 0 2.556-.973 4.02 4.02 0 0 1-1.771 2.22 8.073 8.073 0 0 0 2.319-.624 8.645 8.645 0 0 1-2.019 2.083z"/>
+                        <a href="https://x.com" title="X" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-pink-600 focus:bg-pink-600">
+                            {/* X Icon instead of Twitter */}
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                              <path d="M4 4L20 20M20 4L4 20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                            </svg>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://wa.me/" title="WhatsApp" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-pink-600 focus:bg-pink-600">
+                            {/* WhatsApp Icon modern */}
+                            <svg className="w-4 h-4" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M16 3C9.373 3 4 8.373 4 15c0 2.385.832 4.58 2.236 6.364L4 29l7.818-2.236A11.96 11.96 0 0 0 16 27c6.627 0 12-5.373 12-12S22.627 3 16 3Zm0 21.818c-1.818 0-3.591-.482-5.127-1.391l-.364-.218-4.655 1.336 1.336-4.655-.218-.364A9.818 9.818 0 1 1 16 24.818Zm5.273-7.273c-.291-.145-1.709-.845-1.973-.945-.264-.1-.455-.145-.646.145-.191.291-.736.945-.902 1.136-.164.191-.336.218-.627.073-.291-.145-1.229-.454-2.342-1.447-.866-.772-1.45-1.723-1.618-2.014-.164-.291-.018-.447.127-.591.13-.13.291-.336.436-.5.145-.164.191-.291.291-.482.1-.191.045-.364-.018-.509-.064-.145-.646-1.564-.882-2.145-.232-.558-.468-.482-.646-.491l-.545-.009c-.182 0-.473.064-.718.291-.245.227-.936.914-.936 2.227 0 1.314.958 2.584 1.091 2.764.127.182 1.885 2.873 4.573 3.914.64.218 1.139.348 1.528.445.642.163 1.227.14 1.689.085.515-.062 1.709-.699 1.951-1.374.241-.676.241-1.256.168-1.374-.073-.118-.264-.191-.555-.336Z" fill="currentColor"/>
                             </svg>
                         </a>
                     </li>

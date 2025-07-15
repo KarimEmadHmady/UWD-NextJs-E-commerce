@@ -18,6 +18,8 @@ import { useOrders } from '@/hooks/useOrders';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/features/user/userSelectors';
 import { clearCart } from '@/redux/features/cart/cartSlice';
+import { useAddress } from '@/hooks/useAddress';
+import { useEffect } from 'react';
 
 interface LocationData {
   latitude: number
@@ -48,6 +50,7 @@ export default function CheckoutPage() {
   const [customerInfo, setCustomerInfo] = useState<any>(null);
   const { createOrder } = useOrders();
   const user = useSelector(selectUser);
+  const { addresses, defaultAddress, add: addAddress } = useAddress();
 
   // حساب subtotal من السلة
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
@@ -119,9 +122,46 @@ export default function CheckoutPage() {
     if (method !== 'card') setCurrentStep(4);
   };
 
+  // عند تحميل الصفحة، إذا كان هناك عنوان افتراضي ولم يتم تعبئة customerInfo، املأه تلقائياً
+  useEffect(() => {
+    if (!customerInfo && defaultAddress) {
+      setCustomerInfo({
+        name: defaultAddress.name,
+        phone: defaultAddress.phone,
+        street: defaultAddress.street,
+        city: defaultAddress.city,
+        region: defaultAddress.region,
+        notes: defaultAddress.notes || '',
+        country: defaultAddress.country || '',
+      });
+    }
+  }, [defaultAddress]);
+
   const handleCustomerInfoSet = (info: any, shipping: string) => {
     setCustomerInfo(info);
     dispatch(setShippingMethod(shipping));
+    // أضف العنوان الجديد للـ addressSlice إذا لم يكن موجوداً
+    const exists = addresses.some(addr =>
+      addr.name === info.name &&
+      addr.phone === info.phone &&
+      addr.street === info.street &&
+      addr.city === info.city &&
+      addr.region === info.region
+    );
+    if (!exists) {
+      addAddress({
+        id: Date.now().toString(),
+        userId: user?.id || 'guest',
+        name: info.name,
+        phone: info.phone,
+        street: info.street,
+        city: info.city,
+        region: info.region,
+        country: info.country || '',
+        notes: info.notes || '',
+        isDefault: addresses.length === 0, // أول عنوان يصبح افتراضي
+      });
+    }
     if (shipping === 'Pickup from Store') {
       dispatch(setPaymentMethod('pickup'));
       setCurrentStep(4); // انتقل مباشرة للريفيو
