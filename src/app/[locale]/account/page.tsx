@@ -11,6 +11,7 @@ import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import { useAddress } from '@/hooks/useAddress';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/features/user/userSelectors';
+import { useWishlist } from '@/hooks/useWishlist';
 
 export default function AccountPage() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -66,25 +67,7 @@ export default function AccountPage() {
     },
   ]
 
-  const wishlistItems = [
-
-    {
-      id: 1,
-      name: "Kunafa with Cream",
-      price: 120.00,
-      quantity: 2,
-      image: "https://images.unsplash.com/photo-1533910534207-90f31029a78e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0",
-      inStock: true,
-    },
-    {
-      id: 2,
-      name: "Chocolate Cake",
-      price: 200.00,
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1559656914-a30970c1affd?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0",
-      inStock: true,
-    },
-  ]
+  const { items: wishlistItems } = useWishlist();
 
   const formatPrice = (price: number) => {
     return `EGP ${price.toLocaleString("en-EG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
@@ -186,12 +169,12 @@ export default function AccountPage() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 text-gray-900 cursor-pointer">
-            <TabsTrigger value="overview" className="data-[state=active]:text-black">Overview</TabsTrigger>
-            <TabsTrigger value="orders" className="data-[state=active]:text-black">Orders</TabsTrigger>
-            <TabsTrigger value="wishlist" className="data-[state=active]:text-black">Wishlist</TabsTrigger>
-            <TabsTrigger value="addresses" className="data-[state=active]:text-black">Addresses</TabsTrigger>
-            <TabsTrigger value="settings" className="data-[state=active]:text-black">Settings</TabsTrigger>
+          <TabsList className="flex w-full gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent px-0 mb-2 lg:grid lg:grid-cols-5 lg:gap-0 lg:overflow-visible lg:px-0 lg:mb-0 text-gray-900 cursor-pointer ">
+            <TabsTrigger value="overview" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base ">Overview</TabsTrigger>
+            <TabsTrigger value="orders" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base ">Orders</TabsTrigger>
+            <TabsTrigger value="wishlist" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Wishlist</TabsTrigger>
+            <TabsTrigger value="addresses" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Addresses</TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-6 ">
@@ -269,7 +252,7 @@ export default function AccountPage() {
                   {recentOrders.map((order) => (
                     <div
                       key={order.id}
-                      className="flex items-center justify-between p-6 border border-gray-200 rounded-lg"
+                      className="flex flex-col md:flex-row items-center justify-between p-6 border border-gray-200 rounded-lg"
                     >
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
@@ -303,25 +286,29 @@ export default function AccountPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {wishlistItems.map((item) => (
-                    <div key={item.id} className="border border-gray-200 rounded-lg p-4">
-                      <img
-                        src={item.image || "/placeholder.svg"}
-                        alt={item.name}
-                        className="w-full h-32 object-contain bg-gray-50 rounded-lg mb-4"
-                      />
-                      <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
-                      <p className="text-lg font-bold text-gray-900 mb-3">{formatPrice(item.price)}</p>
-                      <div className="space-y-2">
-                        <Button className="w-full bg-pink-600 hover:bg-pink-700 cursor-pointer" disabled={!item.inStock}>
-                          {item.inStock ? "Add to Cart" : "Out of Stock"}
-                        </Button>
-                        <Button variant="outline" className="w-full bg-transparent cursor-pointer">
-                          Remove
-                        </Button>
+                  {wishlistItems.length === 0 ? (
+                    <div className="text-gray-500 text-center col-span-3">Your wishlist is empty.</div>
+                  ) : (
+                    wishlistItems.map((item) => (
+                      <div key={item.id} className="border border-gray-200 rounded-lg p-4">
+                        <img
+                          src={item.images?.[0] || "/placeholder.svg"}
+                          alt={item.name}
+                          className="w-40 h-40 mx-auto object-cover bg-gray-50 rounded-xl border mb-4"
+                        />
+                        <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
+                        <p className="text-lg font-bold text-gray-900 mb-3">{formatPrice(item.price)}</p>
+                        <div className="space-y-2">
+                          <Button className="w-full bg-pink-600 hover:bg-pink-700 cursor-pointer">
+                            Add to Cart
+                          </Button>
+                          <Button variant="outline" className="w-full bg-transparent cursor-pointer">
+                            Remove
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>

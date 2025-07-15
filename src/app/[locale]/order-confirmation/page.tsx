@@ -155,9 +155,9 @@ export default function OrderConfirmationPage() {
                   {orderItems.map((item) => (
                     <div key={item.id} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg">
                       <img
-                        src={item.image || "/placeholder.svg"}
+                        src={item.image || item.images?.[0] || "/placeholder.svg"}
                         alt={item.name}
-                        className="w-20 h-20 object-contain bg-gray-50 rounded-lg"
+                        className="w-20 h-20 object-cover bg-gray-50 rounded-xl border"
                       />
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900">{item.name}</h3>

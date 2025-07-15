@@ -1,4 +1,6 @@
 // src/components/common/Footer/Footer.tsx 
+import Link from "next/link";
+
 export default function Footer() {
  return (
 <section className="py-10 bg-gray-50 sm:pt-16 lg:pt-24">
@@ -52,16 +54,16 @@ export default function Footer() {
 
                 <ul className="mt-6 space-y-4">
                     <li>
-                        <a href="#" title="About Us" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> About Us </a>
+                        <Link href="/search" title="Search" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Search </Link>
                     </li>
                     <li>
-                        <a href="#" title="Sweets Menu" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Sweets Menu </a>
+                        <Link href="/shop" title="Sweets Menu" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Sweets Menu </Link>
                     </li>
                     <li>
-                        <a href="#" title="Orders" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Orders </a>
+                        <Link href="/account" title="Profile" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Profile </Link>
                     </li>
                     <li>
-                        <a href="#" title="Contact Us" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Contact Us </a>
+                        <Link href="/contact" title="Contact Us" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Contact Us </Link>
                     </li>
                 </ul>
             </div>
@@ -71,16 +73,16 @@ export default function Footer() {
 
                 <ul className="mt-6 space-y-4">
                     <li>
-                        <a href="#" title="Customer Support" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Customer Support </a>
+                        <Link href="/customer-support" title="Customer Support" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Customer Support </Link>
                     </li>
                     <li>
-                        <a href="#" title="Privacy Policy" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Privacy Policy </a>
+                        <Link href="/privacy-policy" title="Privacy Policy" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Privacy Policy </Link>
                     </li>
                     <li>
-                        <a href="#" title="Terms & Conditions" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Terms & Conditions </a>
+                        <Link href="/terms-conditions" title="Terms & Conditions" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> Terms & Conditions </Link>
                     </li>
                     <li>
-                        <a href="#" title="FAQ" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> FAQ </a>
+                        <Link href="/faq" title="FAQ" className="flex text-base text-black transition-all duration-200 hover:text-pink-600 focus:text-pink-600"> FAQ </Link>
                     </li>
                 </ul>
             </div>

@@ -35,7 +35,7 @@ export default function WishlistItemComponent({
     <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
       {/* Product Image */}
       <div className="relative w-full sm:w-32 h-32 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
-        <Image src={image || "/placeholder.svg"} alt={name} fill className="object-contain p-2" />
+        <Image src={image || "/placeholder.svg"} alt={name} fill className="object-cover w-24 h-24 sm:w-32 sm:h-32 rounded-xl border" />
         {!inStock && (
           <Badge variant="secondary" className="absolute top-2 left-2 bg-gray-500  text-xs">
             Out of Stock

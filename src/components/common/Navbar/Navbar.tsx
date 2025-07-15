@@ -266,7 +266,7 @@ export default function Navigation() {
 
 
         {/* Logo */}
-        <Link href="/" className="flex items-center min-w-[150px] flex-shrink-0" aria-label="Home">
+        <Link href="/" className="flex items-center min-w-[95px] flex-shrink-0" aria-label="Home">
           <Image
             src="/logo.png"
             alt="Logo"
