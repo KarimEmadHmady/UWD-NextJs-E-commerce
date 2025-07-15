@@ -19,6 +19,10 @@ import { useFilter } from '@/hooks/useFilter';
 import { setCategories, setQuantities, setSizes, setBrands, clearFilters } from '@/redux/features/filter/filterSlice';
 import { useDispatch } from 'react-redux';
 
+/**
+ * ShopPage component - Displays all products with filtering, search, sorting, pagination, and grid/list view.
+ * Handles product filtering, pagination, and wishlist toggling.
+ */
 export default function ShopPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")

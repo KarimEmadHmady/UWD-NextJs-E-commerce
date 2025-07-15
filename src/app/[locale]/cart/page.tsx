@@ -8,6 +8,10 @@ import { Button } from "@/components/common/Button/Button"
 import { useCart } from "@/hooks/useCart"
 import type { Product } from "@/types/common"
 
+/**
+ * CartPage component - Displays the user's shopping cart with items, summary, and checkout option.
+ * Handles item quantity updates, removal, and navigation to checkout or shop.
+ */
 export default function CartPage() {
   const router = useRouter()
   const { items, subtotal, shipping, tax, total, updateItemQuantity, removeItem } = useCart()

@@ -6,6 +6,10 @@ import ReduxProvider from '@/redux/ReduxProvider';
 import NotificationContainer from '@/components/common/NotificationContainer';
 import GlobalLoadingOverlay from '@/components/common/GlobalLoadingOverlay';
 
+/**
+ * LocaleLayout component - Provides locale-based layout for the app.
+ * Ensures the locale is valid, sets up providers, and renders the main structure.
+ */
 export default async function LocaleLayout({
   children,
   params

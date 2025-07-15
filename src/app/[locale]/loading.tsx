@@ -1,4 +1,8 @@
 // src/app/[locale]/loading.tsx
+
+/**
+ * Loading component - Displays a loading spinner and message while content is being fetched or loaded.
+ */
 export default function Loading() {
   return (
     <div style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>

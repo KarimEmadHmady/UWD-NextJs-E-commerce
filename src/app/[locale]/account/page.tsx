@@ -13,6 +13,10 @@ import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/features/user/userSelectors';
 import { useWishlist } from '@/hooks/useWishlist';
 
+/**
+ * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
+ * Handles address management, tab switching, and user info display.
+ */
 export default function AccountPage() {
   const [activeTab, setActiveTab] = useState("overview")
   const { start, stop } = useGlobalLoading();

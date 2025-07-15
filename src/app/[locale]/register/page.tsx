@@ -11,6 +11,10 @@ import { Input } from "@/components/common/input/input"
 import { Label } from "@/components/common/label/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/common/card/card"
 
+/**
+ * RegisterPage component - Provides a registration form for new users to create an account.
+ * Handles form submission, validation, and loading state.
+ */
 export default function RegisterPage() {
   const router = useRouter()
   const [name, setName] = useState("")

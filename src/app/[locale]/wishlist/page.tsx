@@ -49,6 +49,10 @@ const mockWishlistItems = [
   },
 ]
 
+/**
+ * WishlistPage component - Displays the user's wishlist with options to add items to cart or remove them.
+ * Handles empty state, item removal, and moving items to the cart.
+ */
 export default function WishlistPage() {
   const router = useRouter()
   const { items: wishlistItems, removeItem: removeWishlistItem } = useWishlist()

@@ -8,10 +8,14 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
 
+/**
+ * HomePage component - Main landing page for the e-commerce site.
+ * Displays hero section, featured categories, product grid, slogan, and trusted brands.
+ */
 export default function HomePage() {
   const t = useTranslations('Home');
   const products = productsData;
-  const viewMode = 'grid'; // أو اجعلها متغيرة لو أردت
+  const viewMode = 'grid'; // or make it dynamic if needed
   const router = useRouter();
   return (
     <>

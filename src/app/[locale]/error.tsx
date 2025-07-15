@@ -2,6 +2,10 @@
 'use client';
 import { useEffect } from 'react';
 
+/**
+ * Error component - Displays a user-friendly error message when an error occurs in the app.
+ * Provides a button to reset/reload the page.
+ */
 export default function Error({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {
     // Log the error if needed

@@ -37,6 +37,10 @@ interface ShippingOption {
   estimatedDays: string
 }
 
+/**
+ * CheckoutPage component - Manages the multi-step checkout process including location, shipping, payment, and review.
+ * Handles form state, order creation, and navigation between steps.
+ */
 export default function CheckoutPage() {
   const router = useRouter()
   const dispatch = useDispatch();

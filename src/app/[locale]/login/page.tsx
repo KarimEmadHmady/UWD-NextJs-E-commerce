@@ -12,6 +12,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useUser } from '@/hooks/useUser';
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 
+/**
+ * LoginPage component - Provides a login form for users to authenticate and access their account.
+ * Handles form submission, loading state, and error display.
+ */
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
