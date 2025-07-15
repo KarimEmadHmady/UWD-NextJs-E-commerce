@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/common/card/card"
 import { Badge } from "@/components/common/Badge/Badge"
 import { Checkbox } from "@/components/common/checkbox/checkbox"
 import { useSearch } from '@/hooks/useSearch';
+import { useFilter } from '@/hooks/useFilter';
+import { setCategories, setQuantities, setSizes, setBrands, clearFilters } from '@/redux/features/filter/filterSlice';
 import { useDispatch } from 'react-redux';
 import { setSearchQuery, fetchSearchSuccess } from '@/redux/features/search/searchSlice';
 import { useEffect } from 'react';
@@ -17,8 +19,9 @@ export default function SearchPage() {
   const searchParams = useSearchParams()
   const dispatch = useDispatch();
   const { query: searchQuery, results: searchResults, loading, error } = useSearch();
+  const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands } = useFilter();
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([])
+  // const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
   // Sweet shop dummy data (English)
   const dummyResults = [
@@ -128,19 +131,48 @@ export default function SearchPage() {
     ))
   }
 
-  const handleFilterToggle = (filter: string) => {
-    setSelectedFilters((prev) => (prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]))
-  }
+  // تحديث الفلاتر عند التغيير
+  const handleCategoryToggle = (category: string) => {
+    let updated = selectedCategories.includes(category)
+      ? selectedCategories.filter((c) => c !== category)
+      : [...selectedCategories, category];
+    dispatch(setCategories(updated));
+  };
+  const handleQuantityToggle = (quantity: string) => {
+    let updated = selectedQuantities.includes(quantity)
+      ? selectedQuantities.filter((q) => q !== quantity)
+      : [...selectedQuantities, quantity];
+    dispatch(setQuantities(updated));
+  };
+  const handleSizeToggle = (size: string) => {
+    let updated = selectedSizes.includes(size)
+      ? selectedSizes.filter((s) => s !== size)
+      : [...selectedSizes, size];
+    dispatch(setSizes(updated));
+  };
+  const handleBrandToggle = (brand: string) => {
+    let updated = selectedBrands.includes(brand)
+      ? selectedBrands.filter((b) => b !== brand)
+      : [...selectedBrands, brand];
+    dispatch(setBrands(updated));
+  };
+  const clearAllFilters = () => {
+    dispatch(clearFilters());
+  };
 
-  const clearFilters = () => {
-    setSelectedFilters([])
-  }
+  const activeFiltersCount = selectedCategories.length + selectedQuantities.length + selectedSizes.length + selectedBrands.length;
 
-  // عند أول تحميل للصفحة، اعرض كل النتائج الوهمية
-  // استخدم useEffect
   useEffect(() => {
-    dispatch(fetchSearchSuccess(dummyResults));
-  }, [dispatch]);
+    let filtered = dummyResults.filter((item) => {
+      const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
+      const matchesCategory = selectedCategories.length > 0 ? selectedCategories.includes(item.category) : true;
+      const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
+      const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
+      const matchesBrand = selectedBrands.length > 0 ? selectedBrands.some(b => item.name.toLowerCase().includes(b.toLowerCase())) : true;
+      return matchesQuery && matchesCategory && matchesQuantity && matchesSize && matchesBrand;
+    });
+    dispatch(fetchSearchSuccess(filtered));
+  }, [dispatch, searchQuery, selectedCategories, selectedQuantities, selectedSizes, selectedBrands]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -187,21 +219,39 @@ export default function SearchPage() {
             >
               <SlidersHorizontal className="w-4 h-4 mr-2" />
               Filters
-              {selectedFilters.length > 0 && <Badge className="ml-2">{selectedFilters.length}</Badge>}
+              {activeFiltersCount > 0 && <Badge className="ml-2">{activeFiltersCount}</Badge>}
             </Button>
           </div>
 
           {/* Active Filters */}
-          {selectedFilters.length > 0 && (
+          {activeFiltersCount > 0 && (
             <div className="flex items-center gap-2 mb-6">
               <span className="text-sm text-gray-600">Active filters:</span>
-              {selectedFilters.map((filter) => (
+              {selectedCategories.map((filter) => (
                 <Badge key={filter} variant="secondary" className="flex items-center gap-1">
                   {filter}
-                  <X className="w-3 h-3 cursor-pointer" onClick={() => handleFilterToggle(filter)} />
+                  <X className="w-3 h-3 cursor-pointer" onClick={() => handleCategoryToggle(filter)} />
                 </Badge>
               ))}
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-pink-600">
+              {selectedQuantities.map((filter) => (
+                <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                  {filter}
+                  <X className="w-3 h-3 cursor-pointer" onClick={() => handleQuantityToggle(filter)} />
+                </Badge>
+              ))}
+              {selectedSizes.map((filter) => (
+                <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                  {filter}
+                  <X className="w-3 h-3 cursor-pointer" onClick={() => handleSizeToggle(filter)} />
+                </Badge>
+              ))}
+              {selectedBrands.map((filter) => (
+                <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                  {filter}
+                  <X className="w-3 h-3 cursor-pointer" onClick={() => handleBrandToggle(filter)} />
+                </Badge>
+              ))}
+              <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-pink-600">
                 Clear all
               </Button>
             </div>
@@ -228,8 +278,8 @@ export default function SearchPage() {
                     <div key={category} className="flex items-center space-x-3">
                       <Checkbox
                         id={category}
-                        checked={selectedFilters.includes(category)}
-                        onCheckedChange={() => handleFilterToggle(category)}
+                        checked={selectedCategories.includes(category)}
+                        onCheckedChange={() => handleCategoryToggle(category)}
                       />
                       <label htmlFor={category} className="text-sm text-gray-700 cursor-pointer">
                         {category}
@@ -247,8 +297,8 @@ export default function SearchPage() {
                     <div key={quantity} className="flex items-center space-x-3">
                       <Checkbox
                         id={quantity}
-                        checked={selectedFilters.includes(quantity)}
-                        onCheckedChange={() => handleFilterToggle(quantity)}
+                        checked={selectedQuantities.includes(quantity)}
+                        onCheckedChange={() => handleQuantityToggle(quantity)}
                       />
                       <label htmlFor={quantity} className="text-sm text-gray-700 cursor-pointer">
                         {quantity}
@@ -266,8 +316,8 @@ export default function SearchPage() {
                     <div key={size} className="flex items-center space-x-3">
                       <Checkbox
                         id={size}
-                        checked={selectedFilters.includes(size)}
-                        onCheckedChange={() => handleFilterToggle(size)}
+                        checked={selectedSizes.includes(size)}
+                        onCheckedChange={() => handleSizeToggle(size)}
                       />
                       <label htmlFor={size} className="text-sm text-gray-700 cursor-pointer">
                         {size}
@@ -285,8 +335,8 @@ export default function SearchPage() {
                     <div key={brand} className="flex items-center space-x-3">
                       <Checkbox
                         id={brand}
-                        checked={selectedFilters.includes(brand)}
-                        onCheckedChange={() => handleFilterToggle(brand)}
+                        checked={selectedBrands.includes(brand)}
+                        onCheckedChange={() => handleBrandToggle(brand)}
                       />
                       <label htmlFor={brand} className="text-sm text-gray-700 cursor-pointer">
                         {brand}
@@ -370,7 +420,7 @@ export default function SearchPage() {
                 <p className="text-gray-600 mb-6">
                   Try changing your search or filters to find the sweets you want
                 </p>
-                <Button onClick={clearFilters} variant="outline" className="bg-transparent">
+                <Button onClick={clearAllFilters} variant="outline" className="bg-transparent">
                   Clear all filters
                 </Button>
               </div>

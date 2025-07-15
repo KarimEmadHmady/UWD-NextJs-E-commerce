@@ -11,6 +11,7 @@ interface PaginationProps {
 
 export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
   const getVisiblePages = () => {
+    if (totalPages === 1) return [1];
     const delta = 2
     const range = []
     const rangeWithDots = []

@@ -15,6 +15,9 @@ import Link from "next/link"
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import { useProducts } from '@/hooks/useProducts';
 import { useEffect } from 'react';
+import { useFilter } from '@/hooks/useFilter';
+import { setCategories, setQuantities, setSizes, setBrands, clearFilters } from '@/redux/features/filter/filterSlice';
+import { useDispatch } from 'react-redux';
 
 export default function ShopPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -24,6 +27,17 @@ export default function ShopPage() {
   const [wishlist, setWishlist] = useState<number[]>([])
   const { start, stop } = useGlobalLoading();
   const products = productsData;
+  const dispatch = useDispatch();
+  const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands } = useFilter();
+
+  const filteredProducts = products.filter((item) => {
+    const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
+    const matchesCategory = selectedCategories.length > 0 ? selectedCategories.includes(item.category) : true;
+    const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
+    const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
+    const matchesBrand = selectedBrands.length > 0 ? selectedBrands.some(b => item.name.toLowerCase().includes(b.toLowerCase())) : true;
+    return matchesQuery && matchesCategory && matchesQuantity && matchesSize && matchesBrand;
+  });
 
   const toggleWishlist = (productId: number) => {
     setWishlist((prev) =>
@@ -33,8 +47,18 @@ export default function ShopPage() {
     )
   }
 
-  const totalPages = 8
-  const totalProducts = 156
+  // إعداد الباجيناشن الديناميكي
+  const pageSize = 9; // عدد المنتجات في كل صفحة
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+  const totalProducts = filteredProducts.length;
+  // إذا الصفحة الحالية أكبر من عدد الصفحات المتاحة، أرجع لأول صفحة بها نتائج
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [currentPage, totalPages]);
+  // المنتجات المعروضة في الصفحة الحالية فقط
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -96,7 +120,7 @@ export default function ShopPage() {
             <div className="p-4">
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-                  {products.map((product) => {
+                  {paginatedProducts.map((product) => {
                     const localProduct = {
                       ...product,
                       image: product.image,
@@ -111,7 +135,7 @@ export default function ShopPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {products.map((product) => {
+                  {paginatedProducts.map((product) => {
                     const localProduct = {
                       ...product,
                       image: product.image,

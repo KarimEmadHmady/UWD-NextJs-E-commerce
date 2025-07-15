@@ -6,6 +6,9 @@ import { Checkbox } from "../common/checkbox/checkbox"
 import { Button } from "../common/Button/Button"
 import { Badge } from "../common/Badge/Badge"
 import { Star, X, Filter } from "lucide-react"
+import { useDispatch } from 'react-redux';
+import { useFilter } from '../../hooks/useFilter';
+import { setCategories, setSizes, setQuantities, clearFilters } from '../../redux/features/filter/filterSlice';
 
 interface FilterSidebarProps {
   isOpen: boolean
@@ -13,8 +16,9 @@ interface FilterSidebarProps {
 }
 
 export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
+  const dispatch = useDispatch();
+  const { selectedCategories, selectedSizes, selectedQuantities } = useFilter();
   const [priceRange, setPriceRange] = useState([0, 5000])
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [inStockOnly, setInStockOnly] = useState(false)
 
@@ -32,34 +36,39 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
   ];
 
   const sizeOptions = ["Small", "Medium", "Large"];
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const pieceOptions = ["1 piece", "6 pieces", "12 pieces", "24 pieces"];
-  const [selectedPieces, setSelectedPieces] = useState<string[]>([]);
 
+  // استخدم Redux بدلاً من useState
   const toggleCategory = (categoryId: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId],
-    )
-  }
+    let updated = selectedCategories.includes(categoryId)
+      ? selectedCategories.filter((id) => id !== categoryId)
+      : [...selectedCategories, categoryId];
+    dispatch(setCategories(updated));
+  };
 
   const toggleSize = (size: string) => {
-    setSelectedSizes((prev) => prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]);
+    let updated = selectedSizes.includes(size)
+      ? selectedSizes.filter((s) => s !== size)
+      : [...selectedSizes, size];
+    dispatch(setSizes(updated));
   };
+
   const togglePieces = (piece: string) => {
-    setSelectedPieces((prev) => prev.includes(piece) ? prev.filter((p) => p !== piece) : [...prev, piece]);
+    let updated = selectedQuantities.includes(piece)
+      ? selectedQuantities.filter((p) => p !== piece)
+      : [...selectedQuantities, piece];
+    dispatch(setQuantities(updated));
   };
 
   const clearAllFilters = () => {
-    setPriceRange([0, 5000])
-    setSelectedCategories([])
-    setSelectedSizes([])
-    setSelectedPieces([])
-    setSelectedRating(null)
-    setInStockOnly(false)
-  }
+    setPriceRange([0, 5000]);
+    setSelectedRating(null);
+    setInStockOnly(false);
+    dispatch(clearFilters());
+  };
 
   const activeFiltersCount =
-    selectedCategories.length + selectedSizes.length + selectedPieces.length + (selectedRating ? 1 : 0) + (inStockOnly ? 1 : 0)
+    selectedCategories.length + selectedSizes.length + selectedQuantities.length + (selectedRating ? 1 : 0) + (inStockOnly ? 1 : 0);
 
   return (
     <>
@@ -163,7 +172,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                 <div key={piece} className="flex items-center">
                   <Checkbox
                     id={piece}
-                    checked={selectedPieces.includes(piece)}
+                    checked={selectedQuantities.includes(piece)}
                     onCheckedChange={() => togglePieces(piece)}
                   />
                   <label htmlFor={piece} className="text-sm text-gray-700 cursor-pointer ml-3">

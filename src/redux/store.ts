@@ -9,6 +9,7 @@ import globalLoadingReducer from './features/globalLoading/globalLoadingSlice';
 import productsReducer from './features/products/productsSlice';
 import categoryReducer from './features/category/categorySlice';
 import searchReducer from './features/search/searchSlice';
+import filterReducer from './features/filter/filterSlice';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     products: productsReducer,
     category: categoryReducer,
     search: searchReducer,
+    filter: filterReducer,
   },
 });
 
