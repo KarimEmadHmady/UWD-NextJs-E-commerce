@@ -4,6 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "../common/Button/Button"
+import { useCategory } from '../../hooks/useCategory';
 
 interface Category {
   id: number
@@ -87,7 +88,8 @@ const categories: Category[] = [
 ]
 
 export default function CategorySection() {
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const { categories, loading, error } = useCategory();
   const [scrollPosition, setScrollPosition] = useState(0)
 
   const scrollLeft = () => {
@@ -134,7 +136,9 @@ export default function CategorySection() {
             </Button>
           </div>
         </div>
-
+        {/* حالة التحميل أو الخطأ */}
+        {loading && <div className="text-center py-4">Loading categories...</div>}
+        {error && <div className="text-center py-4 text-red-500">{error}</div>}
         {/* Categories Grid */}
         <div className="relative w-full">
           <div
@@ -146,21 +150,19 @@ export default function CategorySection() {
               <div
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`
-                  flex-shrink-0 group cursor-pointer transition-all duration-200
-                  ${selectedCategory === category.id ? "scale-105" : "hover:scale-105"}
-                `}
+                className={
+                  `flex-shrink-0 group cursor-pointer transition-all duration-200 ` +
+                  (selectedCategory === category.id ? "scale-105" : "hover:scale-105")
+                }
                 style={{ minWidth: 120, maxWidth: 140 }}
               >
                 <div className="flex flex-col items-center space-y-2 p-2">
                   {/* Category Image */}
                   <div
-                    className={`
-                      relative w-16 h-16 rounded-full ${category.color} p-2
-                      overflow-hidden flex items-center justify-center
-                      transition-all duration-300
-                      ${selectedCategory === category.id ? "ring-2 ring-pink-500 ring-offset-2" : ""}
-                    `}
+                    className={
+                      `relative w-16 h-16 rounded-full bg-gray-100 p-2 overflow-hidden flex items-center justify-center transition-all duration-300 ` +
+                      (selectedCategory === category.id ? "ring-2 ring-pink-500 ring-offset-2" : "")
+                    }
                   >
                     <Image
                       src={category.image}
@@ -170,7 +172,6 @@ export default function CategorySection() {
                       style={{transitionTimingFunction: 'cubic-bezier(0.4,0,0.2,1)'}}
                     />
                   </div>
-
                   {/* Category Info */}
                   <div className="text-center">
                     <h3 className="text-xs font-medium text-gray-900 truncate max-w-[70px]">{category.name}</h3>
@@ -180,12 +181,10 @@ export default function CategorySection() {
               </div>
             ))}
           </div>
-
           {/* Gradient Overlays for scroll indication */}
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none" />
         </div>
-
         {/* All Categories Link */}
         <div className="flex justify-center mt-4">
           <Button
@@ -199,5 +198,5 @@ export default function CategorySection() {
         </div>
       </div>
     </div>
-  )
+  );
 }
