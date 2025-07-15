@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, Eye, Plus } from "lucide-react"
+import { Heart, Eye, Plus, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
 import { Badge } from "@/components/common/Badge/Badge"
 import { useCart } from "@/hooks/useCart"
@@ -111,7 +111,7 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
         </div>
 
         {/* Quick Actions */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
           <Button
             variant="secondary"
             size="icon"
@@ -130,9 +130,22 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
           </Button>
         </div>
 
-        {/* Add to Cart */}
+        {/* Add to Cart - Icon Only on Mobile */}
         {product.inStock && (
-          <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <button
+            className="absolute bottom-2 right-2 z-20 bg-pink-600 text-white rounded-full p-2 shadow-lg sm:hidden cursor-pointer"
+            onClick={handleAddToCart}
+            disabled={isAdding}
+            aria-label="Add to Cart"
+            type="button"
+          >
+            <ShoppingCart className="w-5 h-5" />
+          </button>
+        )}
+
+        {/* Add to Cart - Full Button on Desktop */}
+        {product.inStock && (
+          <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 hidden sm:block opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
             <Button
               className="w-full bg-white/90 hover:bg-white text-black shadow-lg backdrop-blur-sm text-xs sm:text-base py-2 sm:py-3"
               onClick={handleAddToCart}

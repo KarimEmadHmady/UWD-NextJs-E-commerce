@@ -39,29 +39,23 @@ export default function ContactPage() {
   const contactInfo = [
     {
       icon: MapPin,
-      title: "Visit Us",
-      details: ["123 Business Street", "Cairo", "Egypt"],
+      title: "Visit Our Sweets Shop",
+      details: ["15 Dessert Avenue", "Sweet City", "Egypt"],
       color: "text-pink-600",
       bgColor: "bg-pink-100",
     },
     {
       icon: Phone,
-      title: "Call Us",
-      details: ["+1 (555) 123-4567", "+1 (555) 987-6543", "Mon-Fri 9AM-6PM EST"],
+      title: "Call the Sweets Shop",
+      details: ["+20 115-123-4567", "Everyday 9AM-11PM"],
       color: "text-green-600",
       bgColor: "bg-green-100",
     },
-    {
-      icon: Mail,
-      title: "Email Us",
-      details: ["support@company.com", "sales@company.com", "info@company.com"],
-      color: "text-purple-600",
-      bgColor: "bg-purple-100",
-    },
+
     {
       icon: Clock,
-      title: "Business Hours",
-      details: ["Monday - Friday: 9AM - 6PM", "Saturday: 10AM - 4PM", "Sunday: Closed"],
+      title: "Sweets Shop Hours",
+      details: ["Everyday: 9AM - 11PM", "Friday: 2PM - 11PM"],
       color: "text-orange-600",
       bgColor: "bg-orange-100",
     },
@@ -70,30 +64,30 @@ export default function ContactPage() {
   const supportOptions = [
     {
       icon: MessageCircle,
-      title: "Live Chat",
-      description: "Chat with our support team in real-time",
-      action: "Start Chat",
+      title: "Chat with Sweets Team",
+      description: "Chat with our sweets experts in real-time for any inquiry or order.",
+      action: "Start Sweets Chat",
       available: true,
     },
     {
       icon: HeadphonesIcon,
-      title: "Phone Support",
-      description: "Speak directly with our experts",
-      action: "Call Now",
+      title: "Call Sweets Shop",
+      description: "Speak directly with our sweets specialists.",
+      action: "Call Sweets Shop",
       available: true,
     },
     {
       icon: Mail,
-      title: "Email Support",
-      description: "Send us a detailed message",
-      action: "Send Email",
+      title: "Email the Sweets Shop",
+      description: "Send us your sweets questions or custom order requests.",
+      action: "Send Sweets Email",
       available: true,
     },
     {
       icon: Users,
-      title: "Community Forum",
-      description: "Get help from our community",
-      action: "Visit Forum",
+      title: "Sweets Lovers Community",
+      description: "Join our community of sweets lovers and share your experience.",
+      action: "Visit Sweets Forum",
       available: true,
     },
   ]
@@ -105,7 +99,7 @@ export default function ContactPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-16">
         {/* Contact Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {contactInfo.map((info, index) => (
             <Card key={index} className="text-center hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
@@ -130,8 +124,8 @@ export default function ContactPage() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">Send us a Message</CardTitle>
-                <p className="text-gray-600">Fill out the form below and we'll get back to you within 24 hours.</p>
+                <CardTitle className="text-2xl">Send us a Message about Sweets</CardTitle>
+                <p className="text-gray-600">Fill out the form below and our sweets team will get back to you as soon as possible.</p>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -213,10 +207,9 @@ export default function ContactPage() {
           {/* Support Options */}
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Other Ways to Reach Us</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Other Ways to Contact the Sweets Shop</h2>
               <p className="text-gray-600 mb-6">
-                Choose the support option that works best for you. Our team is available to help through multiple
-                channels.
+                Choose the support option that works best for your sweets needs. Our team is available to help you with any sweets order or inquiry!
               </p>
             </div>
 
@@ -244,8 +237,8 @@ export default function ContactPage() {
             {/* FAQ Link */}
             <Card className="bg-pink-50 border-pink-200">
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-pink-900 mb-2">Frequently Asked Questions</h3>
-                <p className="text-pink-700 text-sm mb-4">Find quick answers to common questions in our FAQ section.</p>
+                <h3 className="font-semibold text-pink-900 mb-2">Frequently Asked Sweets Questions</h3>
+                <p className="text-pink-700 text-sm mb-4">Find quick answers to common sweets questions in our FAQ section.</p>
                 <Button variant="outline" className="bg-transparent border-pink-300 text-pink-700 hover:bg-pink-100">
                   View FAQ
                 </Button>
@@ -258,15 +251,15 @@ export default function ContactPage() {
         <div className="mt-16">
           <Card>
             <CardHeader>
-              <CardTitle>Find Our Location</CardTitle>
-              <p className="text-gray-600">Visit our office for in-person support and consultations.</p>
+              <CardTitle>Find Our Sweets Shop Location</CardTitle>
+              <p className="text-gray-600">Visit our sweets shop for in-person orders, tastings, and support.</p>
             </CardHeader>
             <CardContent>
               <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
                 <div className="text-center">
                   <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-500">Interactive map would be displayed here</p>
-                  <p className="text-sm text-gray-400">123 Business Street, Cairo, Egypt</p>
+                  <p className="text-sm text-gray-400">15 Dessert Avenue, Sweet City, Egypt</p>
                 </div>
               </div>
             </CardContent>

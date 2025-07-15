@@ -9,31 +9,38 @@ import { Badge } from "@/components/common/Badge/Badge"
 
 export default function OrderConfirmationPage() {
   const router = useRouter()
-  const [orderNumber] = useState("ORD-2024-001234")
+  const [orderNumber] = useState("SWEETS-2024-001234")
   const [estimatedDelivery] = useState("March 15, 2024")
 
   const orderItems = [
     {
       id: 1,
-      name: "MacBook Pro M3 14-inch",
-      price: 1999.99,
-      quantity: 1,
-      image: "https://eljokerstores.com/wp-content/uploads/2023/09/Untitled_design-removebg-preview-1.png",
+      name: "Kunafa with Cream",
+      price: 120.00,
+      quantity: 2,
+      image: "https://images.unsplash.com/photo-1533910534207-90f31029a78e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0",
     },
     {
       id: 2,
-      name: "iPhone 15 Pro Max",
-      price: 1199.99,
-      quantity: 2,
-      image: "https://vlegko.ru/upload/iblock/900/a4ay7kyvxsv47178yp7ivr1114wbkm5u/225c56ea-5217-11ee-88d4-24418cd4ee54_adef5cda-521f-11ee-88d4-24418cd4ee54.jpg",
+      name: "Chocolate Cake",
+      price: 200.00,
+      quantity: 1,
+      image: "https://images.unsplash.com/photo-1559656914-a30970c1affd?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0",
+    },
+    {
+      id: 3,
+      name: "Basbousa",
+      price: 80.00,
+      quantity: 3,
+      image: "https://images.unsplash.com/photo-1657679358567-c01939c7ad42?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0",
     },
   ]
 
   const orderSummary = {
-    subtotal: 4399.97,
+    subtotal: 680.00,
     shipping: 0,
-    tax: 351.99,
-    total: 4751.96,
+    tax: 54.40,
+    total: 734.40,
   }
 
   const formatPrice = (price: number) => {
@@ -58,8 +65,8 @@ export default function OrderConfirmationPage() {
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-12 h-12 text-green-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Confirmed!</h1>
-          <p className="text-lg text-gray-600 mb-4">Thank you for your purchase. Your order has been received.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Sweets Order Confirmed!</h1>
+          <p className="text-lg text-gray-600 mb-4">Thank you for your order. Your delicious sweets are being prepared!</p>
           <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
             <span>Order #{orderNumber}</span>
             <span>•</span>
@@ -74,22 +81,22 @@ export default function OrderConfirmationPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Package className="w-5 h-5 text-pink-600" />
+                  <Package className="w-5 h-5 text-green-600" />
                   Order Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-6 h-6 text-pink-600" />
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-6 h-6 text-green-600" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">Order Confirmed</h3>
-                      <p className="text-sm text-gray-600">We've received your order and are processing it</p>
+                      <p className="text-sm text-gray-600">We've received your sweets order and are preparing it for you!</p>
                     </div>
                   </div>
-                  <Badge className="bg-pink-100 text-pink-800">Processing</Badge>
+                  <Badge className="bg-green-100 text-green-800">Processing</Badge>
                 </div>
 
                 <div className="mt-6 space-y-4">
@@ -103,7 +110,7 @@ export default function OrderConfirmationPage() {
                   </div>
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <MapPin className="w-4 h-4" />
-                    <span>Delivering to: 123 Main Street, New York, NY 10001</span>
+                    <span>Delivering to: 123 Sweet Street, Candy City</span>
                   </div>
                 </div>
               </CardContent>
@@ -112,7 +119,7 @@ export default function OrderConfirmationPage() {
             {/* Order Items */}
             <Card>
               <CardHeader>
-                <CardTitle>Order Items</CardTitle>
+                <CardTitle>Sweets Items</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -121,7 +128,7 @@ export default function OrderConfirmationPage() {
                       <img
                         src={item.image || "/placeholder.svg"}
                         alt={item.name}
-                        className="w-16 h-16 object-contain bg-gray-50 rounded-lg"
+                        className="w-20 h-20 object-contain bg-gray-50 rounded-lg"
                       />
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900">{item.name}</h3>
@@ -140,15 +147,15 @@ export default function OrderConfirmationPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button onClick={() => router.push("/account/orders")} className="flex-1 text-black  hover:bg-gray-50 border-[1px] border-gray-200 cursor-pointer border-inputborder-input">
                 <Package className="w-4 h-4 mr-2 text-black" />
-                Track Order
+                Track Sweets Order
               </Button>
               <Button variant="outline" className="flex-1 bg-transparent">
                 <Download className="w-4 h-4 mr-2" />
-                Download Receipt
+                Download Invoice
               </Button>
               <Button variant="outline" className="flex-1 bg-transparent">
                 <Share2 className="w-4 h-4 mr-2" />
-                Share Order
+                Share Sweets Order
               </Button>
             </div>
           </div>
@@ -157,7 +164,7 @@ export default function OrderConfirmationPage() {
           <div className="lg:col-span-1">
             <Card className="sticky top-4">
               <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+                <CardTitle>Sweets Order Summary</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -167,7 +174,7 @@ export default function OrderConfirmationPage() {
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
-                    <span>{orderSummary.shipping === 0 ? "Free" : formatPrice(orderSummary.shipping)}</span>
+                    <span>{orderSummary.shipping === 0 ? "Free Delivery" : formatPrice(orderSummary.shipping)}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Tax</span>
@@ -185,21 +192,21 @@ export default function OrderConfirmationPage() {
                   <div className="space-y-3 text-sm text-gray-600">
                     <div className="flex items-start gap-2">
                       <div className="w-2 h-2 bg-pink-600 rounded-full mt-2"></div>
-                      <span>You'll receive an email confirmation shortly</span>
+                      <span>You'll receive an order confirmation by email soon</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <div className="w-2 h-2 bg-pink-600 rounded-full mt-2"></div>
-                      <span>We'll notify you when your order ships</span>
+                      <span>We'll notify you when your sweets are out for delivery</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <div className="w-2 h-2 bg-pink-600 rounded-full mt-2"></div>
-                      <span>Track your package in real-time</span>
+                      <span>Enjoy your fresh and delicious sweets!</span>
                     </div>
                   </div>
                 </div>
 
                 <Button onClick={() => router.push("/shop")} className="w-full mt-6 bg-pink-600 hover:bg-pink-700">
-                  Continue Shopping
+                  Order More Sweets
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </CardContent>

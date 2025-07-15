@@ -29,14 +29,7 @@ export default function Categore() {
                 <div className="rounded-3xl bg-white/95 px-4 py-3 text-sm font-semibold tracking-wide uppercase transition ease-out group-hover:bg-pink-600 group-hover:text-white dark:border-gray-800 dark:bg-gray-900/90">Cakes</div>
               </div>
             </a>
-            {/* Cheesecakes */}
-            <a href="#" className="group relative block overflow-hidden transition ease-out active:opacity-75">
-              <Image src="https://images.unsplash.com/photo-1657679358567-c01939c7ad42?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0" alt="Cheesecakes" width={400} height={192} className="transition ease-out group-hover:scale-110 h-48 w-full object-cover rounded-xl" />
-              <div className="absolute inset-0 bg-black/25 transition ease-out group-hover:bg-black/0" />
-              <div className="absolute inset-0 flex items-center justify-center p-4">
-                <div className="rounded-3xl bg-white/95 px-4 py-3 text-sm font-semibold tracking-wide uppercase transition ease-out group-hover:bg-pink-600 group-hover:text-white dark:border-gray-800 dark:bg-gray-900/90">Cheesecakes</div>
-              </div>
-            </a>
+
             {/* Oriental Sweets */}
             <a href="#" className="group relative block overflow-hidden transition ease-out active:opacity-75">
               <Image src="https://images.unsplash.com/photo-1559656914-a30970c1affd?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0" alt="Oriental Sweets" width={400} height={192} className="transition ease-out group-hover:scale-110 h-48 w-full object-cover rounded-xl" />

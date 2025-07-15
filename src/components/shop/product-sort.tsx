@@ -25,8 +25,8 @@ export default function ProductSort({ viewMode, onViewModeChange, onFilterToggle
   ]
 
   return (
-    <div className="flex items-center justify-between gap-4 p-4 bg-white border-b border-gray-200 text-black">
-      <div className="flex items-center gap-4">
+    <div className="flex items-center justify-between gap-4 p-4 bg-white border-b border-gray-200 text-black flex-col">
+      <div className="flex items-center gap-4 flex-row-reverse">
         {/* Mobile Filter Button */}
         <Button variant="outline" size="sm" onClick={onFilterToggle} className="lg:hidden bg-transparent text-black">
           <Filter className="w-4 h-4 mr-2 text-black" />
@@ -35,11 +35,11 @@ export default function ProductSort({ viewMode, onViewModeChange, onFilterToggle
 
         {/* Results Count */}
         <p className="text-sm text-black">
-          Showing <span className="font-medium text-black">{totalProducts}</span> products
+          Showing <span className="font-medium text-black">{totalProducts}</span> Sweets
         </p>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 w-full justify-between">
         {/* Sort Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -58,7 +58,7 @@ export default function ProductSort({ viewMode, onViewModeChange, onFilterToggle
         </DropdownMenu>
 
         {/* View Mode Toggle */}
-        <div className="hidden sm:flex items-center border border-gray-200 rounded-lg p-1 text-black">
+        <div className="flex items-center border border-gray-200 rounded-lg p-1 text-black">
           <Button
             variant={viewMode === "grid" ? "default" : "ghost"}
             size="sm"

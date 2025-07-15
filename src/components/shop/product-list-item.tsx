@@ -157,7 +157,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
             src={product.image || "/placeholder.svg"}
             alt={product.name}
             fill
-            className="object-contain p-2"
+            className="object-cover"
             onLoadingComplete={() => setIsImgLoading(false)}
             onError={() => setIsImgLoading(false)}
             style={isImgLoading ? { visibility: 'hidden' } : {}}
@@ -201,7 +201,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
           </div>
 
           {/* Price and Actions */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xl font-bold text-gray-900">{formatPrice(product.price)}</span>
               {product.originalPrice && (

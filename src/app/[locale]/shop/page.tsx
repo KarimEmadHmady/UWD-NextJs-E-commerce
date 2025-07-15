@@ -44,9 +44,9 @@ export default function ShopPage() {
           <nav className="flex items-center space-x-2 text-sm">
             <Home className="w-4 h-4 text-gray-400" />
             <ChevronRight className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-600">Shop</span>
+            <span className="text-gray-600">Sweets</span>
             <ChevronRight className="w-4 h-4 text-gray-400" />
-            <span className="font-medium text-gray-900">All Products</span>
+            <span className="font-medium text-gray-900">All Sweets</span>
           </nav>
         </div>
       </div>
@@ -56,11 +56,10 @@ export default function ShopPage() {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Shop All Products
+              Shop All Sweets
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover our complete collection of premium products with the best
-              deals and latest technology
+              Discover our complete collection of delicious sweets, cakes, pastries, and more. Perfect for every occasion!
             </p>
           </div>
 
@@ -69,7 +68,7 @@ export default function ShopPage() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <Input
               type="text"
-              placeholder="Search products..."
+              placeholder="Search sweets..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 text-black pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"

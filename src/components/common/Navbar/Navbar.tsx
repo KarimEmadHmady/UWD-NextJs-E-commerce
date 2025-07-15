@@ -436,41 +436,44 @@ export default function Navigation() {
         
         {/* Language Switcher and Social Media Icons at the bottom - improved style */}
         <div className="flex flex-col items-center justify-end mt-12 mb-8 gap-4">
-          <div className="flex justify-center gap-4 mb-2">
+        <img className="w-auto h-35 mb-13" src="/logo.png" alt="Sweetness Sweets" height="100px" />
+          <div className="flex flex-row items-center justify-between gap-2 w-[70%]">
+          <div className="flex justify-center gap-2 mb-2">
             <button
-              className={`px-4 py-2 rounded-[10px] border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'en' ? 'bg-pink-600 text-white border-pink-600' : 'bg-white text-pink-600 border-pink-600 hover:bg-pink-50'}`}
+              className={`p-1 cursor-pointer rounded-full border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'en' ? 'bg-pink-600 text-white border-pink-600' : 'bg-white text-pink-600 border-pink-600 hover:bg-pink-50'}`}
               onClick={() => handleLangSwitch('en')}
               disabled={lang === 'en'}
             >
               EN
             </button>
             <button
-              className={`px-4 py-2 rounded-[10px] border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'ar' ? 'bg-pink-600 text-white border-pink-600' : 'bg-white text-pink-600 border-pink-600 hover:bg-pink-50'}`}
+              className={`p-1 cursor-pointer rounded-full border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'ar' ? 'bg-pink-600 text-white border-pink-600' : 'bg-white text-pink-600 border-pink-600 hover:bg-pink-50'}`}
               onClick={() => handleLangSwitch('ar')}
               disabled={lang === 'ar'}
             >
               AR
             </button>
           </div>
-          <div className="flex justify-center gap-4 mb-2">
+          <div className="flex justify-center gap-1 ">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
+              className="group rounded-full  flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
               <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-pink-600 group-hover:text-pink-700 transition-colors duration-200">
                 <path fill="currentColor" d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/>
               </svg>
             </a>
             <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
+              className="group rounded-full  flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
               <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-pink-400 group-hover:text-pink-500 transition-colors duration-200">
                 <path fill="currentColor" d="M24 4.557a9.83 9.83 0 0 1-2.828.775 4.932 4.932 0 0 0 2.165-2.724c-.951.564-2.005.974-3.127 1.195A4.916 4.916 0 0 0 16.616 3c-2.717 0-4.924 2.206-4.924 4.924 0 .386.044.763.127 1.124C7.728 8.807 4.1 6.884 1.671 3.965c-.423.724-.666 1.561-.666 2.475 0 1.708.87 3.216 2.188 4.099a4.904 4.904 0 0 1-2.229-.616c-.054 2.281 1.581 4.415 3.949 4.89a4.936 4.936 0 0 1-2.224.084c.627 1.956 2.444 3.377 4.6 3.417A9.867 9.867 0 0 1 0 21.543a13.94 13.94 0 0 0 7.548 2.212c9.057 0 14.009-7.513 14.009-14.009 0-.213-.005-.425-.014-.636A10.012 10.012 0 0 0 24 4.557z"/>
               </svg>
             </a>
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
+              className="group rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
               <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-pink-500 group-hover:text-pink-600 transition-colors duration-200">
                 <path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.974 1.246 2.241 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.974.974-2.241 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.974-.974-1.246-2.241-1.308-3.608C2.175 15.647 2.163 15.267 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.974-.974 2.241-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.013 7.052.072 5.775.13 4.602.402 3.635 1.37 2.668 2.338 2.396 3.511 2.338 4.788.013 8.332 0 8.741 0 12c0 3.259.013 3.668.072 4.948.058 1.277.33 2.45 1.298 3.418.968.968 2.141 1.24 3.418 1.298C8.332 23.987 8.741 24 12 24c3.259 0 3.668-.013 4.948-.072 1.277-.058 2.45-.33 3.418-1.298.968-.968 1.24-2.141 1.298-3.418.059-1.28.072-1.689.072-4.948 0-3.259-.013-3.668-.072-4.948-.058-1.277-.33-2.45-1.298-3.418-.968-.968-2.141-1.24-3.418-1.298C15.668.013 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/>
               </svg>
             </a>
+          </div>
           </div>
           <span className="text-xs text-gray-400 mt-2">© {new Date().getFullYear()} YourBrand</span>
         </div>

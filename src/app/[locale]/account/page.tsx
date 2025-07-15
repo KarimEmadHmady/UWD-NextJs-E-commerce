@@ -47,19 +47,22 @@ export default function AccountPage() {
   ]
 
   const wishlistItems = [
+
     {
       id: 1,
-      name: "Samsung Galaxy S24 Ultra",
-      price: 42000.00,
-      image: "https://eljokerstores.com/wp-content/uploads/2023/09/Untitled_design-removebg-preview-1.png",
+      name: "Kunafa with Cream",
+      price: 120.00,
+      quantity: 2,
+      image: "https://images.unsplash.com/photo-1533910534207-90f31029a78e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0",
       inStock: true,
     },
     {
       id: 2,
-      name: "Xiaomi Smart TV 55 inch",
-      price: 18000.00,
-      image: "https://vlegko.ru/upload/iblock/900/a4ay7kyvxsv47178yp7ivr1114wbkm5u/225c56ea-5217-11ee-88d4-24418cd4ee54_adef5cda-521f-11ee-88d4-24418cd4ee54.jpg",
-      inStock: false,
+      name: "Chocolate Cake",
+      price: 200.00,
+      quantity: 1,
+      image: "https://images.unsplash.com/photo-1559656914-a30970c1affd?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0",
+      inStock: true,
     },
   ]
 
