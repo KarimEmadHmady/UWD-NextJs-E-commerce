@@ -13,6 +13,7 @@ import {
   setAddresses
 } from '@/redux/features/address/addressSlice';
 import { Address } from '@/redux/features/address/addressSlice';
+import { useEffect } from 'react';
 
 export const useAddress = () => {
   const addresses = useSelector(selectAddresses);
@@ -20,6 +21,26 @@ export const useAddress = () => {
   const loading = useSelector(selectAddressLoading);
   const error = useSelector(selectAddressError);
   const dispatch = useDispatch();
+
+  //  localStorage <-> Redux
+  useEffect(() => {
+    if (addresses.length === 0) {
+      const stored = localStorage.getItem('addresses');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            dispatch(setAddresses(parsed));
+          }
+        } catch {}
+      }
+    }
+        // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('addresses', JSON.stringify(addresses));
+  }, [addresses]);
 
   const add = (address: Address) => dispatch(addAddress(address));
   const update = (address: Address) => dispatch(updateAddress(address));

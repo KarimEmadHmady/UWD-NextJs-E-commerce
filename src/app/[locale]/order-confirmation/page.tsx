@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle, Package, Truck, MapPin, Calendar, Download, Share2, ArrowRight, Facebook, MessageCircle } from "lucide-react"
+import { CheckCircle, Package, Truck, MapPin, Calendar, Download, Share2, ArrowRight, Facebook, MessageCircle ,ShoppingCart} from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Badge } from "@/components/common/Badge/Badge"
@@ -17,7 +17,9 @@ export default function OrderConfirmationPage() {
   if (!latestOrder) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md w-full">
+        <div className=" p-8 rounded-xl text-center max-w-md w-full">
+        <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-pink-500" />
+
           <h2 className="text-2xl font-bold mb-2 text-gray-900">No order found</h2>
           <p className="text-gray-600 mb-6">You have not placed any order yet.</p>
           <Button onClick={() => router.push('/shop')} className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full text-lg font-semibold shadow">
@@ -228,7 +230,7 @@ export default function OrderConfirmationPage() {
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
-                    <span>{orderSummary.shipping === 0 ? "Free Delivery" : formatPrice(orderSummary.shipping)}</span>
+                    <span>{latestOrder.shippingMethod ? latestOrder.shippingMethod : (orderSummary.shipping === 0 ? "Free Delivery" : formatPrice(orderSummary.shipping))}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Tax</span>

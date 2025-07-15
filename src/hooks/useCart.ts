@@ -1,5 +1,5 @@
 // src/hooks/useCart.ts
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
   addToCart,
@@ -29,6 +29,28 @@ export const useCart = () => {
   const tax = useAppSelector(selectCartTax);
   const total = useAppSelector(selectCartTotal);
   const itemsCount = useAppSelector(selectCartItemsCount);
+
+  //  localStorage <-> Redux
+  useEffect(() => {
+    if (items.length === 0) {
+      const stored = localStorage.getItem('cart_items');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            parsed.forEach((item: CartItem) => {
+              dispatch(addToCart(item));
+            });
+          }
+        } catch {}
+      }
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cart_items', JSON.stringify(items));
+  }, [items]);
 
   const addItem = useCallback((product: Product, quantity = 1) => {
     const cartItem: CartItem = {

@@ -357,13 +357,13 @@ export default function AccountPage() {
                   {showAddressForm && (
                     <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
-                        <input name="name" placeholder="Name" value={addressForm.name} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
-                        <input name="phone" placeholder="Phone" value={addressForm.phone} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
-                        <input name="street" placeholder="Street" value={addressForm.street} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
-                        <input name="city" placeholder="City" value={addressForm.city} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
-                        <input name="region" placeholder="Region" value={addressForm.region} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
-                        <input name="country" placeholder="Country" value={addressForm.country} onChange={handleAddressFormChange} className="border rounded px-2 py-1" />
-                        <input name="notes" placeholder="Notes (optional)" value={addressForm.notes} onChange={handleAddressFormChange} className="border rounded px-2 py-1 col-span-2" />
+                        <input name="name" placeholder="Name" value={addressForm.name} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
+                        <input name="phone" placeholder="Phone" value={addressForm.phone} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
+                        <input name="street" placeholder="Street" value={addressForm.street} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
+                        <input name="city" placeholder="City" value={addressForm.city} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
+                        <input name="region" placeholder="Region" value={addressForm.region} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
+                        <input name="country" placeholder="Country" value={addressForm.country} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
+                        <input name="notes" placeholder="Notes (optional)" value={addressForm.notes} onChange={handleAddressFormChange} className="border rounded px-2 py-1 col-span-2 bg-gray-100 placeholder-gray-500 text-gray-900" />
                       </div>
                       <div className="flex gap-2">
                         <Button size="sm" className="bg-pink-600 text-white" onClick={handleAddAddress}>Save</Button>

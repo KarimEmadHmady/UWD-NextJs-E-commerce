@@ -1,9 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { MapPin, Navigation, Check } from "lucide-react";
+import { MapPin, Navigation, Check, Loader2 } from "lucide-react";
 import { Button } from "../common/Button/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card";
+import { Input } from "@/components/common/input/input";
+import dynamic from "next/dynamic";
+import "leaflet/dist/leaflet.css";
 
 interface LocationData {
   latitude: number;
@@ -16,15 +19,87 @@ interface LocationStepProps {
   initialLocation?: LocationData | null;
 }
 
+// مكون الخريطة التفاعلية (يتم تحميله ديناميكياً لدعم SSR)
+const MapWithMarker = dynamic(() => import("./ManualMap"), { ssr: false });
+
 export default function LocationStep({ onLocationSet, initialLocation }: LocationStepProps) {
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<LocationData | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [manualAddress, setManualAddress] = useState("");
+  const [manualError, setManualError] = useState<string | null>(null);
+  const [manualLatLng, setManualLatLng] = useState<{lat: number, lng: number} | null>(null);
+  const [manualLoading, setManualLoading] = useState(false);
+
+  // حالة الموقع التلقائي (currentLocation) + marker
+  const [currentMarker, setCurrentMarker] = useState<{lat: number, lng: number} | null>(null);
+  const [currentAddress, setCurrentAddress] = useState<string>("");
+  const [currentReverseLoading, setCurrentReverseLoading] = useState(false);
+
+  // حالة العنوان اليدوي: العنوان النصي الناتج من reverse geocoding
+  const [manualReverseAddress, setManualReverseAddress] = useState<string>("");
+  const [manualReverseLoading, setManualReverseLoading] = useState(false);
 
   // عند mount، إذا كان initialLocation موجود، املأ currentLocation
   useEffect(() => {
     if (initialLocation) setCurrentLocation(initialLocation);
   }, [initialLocation]);
+
+  // عند جلب الموقع التلقائي، حدث marker والعنوان
+  useEffect(() => {
+    if (currentLocation) {
+      setCurrentMarker({ lat: currentLocation.latitude, lng: currentLocation.longitude });
+      setCurrentAddress(currentLocation.address);
+    }
+  }, [currentLocation]);
+
+  // عند تغيير marker في الموقع التلقائي، نفذ reverse geocoding
+  useEffect(() => {
+    const fetchAddress = async () => {
+      if (currentMarker) {
+        setCurrentReverseLoading(true);
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${currentMarker.lat}&lon=${currentMarker.lng}`);
+          const data = await res.json();
+          if (data && data.display_name) {
+            setCurrentAddress(data.display_name);
+          } else {
+            setCurrentAddress(`Lat: ${currentMarker.lat.toFixed(4)}, Lng: ${currentMarker.lng.toFixed(4)}`);
+          }
+        } catch {
+          setCurrentAddress(`Lat: ${currentMarker.lat.toFixed(4)}, Lng: ${currentMarker.lng.toFixed(4)}`);
+        }
+        setCurrentReverseLoading(false);
+      }
+    };
+    if (currentMarker && (currentMarker.lat !== currentLocation?.latitude || currentMarker.lng !== currentLocation?.longitude)) {
+      fetchAddress();
+    }
+  }, [currentMarker]);
+
+  // عند تغيير manualLatLng، نفذ reverse geocoding
+  useEffect(() => {
+    const fetchManualAddress = async () => {
+      if (manualLatLng) {
+        setManualReverseLoading(true);
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${manualLatLng.lat}&lon=${manualLatLng.lng}`);
+          const data = await res.json();
+          if (data && data.display_name) {
+            setManualReverseAddress(data.display_name);
+          } else {
+            setManualReverseAddress(`Lat: ${manualLatLng.lat.toFixed(4)}, Lng: ${manualLatLng.lng.toFixed(4)}`);
+          }
+        } catch {
+          setManualReverseAddress(`Lat: ${manualLatLng.lat.toFixed(4)}, Lng: ${manualLatLng.lng.toFixed(4)}`);
+        }
+        setManualReverseLoading(false);
+      }
+    };
+    if (manualLatLng) {
+      fetchManualAddress();
+    }
+  }, [manualLatLng]);
 
   const getCurrentLocation = () => {
     setIsGettingLocation(true);
@@ -75,10 +150,50 @@ export default function LocationStep({ onLocationSet, initialLocation }: Locatio
     );
   };
 
+  const searchManualLocation = async () => {
+    setManualError(null);
+    setManualLatLng(null);
+    if (!manualAddress.trim()) {
+      setManualError("Please enter your address");
+      return;
+    }
+    setManualLoading(true);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(manualAddress)}`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        setManualLatLng({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) });
+      } else {
+        setManualError("Location not found. Try a more specific address.");
+      }
+    } catch {
+      setManualError("Failed to fetch location. Try again.");
+    }
+    setManualLoading(false);
+  };
+
+  // أعد تعريف دالة تأكيد الموقع الحالي
   const confirmLocation = () => {
     if (currentLocation) {
       onLocationSet(currentLocation);
     }
+  };
+
+  // عند التأكيد، أرسل الإحداثيات والعنوان الحالي
+  const confirmCurrentMarker = () => {
+    if (currentMarker && currentAddress) {
+      onLocationSet({ latitude: currentMarker.lat, longitude: currentMarker.lng, address: currentAddress });
+    }
+  };
+
+  // عند التأكيد، أرسل العنوان الناتج من reverse geocoding
+  const confirmManualAddress = () => {
+    if (!manualLatLng) {
+      setManualError("Please search and select a valid location");
+      return;
+    }
+    setManualError(null);
+    onLocationSet({ address: manualReverseAddress || manualAddress.trim(), latitude: manualLatLng.lat, longitude: manualLatLng.lng });
   };
 
   return (
@@ -116,6 +231,47 @@ export default function LocationStep({ onLocationSet, initialLocation }: Locatio
           {locationError && <p className="text-red-500 text-sm mt-2">{locationError}</p>}
         </CardContent>
       </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-pink-600" />
+            Enter Address Manually
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2 mb-2">
+            <Input
+              value={manualAddress}
+              onChange={e => setManualAddress(e.target.value)}
+              placeholder="Enter your delivery address"
+            />
+            <Button onClick={searchManualLocation} className="bg-pink-600 hover:bg-pink-700 px-3" disabled={manualLoading}>
+              {manualLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Find your location"}
+            </Button>
+          </div>
+          {manualError && <p className="text-red-500 text-sm mb-2">{manualError}</p>}
+          {manualLatLng && (
+            <div className="mb-2 w-full h-[280px] rounded overflow-hidden">
+              <MapWithMarker
+                lat={manualLatLng.lat}
+                lng={manualLatLng.lng}
+                onChange={(lat: number, lng: number) => setManualLatLng({ lat, lng })}
+              />
+              <p className="font-medium text-gray-900">
+                {manualReverseLoading ? "Loading address..." : manualReverseAddress}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Lat: {manualLatLng.lat.toFixed(5)}, Lng: {manualLatLng.lng.toFixed(5)}</p>
+            </div>
+          )}
+          <Button
+            onClick={confirmManualAddress}
+            className="w-full bg-pink-600 hover:bg-pink-700"
+            disabled={!manualLatLng}
+          >
+            Confirm Manual Address
+          </Button>
+        </CardContent>
+      </Card>
       {currentLocation && (
         <Card className="border-green-200 bg-green-50">
           <CardHeader>
@@ -126,23 +282,22 @@ export default function LocationStep({ onLocationSet, initialLocation }: Locatio
           </CardHeader>
           <CardContent>
             <div className="space-y-2 mb-4">
-              <p className="font-medium text-gray-900">{currentLocation.address}</p>
-              <p className="text-sm text-gray-500">
-                Coordinates: {currentLocation.latitude.toFixed(4)}, {currentLocation.longitude.toFixed(4)}
-              </p>
-              {/* خريطة Google Maps */}
-              <div className="mt-2">
-                <iframe
-                  width="100%"
-                  height="200"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  allowFullScreen
-                  src={`https://maps.google.com/maps?q=${currentLocation.latitude},${currentLocation.longitude}&z=15&output=embed`}
-                ></iframe>
+              {/* خريطة تفاعلية مع marker */}
+              <div className="mb-2 w-full h-[220px] rounded overflow-hidden">
+                <MapWithMarker
+                  lat={currentMarker?.lat || currentLocation.latitude}
+                  lng={currentMarker?.lng || currentLocation.longitude}
+                  onChange={(lat: number, lng: number) => setCurrentMarker({ lat, lng })}
+                />
               </div>
+              <p className="font-medium text-gray-900">
+                {currentReverseLoading ? "Loading address..." : currentAddress}
+              </p>
+              <p className="text-sm text-gray-500">
+                Coordinates: {(currentMarker?.lat || currentLocation.latitude).toFixed(4)}, {(currentMarker?.lng || currentLocation.longitude).toFixed(4)}
+              </p>
             </div>
-            <Button onClick={confirmLocation} className="w-full bg-green-600 hover:bg-green-700">
+            <Button onClick={confirmCurrentMarker} className="w-full bg-green-600 hover:bg-green-700">
               Confirm This Location
             </Button>
           </CardContent>

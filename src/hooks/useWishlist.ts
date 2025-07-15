@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
   addToWishlist,
@@ -15,6 +15,28 @@ export const useWishlist = () => {
   const dispatch = useAppDispatch();
   const items = useAppSelector(selectWishlistItems);
   const count = useAppSelector(selectWishlistCount);
+
+  //  localStorage <-> Redux
+  useEffect(() => {
+    if (items.length === 0) {
+      const stored = localStorage.getItem('wishlist_items');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            parsed.forEach((item: Product) => {
+              dispatch(addToWishlist(item));
+            });
+          }
+        } catch {}
+      }
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('wishlist_items', JSON.stringify(items));
+  }, [items]);
 
   const addItem = useCallback((product: Product) => {
     dispatch(addToWishlist(product));
