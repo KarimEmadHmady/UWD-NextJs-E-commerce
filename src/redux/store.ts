@@ -8,6 +8,7 @@ import notificationReducer from './features/notifications/notificationSlice';
 import globalLoadingReducer from './features/globalLoading/globalLoadingSlice';
 import productsReducer from './features/products/productsSlice';
 import categoryReducer from './features/category/categorySlice';
+import searchReducer from './features/search/searchSlice';
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     globalLoading: globalLoadingReducer,
     products: productsReducer,
     category: categoryReducer,
+    search: searchReducer,
   },
 });
 

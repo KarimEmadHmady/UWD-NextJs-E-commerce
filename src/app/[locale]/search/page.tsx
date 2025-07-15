@@ -8,62 +8,108 @@ import { Input } from "@/components/common/input/input"
 import { Card, CardContent } from "@/components/common/card/card"
 import { Badge } from "@/components/common/Badge/Badge"
 import { Checkbox } from "@/components/common/checkbox/checkbox"
+import { useSearch } from '@/hooks/useSearch';
+import { useDispatch } from 'react-redux';
+import { setSearchQuery, fetchSearchSuccess } from '@/redux/features/search/searchSlice';
+import { useEffect } from 'react';
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
-  const [searchQuery, setSearchQuery] = useState(searchParams?.get("q") || "")
+  const dispatch = useDispatch();
+  const { query: searchQuery, results: searchResults, loading, error } = useSearch();
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
-  const searchResults = [
+  // Sweet shop dummy data (English)
+  const dummyResults = [
     {
-      id: 1,
-      name: "MacBook Pro M3 14-inch",
-      price: 1999.99,
-      originalPrice: 2299.99,
-      image: "https://eljokerstores.com/wp-content/uploads/2023/09/Untitled_design-removebg-preview-1.png",
+      id: '1',
+      name: "Chocolate Cake",
+      price: 150,
+      originalPrice: 180,
+      image: "https://images.unsplash.com/photo-1590251786954-cf189e67d0bd?q=80&w=1074&auto=format&fit=crop",
+      rating: 4.9,
+      reviews: 87,
+      category: "Cakes",
+      description: "Rich and moist chocolate cake topped with creamy chocolate ganache.",
+      isNew: true,
+      isSale: true,
+    },
+    {
+      id: '2',
+      name: "Baklava Mix",
+      price: 120,
+      image: "https://images.unsplash.com/photo-1559656914-a30970c1affd?q=80&w=687&auto=format&fit=crop",
       rating: 4.8,
-      reviews: 124,
-      category: "Laptops",
-      description: "Powerful laptop with M3 chip, perfect for professionals and creatives.",
-      inStock: true,
+      reviews: 54,
+      category: "Oriental Sweets",
+      description: "Assorted baklava with pistachio and walnut, made fresh daily.",
+      isNew: false,
+      isSale: false,
+    },
+    {
+      id: '3',
+      name: "Mini Cupcakes Box (12 pcs)",
+      price: 90,
+      originalPrice: 110,
+      image: "https://images.unsplash.com/photo-1590251786954-cf189e67d0bd?q=80&w=1074&auto=format&fit=crop",
+      rating: 4.7,
+      reviews: 33,
+      category: "Cupcakes",
+      description: "A box of 12 assorted mini cupcakes, perfect for parties.",
       isNew: false,
       isSale: true,
     },
     {
-      id: 2,
-      name: "iPhone 15 Pro Max",
-      price: 1199.99,
-      image: "https://vlegko.ru/upload/iblock/900/a4ay7kyvxsv47178yp7ivr1114wbkm5u/225c56ea-5217-11ee-88d4-24418cd4ee54_adef5cda-521f-11ee-88d4-24418cd4ee54.jpg",
-      rating: 4.9,
-      reviews: 89,
-      category: "Smartphones",
-      description: "Latest iPhone with advanced camera system and titanium design.",
-      inStock: true,
+      id: '4',
+      name: "Strawberry Tart",
+      price: 70,
+      image: "https://images.unsplash.com/photo-1533910534207-90f31029a78e?q=80&w=687&auto=format&fit=crop",
+      rating: 4.6,
+      reviews: 21,
+      category: "Tarts",
+      description: "Crispy tart filled with vanilla cream and fresh strawberries.",
       isNew: true,
       isSale: false,
     },
     {
-      id: 3,
-      name: "iPad Pro 12.9-inch",
-      price: 1099.99,
-      originalPrice: 1299.99,
-      image: "https://eljokerstores.com/wp-content/uploads/2023/09/Untitled_design-removebg-preview-1.png",
-      rating: 4.7,
-      reviews: 156,
-      category: "Tablets",
-      description: "Professional tablet with M2 chip and Liquid Retina XDR display.",
-      inStock: true,
+      id: '5',
+      name: "Assorted Cookies (500g)",
+      price: 60,
+      image: "https://images.unsplash.com/photo-1657679358567-c01939c7ad42?q=80&w=687&auto=format&fit=crop",
+      rating: 4.5,
+      reviews: 40,
+      category: "Cookies",
+      description: "A mix of butter, chocolate chip, and coconut cookies.",
       isNew: false,
-      isSale: true,
+      isSale: false,
     },
-  ]
+  ];
+
+  // عند تغيير البحث، حدث النتائج الوهمية
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    dispatch(setSearchQuery(value));
+    // فلترة النتائج الوهمية بناءً على البحث
+    const filtered = value
+      ? dummyResults.filter((item) => item.name.toLowerCase().includes(value.toLowerCase()))
+      : dummyResults;
+    dispatch(fetchSearchSuccess(filtered));
+  };
+
+  // عند الضغط على X امسح البحث والنتائج
+  const handleClearSearch = () => {
+    dispatch(setSearchQuery(''));
+    dispatch(fetchSearchSuccess(dummyResults));
+  };
+
+  // تم حذف بيانات البحث الثابتة، سيتم استخدام بيانات الريدكس
 
   const filters = {
-    categories: ["Laptops", "Smartphones", "Tablets", "Audio", "Wearables"],
-    priceRanges: ["Under E.L 500", "E.L 500 - E.L 1000", "E.L 1000 - E.L 2000", "Over E.L 2000"],
-    brands: ["Apple", "Samsung", "Sony", "Microsoft", "Google"],
-    ratings: ["4+ Stars", "3+ Stars", "2+ Stars", "1+ Stars"],
+    categories: ["Cakes", "Cookies", "Tarts", "Cupcakes", "Oriental Sweets", "Chocolates"],
+    quantities: ["1 piece", "6 pieces", "12 pieces", "500g", "1kg"],
+    sizes: ["Small", "Medium", "Large"],
+    brands: ["Sweet House", "Oriental Delights", "ChocoDream", "Bakery Fresh", "Tasty Bites"],
   }
 
   const formatPrice = (price: number) => {
@@ -90,6 +136,12 @@ export default function SearchPage() {
     setSelectedFilters([])
   }
 
+  // عند أول تحميل للصفحة، اعرض كل النتائج الوهمية
+  // استخدم useEffect
+  useEffect(() => {
+    dispatch(fetchSearchSuccess(dummyResults));
+  }, [dispatch]);
+
   return (
     <div className="min-h-screen bg-gray-50">
 
@@ -103,14 +155,14 @@ export default function SearchPage() {
                 type="text"
                 placeholder="Search for products..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 className="pl-12 pr-4 py-4 text-lg border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
               />
               {searchQuery && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setSearchQuery("")}
+                  onClick={handleClearSearch}
                   className="absolute right-2 top-1/2 transform -translate-y-1/2"
                 >
                   <X className="w-4 h-4" />
@@ -123,9 +175,9 @@ export default function SearchPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                {searchQuery ? `Search results for "${searchQuery}"` : "All Products"}
+                {searchQuery ? `Search results for "${searchQuery}"` : "All Sweets"}
               </h1>
-              <p className="text-gray-600">{searchResults.length} products found</p>
+              <p className="text-gray-600">{searchResults.length} items available</p>
             </div>
 
             <Button
@@ -156,6 +208,10 @@ export default function SearchPage() {
           )}
         </div>
 
+        {/* حالة التحميل أو الخطأ */}
+        {loading && <div className="text-center py-4">Loading search results...</div>}
+        {error && <div className="text-center py-4 text-red-500">{error}</div>}
+
         <div className="flex gap-8">
           {/* Filters Sidebar */}
           <div
@@ -183,30 +239,47 @@ export default function SearchPage() {
                 </div>
               </CardContent>
             </Card>
-
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Price Range</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">Quantity</h3>
                 <div className="space-y-3">
-                  {filters.priceRanges.map((range) => (
-                    <div key={range} className="flex items-center space-x-3">
+                  {filters.quantities.map((quantity) => (
+                    <div key={quantity} className="flex items-center space-x-3">
                       <Checkbox
-                        id={range}
-                        checked={selectedFilters.includes(range)}
-                        onCheckedChange={() => handleFilterToggle(range)}
+                        id={quantity}
+                        checked={selectedFilters.includes(quantity)}
+                        onCheckedChange={() => handleFilterToggle(quantity)}
                       />
-                      <label htmlFor={range} className="text-sm text-gray-700 cursor-pointer">
-                        {range}
+                      <label htmlFor={quantity} className="text-sm text-gray-700 cursor-pointer">
+                        {quantity}
                       </label>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
-
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Brands</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">Size</h3>
+                <div className="space-y-3">
+                  {filters.sizes.map((size) => (
+                    <div key={size} className="flex items-center space-x-3">
+                      <Checkbox
+                        id={size}
+                        checked={selectedFilters.includes(size)}
+                        onCheckedChange={() => handleFilterToggle(size)}
+                      />
+                      <label htmlFor={size} className="text-sm text-gray-700 cursor-pointer">
+                        {size}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Brand/Bakery</h3>
                 <div className="space-y-3">
                   {filters.brands.map((brand) => (
                     <div key={brand} className="flex items-center space-x-3">
@@ -239,7 +312,8 @@ export default function SearchPage() {
                       <img
                         src={product.image || "/placeholder.svg"}
                         alt={product.name}
-                        className="w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover p-0 group-hover:scale-105 transition-transform duration-300"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
 
                       {/* Badges */}
@@ -264,7 +338,7 @@ export default function SearchPage() {
 
                       {/* Rating */}
                       <div className="flex items-center gap-2">
-                        <div className="flex items-center">{renderStars(product.rating)}</div>
+                        <div className="flex items-center">{renderStars(product.rating ?? 0)}</div>
                         <span className="text-sm text-gray-600">
                           {product.rating} ({product.reviews})
                         </span>
@@ -273,7 +347,7 @@ export default function SearchPage() {
                       {/* Price */}
                       <div className="flex items-center gap-2">
                         <span className="text-xl font-bold text-gray-900">{formatPrice(product.price)}</span>
-                        {product.originalPrice && (
+                        {typeof product.originalPrice === 'number' && (
                           <span className="text-sm text-gray-400 line-through">
                             {formatPrice(product.originalPrice)}
                           </span>
@@ -292,9 +366,9 @@ export default function SearchPage() {
             {searchResults.length === 0 && (
               <div className="text-center py-16">
                 <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">No products found</h2>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-2">No matching sweets found</h2>
                 <p className="text-gray-600 mb-6">
-                  Try adjusting your search or filters to find what you're looking for
+                  Try changing your search or filters to find the sweets you want
                 </p>
                 <Button onClick={clearFilters} variant="outline" className="bg-transparent">
                   Clear all filters
