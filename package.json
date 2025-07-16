@@ -33,6 +33,7 @@
     "react-redux": "^9.2.0",
     "react-share": "^5.2.2",
     "sonner": "^2.0.6",
+    "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",
     "yet-another-react-lightbox": "^3.24.0"
   },

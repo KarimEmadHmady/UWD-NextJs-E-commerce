@@ -43,9 +43,9 @@ export default function AccountPage() {
     name: "Karim Emad",
     email: "karim.emad@gmail.com",
     avatar: "/placeholder.svg?height=100&width=100",
-    joinDate: "May 2022",
+    joinDate: "May 2025",
     totalOrders: 7,
-    totalSpent: 32450.75,
+    totalSpent: 3150,
   }
 
   const recentOrders = [

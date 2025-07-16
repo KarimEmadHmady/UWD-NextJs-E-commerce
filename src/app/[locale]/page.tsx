@@ -7,6 +7,10 @@ import ProductListItem from '@/components/shop/product-list-item';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import RevealOnScroll from '@/components/common/RevealOnScroll';
+import { useMemo } from "react";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
 
 /**
  * HomePage component - Main landing page for the e-commerce site.
@@ -17,6 +21,25 @@ export default function HomePage() {
   const products = productsData;
   const viewMode = 'grid'; // or make it dynamic if needed
   const router = useRouter();
+
+  // Create two different shuffled sets for the two sliders
+  const shuffledProducts1 = useMemo(() => {
+    const arr = [...products];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.slice(0, 8);
+  }, [products]);
+  const shuffledProducts2 = useMemo(() => {
+    const arr = [...products];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.slice(0, 8);
+  }, [products]);
+
   return (
     <>
       {/* hero */}
@@ -66,9 +89,17 @@ export default function HomePage() {
           </RevealOnScroll>
           <RevealOnScroll delay={0.5}>
           <div className="p-4">
-            {viewMode === "grid" ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-                {products.map((product) => {
+            {/* Mobile: Swiper Sliders */}
+            <div className="block sm:hidden space-y-6">
+              <Swiper
+                modules={[Autoplay]}
+                spaceBetween={16}
+                slidesPerView={2}
+                loop={shuffledProducts1.length > 2}
+                autoplay={{ delay: 2500, disableOnInteraction: false }}
+                style={{ paddingBottom: 0 }}
+              >
+                {shuffledProducts1.map((product) => {
                   const localProduct = {
                     ...product,
                     image: product.image,
@@ -78,12 +109,26 @@ export default function HomePage() {
                     isSale: product.isSale,
                     discount: product.discount,
                   };
-                  return <ShopProductCard key={product.id} product={localProduct} />;
+                  return (
+                    <SwiperSlide key={product.id} className="bg-white rounded-2xl">
+                      {viewMode === "grid" ? (
+                        <ShopProductCard product={localProduct} />
+                      ) : (
+                        <ProductListItem product={localProduct} />
+                      )}
+                    </SwiperSlide>
+                  );
                 })}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {products.map((product) => {
+              </Swiper>
+              <Swiper
+                modules={[Autoplay]}
+                spaceBetween={16}
+                slidesPerView={2}
+                loop={shuffledProducts2.length > 2}
+                autoplay={{ delay: 4000, disableOnInteraction: false }}
+                style={{ paddingBottom: 0 }}
+              >
+                {shuffledProducts2.map((product) => {
                   const localProduct = {
                     ...product,
                     image: product.image,
@@ -93,10 +138,52 @@ export default function HomePage() {
                     isSale: product.isSale,
                     discount: product.discount,
                   };
-                  return <ProductListItem key={product.id} product={localProduct} />;
+                  return (
+                    <SwiperSlide key={product.id} className="bg-white rounded-2xl">
+                      {viewMode === "grid" ? (
+                        <ShopProductCard product={localProduct} />
+                      ) : (
+                        <ProductListItem product={localProduct} />
+                      )}
+                    </SwiperSlide>
+                  );
                 })}
-              </div>
-            )}
+              </Swiper>
+            </div>
+            {/* Desktop: Grid/List */}
+            <div className="hidden sm:block">
+              {viewMode === "grid" ? (
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+                  {shuffledProducts1.map((product) => {
+                    const localProduct = {
+                      ...product,
+                      image: product.image,
+                      reviews: product.reviews,
+                      inStock: product.inStock,
+                      isNew: product.isNew,
+                      isSale: product.isSale,
+                      discount: product.discount,
+                    };
+                    return <ShopProductCard key={product.id} product={localProduct} />;
+                  })}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {shuffledProducts1.map((product) => {
+                    const localProduct = {
+                      ...product,
+                      image: product.image,
+                      reviews: product.reviews,
+                      inStock: product.inStock,
+                      isNew: product.isNew,
+                      isSale: product.isSale,
+                      discount: product.discount,
+                    };
+                    return <ProductListItem key={product.id} product={localProduct} />;
+                  })}
+                </div>
+              )}
+            </div>
           </div>
           </RevealOnScroll>
         </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "../common/Button/Button"
@@ -23,20 +23,37 @@ export default function CategorySection() {
   const categoriesToShow = reduxCategories && reduxCategories.length > 0 ? reduxCategories : categories;
   const [scrollPosition, setScrollPosition] = useState(0)
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => {
-    const container = document.getElementById("categories-container")
+    const container = containerRef.current;
     if (container) {
-      container.scrollBy({ left: -200, behavior: "smooth" })
+      container.scrollBy({ left: -200, behavior: "smooth" });
     }
-  }
+  };
 
   const scrollRight = () => {
-    const container = document.getElementById("categories-container")
+    const container = containerRef.current;
     if (container) {
-      container.scrollBy({ left: 200, behavior: "smooth" })
+      container.scrollBy({ left: 200, behavior: "smooth" });
     }
-  }
+  };
+
+  // Auto-scroll every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const container = containerRef.current;
+      if (container) {
+        // If at end, scroll back to start
+        if (container.scrollLeft + container.offsetWidth >= container.scrollWidth - 10) {
+          container.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          container.scrollBy({ left: 200, behavior: "smooth" });
+        }
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="w-full bg-white border-b border-gray-100">
@@ -75,6 +92,7 @@ export default function CategorySection() {
         <div className="relative w-full">
           <div
             id="categories-container"
+            ref={containerRef}
             className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 w-full"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >

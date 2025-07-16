@@ -78,11 +78,15 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
 
   return (
     <Link
-      href={`/product/${product.id}`}
-      className={`group relative bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1  ${isInWishlist ? "border-red-400 ring-2 ring-red-300 bg-red-50/40" : "border-gray-200"}  `}
-    >
-      <div className="relative aspect-square bg-gray-50 overflow-hidden">
-        {isImgLoading && (
+      href={`/product/${product.id}`} 
+      className={`group relative bg-white shadow-sm rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+        isInWishlist
+          ? "lg:border-red-400 lg:ring-2 lg:ring-red-300 lg:bg-red-50/40"
+          : "lg:border-gray-200"
+      }`}
+          >
+<div className="relative aspect-square bg-gray-50 overflow-hidden rounded-t-[10px] rounded-b-none">
+{isImgLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse z-10">
             <div className="w-10 h-10 rounded-full border-4 border-b-2 border-gray-300 animate-spin" />
           </div>
@@ -115,7 +119,7 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
           <Button
             variant="secondary"
             size="icon"
-            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg"
+            className="w-8 h-8 sm:w-10  sm:h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg"
             onClick={handleWishlist}
           >
             <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isInWishlist ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
@@ -133,13 +137,13 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
         {/* Add to Cart - Icon Only on Mobile */}
         {product.inStock && (
           <button
-            className="absolute bottom-2 right-2 z-20 bg-pink-600 text-white rounded-full p-2 shadow-lg sm:hidden cursor-pointer"
+            className="absolute bottom-2 right-3.5 z-20 bg-pink-600 text-white rounded-full p-[8px] shadow-lg sm:hidden cursor-pointer"
             onClick={handleAddToCart}
             disabled={isAdding}
             aria-label="Add to Cart"
             type="button"
           >
-            <ShoppingCart className="w-5 h-5" />
+            <ShoppingCart className="w-4 h-4" />
           </button>
         )}
 
