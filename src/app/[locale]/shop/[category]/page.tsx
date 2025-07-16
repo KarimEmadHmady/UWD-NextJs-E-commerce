@@ -1,19 +1,18 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { products as productsData } from '@/components/product/product-data';
 import { categories } from '@/components/product/category-data';
 import ProductListItem from '@/components/shop/product-list-item';
 import ShopProductCard from '@/components/product/ShopProductCard/ShopProductCard';
 import FilterSidebar from '@/components/shop/filter-sidebar';
 import ProductSort from '@/components/shop/product-sort';
-import Pagination from '@/components/shop/pagination';
 import RevealOnScroll from '@/components/common/RevealOnScroll';
 import { useFilter } from '@/hooks/useFilter';
 import { notFound } from 'next/navigation';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 import { Home } from 'lucide-react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const normalize = (str: string) => str.replace(/\s+/g, '-').toLowerCase();
 
@@ -29,7 +28,7 @@ export default function CategoryPage({ params }: { params: { category: string; l
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(9);
   const { selectedQuantities, selectedSizes, selectedBrands, priceRange } = useFilter();
 
   let filteredProducts = products.filter((item) => {
@@ -58,15 +57,9 @@ export default function CategoryPage({ params }: { params: { category: string; l
     }
   });
 
-  const pageSize = 9;
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
-  const totalProducts = filteredProducts.length;
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(1);
-    }
-  }, [currentPage, totalPages]);
-  const paginatedProducts = filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const hasMore = visibleCount < filteredProducts.length;
+  const loadMore = () => setVisibleCount((prev) => prev + 9);
+  const productsToShow = filteredProducts.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,7 +105,7 @@ export default function CategoryPage({ params }: { params: { category: string; l
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
                 onFilterToggle={() => setIsFilterOpen(true)}
-                totalProducts={totalProducts}
+                totalProducts={filteredProducts.length}
                 sortBy={sortBy}
                 setSortBy={setSortBy}
               />
@@ -120,42 +113,47 @@ export default function CategoryPage({ params }: { params: { category: string; l
             <RevealOnScroll delay={0.4}>
               {/* Products Grid/List */}
               <div className="p-4">
-                {viewMode === "grid" ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-                    {paginatedProducts.map((product) => {
-                      const localProduct = {
-                        ...product,
-                        image: product.image,
-                        reviews: product.reviews,
-                        inStock: product.inStock,
-                        isNew: product.isNew,
-                        isSale: product.isSale,
-                        discount: product.discount,
-                      };
-                      return <ShopProductCard key={product.id} product={localProduct} />;
-                    })}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {paginatedProducts.map((product) => {
-                      const localProduct = {
-                        ...product,
-                        image: product.image,
-                        reviews: product.reviews,
-                        inStock: product.inStock,
-                        isNew: product.isNew,
-                        isSale: product.isSale,
-                        discount: product.discount,
-                      };
-                      return <ProductListItem key={product.id} product={localProduct} />;
-                    })}
-                  </div>
-                )}
+                <InfiniteScroll
+                  dataLength={productsToShow.length}
+                  next={loadMore}
+                  hasMore={hasMore}
+                  loader={<div className="text-center py-4 text-gray-400">Loading...</div>}
+                  endMessage={<div className="text-center py-4 text-gray-400">No more products</div>}
+                  scrollableTarget={null}
+                >
+                  {viewMode === "grid" ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                      {productsToShow.map((product) => {
+                        const localProduct = {
+                          ...product,
+                          image: product.image,
+                          reviews: product.reviews,
+                          inStock: product.inStock,
+                          isNew: product.isNew,
+                          isSale: product.isSale,
+                          discount: product.discount,
+                        };
+                        return <ShopProductCard key={product.id} product={localProduct} />;
+                      })}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {productsToShow.map((product) => {
+                        const localProduct = {
+                          ...product,
+                          image: product.image,
+                          reviews: product.reviews,
+                          inStock: product.inStock,
+                          isNew: product.isNew,
+                          isSale: product.isSale,
+                          discount: product.discount,
+                        };
+                        return <ProductListItem key={product.id} product={localProduct} />;
+                      })}
+                    </div>
+                  )}
+                </InfiniteScroll>
               </div>
-            </RevealOnScroll>
-            <RevealOnScroll delay={0.5}>
-              {/* Pagination */}
-              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </RevealOnScroll>
           </div>
         </div>

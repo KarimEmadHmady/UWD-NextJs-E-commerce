@@ -5,7 +5,6 @@ import { Search, Home, ChevronRight } from "lucide-react"
 import FilterSidebar from "@/components/shop/filter-sidebar"
 import ProductSort from "@/components/shop/product-sort"
 import ProductListItem from "@/components/shop/product-list-item"
-import Pagination from "@/components/shop/pagination"
 import ShopProductCard from "@/components/product/ShopProductCard/ShopProductCard"
 import { Button } from "@/components/common/Button/Button"
 import { Input } from "@/components/common/input/input"
@@ -21,10 +20,11 @@ import { useDispatch } from 'react-redux';
 import RevealOnScroll from '@/components/common/RevealOnScroll';
 import { categories } from '@/components/product/category-data';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 /**
- * ShopPage component - Displays all products with filtering, search, sorting, pagination, and grid/list view.
- * Handles product filtering, pagination, and wishlist toggling.
+ * ShopPage component - Displays all products with filtering, search, sorting, and grid/list view.
+ * Handles product filtering, and wishlist toggling.
  */
 export default function ShopPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -74,15 +74,10 @@ export default function ShopPage() {
     )
   }
 
-  const pageSize = 9; 
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
-  const totalProducts = filteredProducts.length;
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(1);
-    }
-  }, [currentPage, totalPages]);
-  const paginatedProducts = filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const [visibleCount, setVisibleCount] = useState(9);
+  const hasMore = visibleCount < filteredProducts.length;
+  const loadMore = () => setVisibleCount((prev) => prev + 9);
+  const productsToShow = filteredProducts.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -139,7 +134,7 @@ export default function ShopPage() {
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
                 onFilterToggle={() => setIsFilterOpen(true)}
-                totalProducts={totalProducts}
+                totalProducts={filteredProducts.length}
                 sortBy={sortBy}
                 setSortBy={setSortBy}
               />
@@ -160,42 +155,47 @@ export default function ShopPage() {
               </div>
               {/* Products Grid/List */}
               <div className="p-4">
-                {viewMode === "grid" ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-                    {paginatedProducts.map((product) => {
-                      const localProduct = {
-                        ...product,
-                        image: product.image,
-                        reviews: product.reviews,
-                        inStock: product.inStock,
-                        isNew: product.isNew,
-                        isSale: product.isSale,
-                        discount: product.discount,
-                      };
-                      return <ShopProductCard key={product.id} product={localProduct} />;
-                    })}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {paginatedProducts.map((product) => {
-                      const localProduct = {
-                        ...product,
-                        image: product.image,
-                        reviews: product.reviews,
-                        inStock: product.inStock,
-                        isNew: product.isNew,
-                        isSale: product.isSale,
-                        discount: product.discount,
-                      };
-                      return <ProductListItem key={product.id} product={localProduct} />;
-                    })}
-                  </div>
-                )}
+                <InfiniteScroll
+                  dataLength={productsToShow.length}
+                  next={loadMore}
+                  hasMore={hasMore}
+                  loader={<div className="text-center py-4 text-gray-400">Loading...</div>}
+                  endMessage={<div className="text-center py-4 text-gray-400">No more products</div>}
+                  scrollableTarget={null}
+                >
+                  {viewMode === "grid" ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                      {productsToShow.map((product) => {
+                        const localProduct = {
+                          ...product,
+                          image: product.image,
+                          reviews: product.reviews,
+                          inStock: product.inStock,
+                          isNew: product.isNew,
+                          isSale: product.isSale,
+                          discount: product.discount,
+                        };
+                        return <ShopProductCard key={product.id} product={localProduct} />;
+                      })}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {productsToShow.map((product) => {
+                        const localProduct = {
+                          ...product,
+                          image: product.image,
+                          reviews: product.reviews,
+                          inStock: product.inStock,
+                          isNew: product.isNew,
+                          isSale: product.isSale,
+                          discount: product.discount,
+                        };
+                        return <ProductListItem key={product.id} product={localProduct} />;
+                      })}
+                    </div>
+                  )}
+                </InfiniteScroll>
               </div>
-            </RevealOnScroll>
-            <RevealOnScroll delay={0.5}>
-              {/* Pagination */}
-              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </RevealOnScroll>
           </div>
         </div>

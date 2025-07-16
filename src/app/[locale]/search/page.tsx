@@ -18,6 +18,7 @@ import { products } from '@/components/product/product-data';
 import { Slider } from '@/components/common/slider/slider';
 import ShopProductCard from '@/components/product/ShopProductCard/ShopProductCard';
 import { categories } from '@/components/product/category-data';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
@@ -28,14 +29,12 @@ export default function SearchPage() {
   const [error, setError] = useState("");
   const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands } = useFilter();
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  // فلتر السعر
   const prices = products.map(p => p.price);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
   const [priceRange, setPriceRange] = useState<[number, number]>([minPrice, maxPrice]);
   // const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
-  // عند تغيير البحث، حدث النتائج
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -45,15 +44,12 @@ export default function SearchPage() {
     setSearchResults(filtered);
   };
 
-  // عند الضغط على X امسح البحث والنتائج
   const handleClearSearch = () => {
     setSearchQuery("");
     setSearchResults(products);
   };
 
-  // تم حذف بيانات البحث الثابتة، سيتم استخدام بيانات الريدكس
 
-  // احسب عدد المنتجات لكل كاتيجوري ديناميكياً من category-data
   const categoriesWithCount = categories.map(cat => ({
     ...cat,
     count: products.filter(p => p.category === cat.name).length,
@@ -62,7 +58,6 @@ export default function SearchPage() {
     categories: categoriesWithCount,
     quantities: ["1 piece", "6 pieces", "12 pieces", "500g", "1kg"],
     sizes: ["Small", "Medium", "Large"],
-    // brands: ["Sweet House", "Oriental Delights", "ChocoDream", "Bakery Fresh", "Tasty Bites"],
   }
 
   const formatPrice = (price: number) => {
@@ -81,7 +76,6 @@ export default function SearchPage() {
     ))
   }
 
-  // تحديث الفلاتر عند التغيير
   const handleCategoryToggle = (category: string) => {
     let updated = selectedCategories.includes(category)
       ? selectedCategories.filter((c) => c !== category)
@@ -123,6 +117,11 @@ export default function SearchPage() {
     });
     setSearchResults(filtered);
   }, [searchQuery, selectedCategories, selectedQuantities, selectedSizes, priceRange]);
+
+  const [visibleCount, setVisibleCount] = useState(9);
+  const hasMore = visibleCount < searchResults.length;
+  const loadMore = () => setVisibleCount((prev) => prev + 9);
+  const productsToShow = searchResults.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -208,7 +207,6 @@ export default function SearchPage() {
           )}
         </div>
 
-        {/* حالة التحميل أو الخطأ */}
         {loading && <div className="text-center py-4">Loading search results...</div>}
         {error && <div className="text-center py-4 text-red-500">{error}</div>}
 
@@ -301,11 +299,20 @@ export default function SearchPage() {
 
           {/* Search Results */}
           <div className="flex-1">
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {searchResults.map((product) => (
-                <ShopProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <InfiniteScroll
+              dataLength={productsToShow.length}
+              next={loadMore}
+              hasMore={hasMore}
+              loader={<div className="text-center py-4 text-gray-600">Loading...</div>}
+              endMessage={<div className="text-center py-4 text-gray-400">No more products</div>}
+              scrollableTarget={null}
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                {productsToShow.map((product) => (
+                  <ShopProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </InfiniteScroll>
 
             {/* No Results */}
             {searchResults.length === 0 && (
