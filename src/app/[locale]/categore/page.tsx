@@ -3,6 +3,7 @@ import React from 'react'
 import Image from 'next/image'
 import RevealOnScroll from '@/components/common/RevealOnScroll'
 import { categories } from '@/components/product/category-data'
+import Link from 'next/link';
 
 export default function Categore() {
   return (
@@ -23,9 +24,9 @@ export default function Categore() {
         <div className="container mx-auto px-4 py-16 lg:px-8 lg:py-32 xl:max-w-7xl">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             {categories.map((cat, idx) => (
-              <a
+              <Link
                 key={cat.id}
-                href="#"
+                href={`/shop/${cat.name.replace(/\s+/g, '-').toLowerCase()}`}
                 className={`group relative block overflow-hidden transition ease-out active:opacity-75 ${idx % 5 === 0 ? 'sm:col-span-2 md:col-span-1' : ''}`}
               >
                 <Image
@@ -41,7 +42,7 @@ export default function Categore() {
                     {cat.name}
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>

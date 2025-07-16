@@ -15,9 +15,10 @@ import { products } from '@/components/product/product-data';
 interface FilterSidebarProps {
   isOpen: boolean
   onClose: () => void
+  hideCategories?: boolean
 }
 
-export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
+export default function FilterSidebar({ isOpen, onClose, hideCategories = false }: FilterSidebarProps) {
   const dispatch = useDispatch();
   const { selectedCategories, selectedSizes, selectedQuantities, priceRange } = useFilter();
   // احسب عدد المنتجات لكل كاتيجوري ديناميكياً
@@ -123,26 +124,28 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
           </div>
 
           {/* Categories */}
-          <div className="space-y-4">
-            <h3 className="font-medium text-gray-900">Categories</h3>
-            <div className="space-y-3">
-              {categoriesWithCount.map((category) => (
-                <div key={category.id} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id={category.name}
-                      checked={selectedCategories.includes(category.name)}
-                      onCheckedChange={() => toggleCategory(category.name)}
-                    />
-                    <label htmlFor={category.name} className="text-sm text-gray-700 cursor-pointer">
-                      {category.name}
-                    </label>
+          {!hideCategories && (
+            <div className="space-y-4">
+              <h3 className="font-medium text-gray-900">Categories</h3>
+              <div className="space-y-3">
+                {categoriesWithCount.map((category) => (
+                  <div key={category.id} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id={category.name}
+                        checked={selectedCategories.includes(category.name)}
+                        onCheckedChange={() => toggleCategory(category.name)}
+                      />
+                      <label htmlFor={category.name} className="text-sm text-gray-700 cursor-pointer">
+                        {category.name}
+                      </label>
+                    </div>
+                    <span className="text-xs text-gray-500">({category.count})</span>
                   </div>
-                  <span className="text-xs text-gray-500">({category.count})</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Size */}
           <div className="space-y-4">

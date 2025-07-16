@@ -1,51 +1,43 @@
 "use client"
 
-import { useState } from "react"
-import { Search, Home, ChevronRight } from "lucide-react"
-import FilterSidebar from "@/components/shop/filter-sidebar"
-import ProductSort from "@/components/shop/product-sort"
-import ProductListItem from "@/components/shop/product-list-item"
-import Pagination from "@/components/shop/pagination"
-import ShopProductCard from "@/components/product/ShopProductCard/ShopProductCard"
-import { Button } from "@/components/common/Button/Button"
-import { Input } from "@/components/common/input/input"
-import { products as productsData } from "@/components/product/product-data"
-import { Toaster } from "sonner"
-import Link from "next/link"
-import { useGlobalLoading } from '@/hooks/useGlobalLoading';
-import { useProducts } from '@/hooks/useProducts';
-import { useEffect } from 'react';
-import { useFilter } from '@/hooks/useFilter';
-import { setCategories, setQuantities, setSizes, setBrands, clearFilters } from '@/redux/features/filter/filterSlice';
-import { useDispatch } from 'react-redux';
-import RevealOnScroll from '@/components/common/RevealOnScroll';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { products as productsData } from '@/components/product/product-data';
 import { categories } from '@/components/product/category-data';
+import ProductListItem from '@/components/shop/product-list-item';
+import ShopProductCard from '@/components/product/ShopProductCard/ShopProductCard';
+import FilterSidebar from '@/components/shop/filter-sidebar';
+import ProductSort from '@/components/shop/product-sort';
+import Pagination from '@/components/shop/pagination';
+import RevealOnScroll from '@/components/common/RevealOnScroll';
+import { useFilter } from '@/hooks/useFilter';
+import { notFound } from 'next/navigation';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
+import { Home } from 'lucide-react';
 
-/**
- * ShopPage component - Displays all products with filtering, search, sorting, pagination, and grid/list view.
- * Handles product filtering, pagination, and wishlist toggling.
- */
-export default function ShopPage() {
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [wishlist, setWishlist] = useState<number[]>([])
-  const [sortBy, setSortBy] = useState("featured");
-  const { start, stop } = useGlobalLoading();
-  const products = productsData;
-  const dispatch = useDispatch();
-  const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands, priceRange } = useFilter();
+const normalize = (str: string) => str.replace(/\s+/g, '-').toLowerCase();
+
+export default function CategoryPage({ params }: { params: { category: string; locale: string } }) {
+  const { category } = params;
+  const catObj = categories.find((cat) => normalize(cat.name) === normalize(category));
+  if (!catObj) return notFound();
+
+  // Filter products by category
+  const products = productsData.filter((p) => normalize(p.category) === normalize(category));
+
+  // Filter logic (reuse shop logic)
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState('featured');
+  const [currentPage, setCurrentPage] = useState(1);
+  const { selectedQuantities, selectedSizes, selectedBrands, priceRange } = useFilter();
 
   let filteredProducts = products.filter((item) => {
-    const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
-    const matchesCategory = selectedCategories.length > 0 ? selectedCategories.includes(item.category) : true;
     const matchesPrice = priceRange && priceRange.length === 2 ? (item.price >= priceRange[0] && item.price <= priceRange[1]) : true;
     const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
     const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
     const matchesBrand = selectedBrands.length > 0 ? selectedBrands.some(b => item.name.toLowerCase().includes(b.toLowerCase())) : true;
-    return matchesQuery && matchesCategory && matchesPrice && matchesQuantity && matchesSize && matchesBrand;
+    return matchesPrice && matchesQuantity && matchesSize && matchesBrand;
   });
 
   // Apply sorting
@@ -66,15 +58,7 @@ export default function ShopPage() {
     }
   });
 
-  const toggleWishlist = (productId: number) => {
-    setWishlist((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId]
-    )
-  }
-
-  const pageSize = 9; 
+  const pageSize = 9;
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
   const totalProducts = filteredProducts.length;
   useEffect(() => {
@@ -93,8 +77,8 @@ export default function ShopPage() {
             <Breadcrumbs
               items={[
                 { label: 'Home', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
-                { label: 'Sweets', href: '/shop', },
-                { label: 'All Sweets' }
+                { label: 'Sweets', href: '/shop' },
+                { label: catObj.name }
               ]}
             />
           </div>
@@ -106,22 +90,11 @@ export default function ShopPage() {
           <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="text-center mb-8">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Shop All Sweets
+                {catObj.name}
               </h1>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Discover our complete collection of delicious sweets, cakes, pastries, and more. Perfect for every occasion!
+                {catObj.description}
               </p>
-            </div>
-            {/* Search Bar */}
-            <div className="max-w-md mx-auto relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
-                type="text"
-                placeholder="Search sweets..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 text-black pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              />
             </div>
           </div>
         </div>
@@ -130,7 +103,7 @@ export default function ShopPage() {
         <div className="flex">
           <RevealOnScroll delay={0.2}>
             {/* Filter Sidebar */}
-            <FilterSidebar isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} />
+            <FilterSidebar isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} hideCategories={true} />
           </RevealOnScroll>
           <div className="flex-1 min-w-0">
             <RevealOnScroll delay={0.3}>
@@ -145,19 +118,6 @@ export default function ShopPage() {
               />
             </RevealOnScroll>
             <RevealOnScroll delay={0.4}>
-              {/* Add this section at the top of the main shop page, before the product grid */}
-              <div className="mb-8 grid grid-cols-2 md:grid-cols-5 gap-4">
-                {categories.map((cat) => (
-                  <Link
-                    key={cat.id}
-                    href={`/shop/${cat.name.replace(/\s+/g, '-').toLowerCase()}`}
-                    className="block border rounded-lg p-2 text-center hover:shadow-md transition hover:scale-[1.05]"
-                  >
-                    <img src={cat.image} alt={cat.name} className="w-full h-20 object-cover rounded mb-2" />
-                    <span className="font-semibold text-black">{cat.name}</span>
-                  </Link>
-                ))}
-              </div>
               {/* Products Grid/List */}
               <div className="p-4">
                 {viewMode === "grid" ? (
@@ -200,7 +160,6 @@ export default function ShopPage() {
           </div>
         </div>
       </div>
-      <Toaster position="top-center" richColors />
     </div>
   );
-}
+} 

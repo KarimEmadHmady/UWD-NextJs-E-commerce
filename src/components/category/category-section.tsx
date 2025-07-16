@@ -81,7 +81,10 @@ export default function CategorySection() {
             {categoriesToShow.map((category) => (
               <div
                 key={category.id}
-                onClick={() => setSelectedCategory(category.id.toString())}
+                onClick={() => {
+                  setSelectedCategory(category.id.toString());
+                  router.push(`/shop/${category.name.replace(/\s+/g, '-').toLowerCase()}`);
+                }}
                 className={
                   `flex-shrink-0 group cursor-pointer transition-all duration-200 ` +
                   (selectedCategory === category.id.toString() ? "scale-105" : "hover:scale-105")
