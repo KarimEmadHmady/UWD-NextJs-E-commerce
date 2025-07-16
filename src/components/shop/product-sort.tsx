@@ -10,10 +10,11 @@ interface ProductSortProps {
   onViewModeChange: (mode: "grid" | "list") => void
   onFilterToggle: () => void
   totalProducts: number
+  sortBy: string
+  setSortBy: (value: string) => void
 }
 
-export default function ProductSort({ viewMode, onViewModeChange, onFilterToggle, totalProducts }: ProductSortProps) {
-  const [sortBy, setSortBy] = useState("featured")
+export default function ProductSort({ viewMode, onViewModeChange, onFilterToggle, totalProducts, sortBy, setSortBy }: ProductSortProps) {
 
   const sortOptions = [
     { value: "featured", label: "Featured" },

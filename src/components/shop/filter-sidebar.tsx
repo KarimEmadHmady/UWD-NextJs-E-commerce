@@ -8,7 +8,9 @@ import { Badge } from "../common/Badge/Badge"
 import { Star, X, Filter } from "lucide-react"
 import { useDispatch } from 'react-redux';
 import { useFilter } from '../../hooks/useFilter';
-import { setCategories, setSizes, setQuantities, clearFilters } from '../../redux/features/filter/filterSlice';
+import { setCategories, setSizes, setQuantities, setPriceRange, clearFilters } from '../../redux/features/filter/filterSlice';
+import { categories } from '@/components/product/category-data';
+import { products } from '@/components/product/product-data';
 
 interface FilterSidebarProps {
   isOpen: boolean
@@ -17,32 +19,29 @@ interface FilterSidebarProps {
 
 export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
   const dispatch = useDispatch();
-  const { selectedCategories, selectedSizes, selectedQuantities } = useFilter();
-  const [priceRange, setPriceRange] = useState([0, 5000])
+  const { selectedCategories, selectedSizes, selectedQuantities, priceRange } = useFilter();
+  // احسب عدد المنتجات لكل كاتيجوري ديناميكياً
+  const categoriesWithCount = categories.map(cat => ({
+    ...cat,
+    count: products.filter(p => p.category === cat.name).length,
+  }));
+
+  // فلتر السعر من المنتجات
+  const prices = products.map(p => p.price);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [inStockOnly, setInStockOnly] = useState(false)
-
-  const categories = [
-    { id: "cakes", name: "Cakes", count: 18 },
-    { id: "cheesecakes", name: "Cheesecakes", count: 12 },
-    { id: "oriental", name: "Oriental Sweets", count: 22 },
-    { id: "pastries", name: "Pastries", count: 15 },
-    { id: "cookies", name: "Cookies", count: 20 },
-    { id: "cupcakes", name: "Cupcakes", count: 10 },
-    { id: "tarts", name: "Tarts", count: 8 },
-    { id: "chocolates", name: "Chocolates", count: 14 },
-    { id: "pies", name: "Pies", count: 7 },
-    { id: "icecream", name: "Ice Cream", count: 9 },
-  ];
 
   const sizeOptions = ["Small", "Medium", "Large"];
   const pieceOptions = ["1 piece", "6 pieces", "12 pieces", "24 pieces"];
 
   // استخدم Redux بدلاً من useState
-  const toggleCategory = (categoryId: string) => {
-    let updated = selectedCategories.includes(categoryId)
-      ? selectedCategories.filter((id) => id !== categoryId)
-      : [...selectedCategories, categoryId];
+  const toggleCategory = (categoryName: string) => {
+    let updated = selectedCategories.includes(categoryName)
+      ? selectedCategories.filter((name) => name !== categoryName)
+      : [...selectedCategories, categoryName];
     dispatch(setCategories(updated));
   };
 
@@ -61,7 +60,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
   };
 
   const clearAllFilters = () => {
-    setPriceRange([0, 5000]);
+    dispatch(setPriceRange([minPrice, maxPrice]));
     setSelectedRating(null);
     setInStockOnly(false);
     dispatch(clearFilters());
@@ -110,10 +109,10 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
             <div className="px-2">
               <Slider
                 value={priceRange}
-                onValueChange={setPriceRange}
-                max={5000}
-                min={0}
-                step={50}
+                onValueChange={(val) => dispatch(setPriceRange([val[0], val[1]]))}
+                max={maxPrice}
+                min={minPrice}
+                step={10}
                 className="w-full"
               />
               <div className="flex justify-between text-sm text-gray-600 mt-2">
@@ -127,15 +126,15 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
           <div className="space-y-4">
             <h3 className="font-medium text-gray-900">Categories</h3>
             <div className="space-y-3">
-              {categories.map((category) => (
+              {categoriesWithCount.map((category) => (
                 <div key={category.id} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <Checkbox
-                      id={category.id}
-                      checked={selectedCategories.includes(category.id)}
-                      onCheckedChange={() => toggleCategory(category.id)}
+                      id={category.name}
+                      checked={selectedCategories.includes(category.name)}
+                      onCheckedChange={() => toggleCategory(category.name)}
                     />
-                    <label htmlFor={category.id} className="text-sm text-gray-700 cursor-pointer">
+                    <label htmlFor={category.name} className="text-sm text-gray-700 cursor-pointer">
                       {category.name}
                     </label>
                   </div>

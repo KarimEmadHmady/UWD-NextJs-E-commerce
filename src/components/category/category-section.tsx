@@ -5,6 +5,8 @@ import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "../common/Button/Button"
 import { useCategory } from '../../hooks/useCategory';
+import { categories } from '@/components/product/category-data';
+import { products } from '@/components/product/product-data';
 import { useRouter } from 'next/navigation';
 
 interface Category {
@@ -14,79 +16,6 @@ interface Category {
   productCount: number
   color: string
 }
-
-const categories: Category[] = [
-  {
-    id: 1,
-    name: "Cakes",
-    image: "https://images.unsplash.com/photo-1590251786954-cf189e67d0bd?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    productCount: 18,
-    color: "bg-gray-100",
-  },
-  {
-    id: 2,
-    name: "Cheesecakes",
-    image: "https://images.unsplash.com/photo-1657679358567-c01939c7ad42?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    productCount: 12,
-    color: "bg-gray-100",
-  },
-  {
-    id: 3,
-    name: "Oriental Sweets",
-    image: "https://images.unsplash.com/photo-1559656914-a30970c1affd?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    productCount: 22,
-    color: "bg-gray-100",
-  },
-  {
-    id: 4,
-    name: "Pastries",
-    image: "https://images.unsplash.com/photo-1533910534207-90f31029a78e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    productCount: 15,
-    color: "bg-gray-100",
-  },
-  {
-    id: 5,
-    name: "Cookies",
-    image: "https://images.unsplash.com/photo-1657679358567-c01939c7ad42?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    productCount: 20,
-    color: "bg-gray-100",
-  },
-  {
-    id: 6,
-    name: "Cupcakes",
-    image: "https://images.unsplash.com/photo-1590251786954-cf189e67d0bd?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    productCount: 10,
-    color: "bg-gray-100",
-  },
-  {
-    id: 7,
-    name: "Tarts",
-    image: "https://images.unsplash.com/photo-1559656914-a30970c1affd?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    productCount: 8,
-    color: "bg-gray-100",
-  },
-  {
-    id: 8,
-    name: "Chocolates",
-    image: "https://images.unsplash.com/photo-1533910534207-90f31029a78e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    productCount: 14,
-    color: "bg-gray-100",
-  },
-  {
-    id: 9,
-    name: "Pies",
-    image: "https://images.unsplash.com/photo-1657679358567-c01939c7ad42?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    productCount: 7,
-    color: "bg-gray-100",
-  },
-  {
-    id: 10,
-    name: "Ice Cream",
-    image: "https://images.unsplash.com/photo-1619286311276-d8343d00ce1f?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    productCount: 9,
-    color: "bg-gray-100",
-  },
-]
 
 export default function CategorySection() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -178,7 +107,7 @@ export default function CategorySection() {
                   {/* Category Info */}
                   <div className="text-center">
                     <h3 className="text-xs font-medium text-gray-900 truncate max-w-[70px]">{category.name}</h3>
-                    <p className="text-xs text-gray-500">{category.productCount} items</p>
+                    <p className="text-xs text-gray-500">{products.filter(p => p.category === category.name).length} items</p>
                   </div>
                 </div>
               </div>

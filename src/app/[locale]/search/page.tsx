@@ -8,111 +8,61 @@ import { Input } from "@/components/common/input/input"
 import { Card, CardContent } from "@/components/common/card/card"
 import { Badge } from "@/components/common/Badge/Badge"
 import { Checkbox } from "@/components/common/checkbox/checkbox"
-import { useSearch } from '@/hooks/useSearch';
+// import { useSearch } from '@/hooks/useSearch';
 import { useFilter } from '@/hooks/useFilter';
 import { setCategories, setQuantities, setSizes, setBrands, clearFilters } from '@/redux/features/filter/filterSlice';
 import { useDispatch } from 'react-redux';
-import { setSearchQuery, fetchSearchSuccess } from '@/redux/features/search/searchSlice';
+// import { setSearchQuery, fetchSearchSuccess } from '@/redux/features/search/searchSlice';
 import { useEffect } from 'react';
+import { products } from '@/components/product/product-data';
+import { Slider } from '@/components/common/slider/slider';
+import ShopProductCard from '@/components/product/ShopProductCard/ShopProductCard';
+import { categories } from '@/components/product/category-data';
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
   const dispatch = useDispatch();
-  const { query: searchQuery, results: searchResults, loading, error } = useSearch();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState(products);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands } = useFilter();
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  // فلتر السعر
+  const prices = products.map(p => p.price);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  const [priceRange, setPriceRange] = useState<[number, number]>([minPrice, maxPrice]);
   // const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
-  // Sweet shop dummy data (English)
-  const dummyResults = [
-    {
-      id: '1',
-      name: "Chocolate Cake",
-      price: 150,
-      originalPrice: 180,
-      image: "https://images.unsplash.com/photo-1590251786954-cf189e67d0bd?q=80&w=1074&auto=format&fit=crop",
-      rating: 4.9,
-      reviews: 87,
-      category: "Cakes",
-      description: "Rich and moist chocolate cake topped with creamy chocolate ganache.",
-      isNew: true,
-      isSale: true,
-    },
-    {
-      id: '2',
-      name: "Baklava Mix",
-      price: 120,
-      image: "https://images.unsplash.com/photo-1559656914-a30970c1affd?q=80&w=687&auto=format&fit=crop",
-      rating: 4.8,
-      reviews: 54,
-      category: "Oriental Sweets",
-      description: "Assorted baklava with pistachio and walnut, made fresh daily.",
-      isNew: false,
-      isSale: false,
-    },
-    {
-      id: '3',
-      name: "Mini Cupcakes Box (12 pcs)",
-      price: 90,
-      originalPrice: 110,
-      image: "https://images.unsplash.com/photo-1590251786954-cf189e67d0bd?q=80&w=1074&auto=format&fit=crop",
-      rating: 4.7,
-      reviews: 33,
-      category: "Cupcakes",
-      description: "A box of 12 assorted mini cupcakes, perfect for parties.",
-      isNew: false,
-      isSale: true,
-    },
-    {
-      id: '4',
-      name: "Strawberry Tart",
-      price: 70,
-      image: "https://images.unsplash.com/photo-1533910534207-90f31029a78e?q=80&w=687&auto=format&fit=crop",
-      rating: 4.6,
-      reviews: 21,
-      category: "Tarts",
-      description: "Crispy tart filled with vanilla cream and fresh strawberries.",
-      isNew: true,
-      isSale: false,
-    },
-    {
-      id: '5',
-      name: "Assorted Cookies (500g)",
-      price: 60,
-      image: "https://images.unsplash.com/photo-1657679358567-c01939c7ad42?q=80&w=687&auto=format&fit=crop",
-      rating: 4.5,
-      reviews: 40,
-      category: "Cookies",
-      description: "A mix of butter, chocolate chip, and coconut cookies.",
-      isNew: false,
-      isSale: false,
-    },
-  ];
-
-  // عند تغيير البحث، حدث النتائج الوهمية
+  // عند تغيير البحث، حدث النتائج
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    dispatch(setSearchQuery(value));
-    // فلترة النتائج الوهمية بناءً على البحث
+    setSearchQuery(value);
     const filtered = value
-      ? dummyResults.filter((item) => item.name.toLowerCase().includes(value.toLowerCase()))
-      : dummyResults;
-    dispatch(fetchSearchSuccess(filtered));
+      ? products.filter((item) => item.name.toLowerCase().includes(value.toLowerCase()))
+      : products;
+    setSearchResults(filtered);
   };
 
   // عند الضغط على X امسح البحث والنتائج
   const handleClearSearch = () => {
-    dispatch(setSearchQuery(''));
-    dispatch(fetchSearchSuccess(dummyResults));
+    setSearchQuery("");
+    setSearchResults(products);
   };
 
   // تم حذف بيانات البحث الثابتة، سيتم استخدام بيانات الريدكس
 
+  // احسب عدد المنتجات لكل كاتيجوري ديناميكياً من category-data
+  const categoriesWithCount = categories.map(cat => ({
+    ...cat,
+    count: products.filter(p => p.category === cat.name).length,
+  }));
   const filters = {
-    categories: ["Cakes", "Cookies", "Tarts", "Cupcakes", "Oriental Sweets", "Chocolates"],
+    categories: categoriesWithCount,
     quantities: ["1 piece", "6 pieces", "12 pieces", "500g", "1kg"],
     sizes: ["Small", "Medium", "Large"],
-    brands: ["Sweet House", "Oriental Delights", "ChocoDream", "Bakery Fresh", "Tasty Bites"],
+    // brands: ["Sweet House", "Oriental Delights", "ChocoDream", "Bakery Fresh", "Tasty Bites"],
   }
 
   const formatPrice = (price: number) => {
@@ -163,16 +113,16 @@ export default function SearchPage() {
   const activeFiltersCount = selectedCategories.length + selectedQuantities.length + selectedSizes.length + selectedBrands.length;
 
   useEffect(() => {
-    let filtered = dummyResults.filter((item) => {
+    let filtered = products.filter((item) => {
       const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
       const matchesCategory = selectedCategories.length > 0 ? selectedCategories.includes(item.category) : true;
       const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
       const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
-      const matchesBrand = selectedBrands.length > 0 ? selectedBrands.some(b => item.name.toLowerCase().includes(b.toLowerCase())) : true;
-      return matchesQuery && matchesCategory && matchesQuantity && matchesSize && matchesBrand;
+      const matchesPrice = priceRange && priceRange.length === 2 ? (item.price >= priceRange[0] && item.price <= priceRange[1]) : true;
+      return matchesQuery && matchesCategory && matchesQuantity && matchesSize && matchesPrice;
     });
-    dispatch(fetchSearchSuccess(filtered));
-  }, [dispatch, searchQuery, selectedCategories, selectedQuantities, selectedSizes, selectedBrands]);
+    setSearchResults(filtered);
+  }, [searchQuery, selectedCategories, selectedQuantities, selectedSizes, priceRange]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -275,15 +225,16 @@ export default function SearchPage() {
                 <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
                 <div className="space-y-3">
                   {filters.categories.map((category) => (
-                    <div key={category} className="flex items-center space-x-3">
+                    <div key={category.name} className="flex items-center space-x-3">
                       <Checkbox
-                        id={category}
-                        checked={selectedCategories.includes(category)}
-                        onCheckedChange={() => handleCategoryToggle(category)}
+                        id={category.name}
+                        checked={selectedCategories.includes(category.name)}
+                        onCheckedChange={() => handleCategoryToggle(category.name)}
                       />
-                      <label htmlFor={category} className="text-sm text-gray-700 cursor-pointer">
-                        {category}
+                      <label htmlFor={category.name} className="text-sm text-gray-700 cursor-pointer">
+                        {category.name}
                       </label>
+                      <span className="text-xs text-gray-500">({category.count})</span>
                     </div>
                   ))}
                 </div>
@@ -329,20 +280,20 @@ export default function SearchPage() {
             </Card>
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Brand/Bakery</h3>
-                <div className="space-y-3">
-                  {filters.brands.map((brand) => (
-                    <div key={brand} className="flex items-center space-x-3">
-                      <Checkbox
-                        id={brand}
-                        checked={selectedBrands.includes(brand)}
-                        onCheckedChange={() => handleBrandToggle(brand)}
-                      />
-                      <label htmlFor={brand} className="text-sm text-gray-700 cursor-pointer">
-                        {brand}
-                      </label>
-                    </div>
-                  ))}
+                <h3 className="font-semibold text-gray-900 mb-4">Price Range</h3>
+                <div className="space-y-4">
+                  <Slider
+                    value={priceRange}
+                    onValueChange={(val) => setPriceRange([val[0], val[1]])}
+                    max={maxPrice}
+                    min={minPrice}
+                    step={10}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-sm text-gray-600 mt-2">
+                    <span>EGP {priceRange[0]}</span>
+                    <span>EGP {priceRange[1]}</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -350,65 +301,9 @@ export default function SearchPage() {
 
           {/* Search Results */}
           <div className="flex-1">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {searchResults.map((product) => (
-                <Card
-                  key={product.id}
-                  className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                >
-                  <CardContent className="p-0">
-                    {/* Product Image */}
-                    <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-t-lg">
-                      <img
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        className="w-full h-full object-cover p-0 group-hover:scale-105 transition-transform duration-300"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-
-                      {/* Badges */}
-                      <div className="absolute top-3 left-3 flex flex-col gap-2">
-                        {product.isNew && <Badge className="bg-green-500 text-white">New</Badge>}
-                        {product.isSale && <Badge className="bg-red-500 text-white">Sale</Badge>}
-                      </div>
-
-                      {/* Quick Actions */}
-                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <Button size="sm" variant="secondary" className="w-10 h-10 rounded-full p-0 shadow-lg">
-                          <Search className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="p-4 space-y-3">
-                      <p className="text-sm text-gray-500 font-medium">{product.category}</p>
-                      <h3 className="font-semibold text-gray-900 text-lg leading-tight line-clamp-2">{product.name}</h3>
-                      <p className="text-sm text-gray-600 line-clamp-2">{product.description}</p>
-
-                      {/* Rating */}
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center">{renderStars(product.rating ?? 0)}</div>
-                        <span className="text-sm text-gray-600">
-                          {product.rating} ({product.reviews})
-                        </span>
-                      </div>
-
-                      {/* Price */}
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl font-bold text-gray-900">{formatPrice(product.price)}</span>
-                        {typeof product.originalPrice === 'number' && (
-                          <span className="text-sm text-gray-400 line-through">
-                            {formatPrice(product.originalPrice)}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Add to Cart */}
-                      <Button className="w-full bg-pink-600 hover:bg-pink-700">Add to Cart</Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ShopProductCard key={product.id} product={product} />
               ))}
             </div>
 

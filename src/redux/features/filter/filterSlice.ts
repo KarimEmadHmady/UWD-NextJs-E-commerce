@@ -5,6 +5,7 @@ export interface FilterState {
   selectedQuantities: string[];
   selectedSizes: string[];
   selectedBrands: string[];
+  priceRange: [number, number];
   // يمكنك إضافة المزيد من الفلاتر هنا حسب الحاجة
 }
 
@@ -13,6 +14,7 @@ const initialState: FilterState = {
   selectedQuantities: [],
   selectedSizes: [],
   selectedBrands: [],
+  priceRange: [0, 5000],
 };
 
 const filterSlice = createSlice({
@@ -31,14 +33,18 @@ const filterSlice = createSlice({
     setBrands(state, action: PayloadAction<string[]>) {
       state.selectedBrands = action.payload;
     },
+    setPriceRange(state, action: PayloadAction<[number, number]>) {
+      state.priceRange = action.payload;
+    },
     clearFilters(state) {
       state.selectedCategories = [];
       state.selectedQuantities = [];
       state.selectedSizes = [];
       state.selectedBrands = [];
+      state.priceRange = [0, 5000];
     },
   },
 });
 
-export const { setCategories, setQuantities, setSizes, setBrands, clearFilters } = filterSlice.actions;
+export const { setCategories, setQuantities, setSizes, setBrands, setPriceRange, clearFilters } = filterSlice.actions;
 export default filterSlice.reducer; 

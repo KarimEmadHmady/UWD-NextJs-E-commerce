@@ -30,18 +30,38 @@ export default function ShopPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [wishlist, setWishlist] = useState<number[]>([])
+  const [sortBy, setSortBy] = useState("featured");
   const { start, stop } = useGlobalLoading();
   const products = productsData;
   const dispatch = useDispatch();
-  const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands } = useFilter();
+  const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands, priceRange } = useFilter();
 
-  const filteredProducts = products.filter((item) => {
+  let filteredProducts = products.filter((item) => {
     const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
     const matchesCategory = selectedCategories.length > 0 ? selectedCategories.includes(item.category) : true;
+    const matchesPrice = priceRange && priceRange.length === 2 ? (item.price >= priceRange[0] && item.price <= priceRange[1]) : true;
     const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
     const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
     const matchesBrand = selectedBrands.length > 0 ? selectedBrands.some(b => item.name.toLowerCase().includes(b.toLowerCase())) : true;
-    return matchesQuery && matchesCategory && matchesQuantity && matchesSize && matchesBrand;
+    return matchesQuery && matchesCategory && matchesPrice && matchesQuantity && matchesSize && matchesBrand;
+  });
+
+  // Apply sorting
+  filteredProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case "price-low":
+        return a.price - b.price;
+      case "price-high":
+        return b.price - a.price;
+      case "rating":
+        return (b.rating ?? 0) - (a.rating ?? 0);
+      case "name":
+        return a.name.localeCompare(b.name);
+      case "newest":
+        return b.id - a.id;
+      default:
+        return 0;
+    }
   });
 
   const toggleWishlist = (productId: number) => {
@@ -52,17 +72,14 @@ export default function ShopPage() {
     )
   }
 
-  // إعداد الباجيناشن الديناميكي
-  const pageSize = 9; // عدد المنتجات في كل صفحة
+  const pageSize = 9; 
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
   const totalProducts = filteredProducts.length;
-  // إذا الصفحة الحالية أكبر من عدد الصفحات المتاحة، أرجع لأول صفحة بها نتائج
   useEffect(() => {
     if (currentPage > totalPages) {
       setCurrentPage(1);
     }
   }, [currentPage, totalPages]);
-  // المنتجات المعروضة في الصفحة الحالية فقط
   const paginatedProducts = filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
@@ -121,6 +138,8 @@ export default function ShopPage() {
                 onViewModeChange={setViewMode}
                 onFilterToggle={() => setIsFilterOpen(true)}
                 totalProducts={totalProducts}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
               />
             </RevealOnScroll>
             <RevealOnScroll delay={0.4}>
