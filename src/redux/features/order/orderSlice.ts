@@ -24,6 +24,10 @@ const initialState: OrderState = {
   error: null,
 };
 
+/**
+ * orderSlice - Redux slice for managing orders state.
+ * Handles adding, setting, clearing orders, and error/loading state.
+ */
 const orderSlice = createSlice({
   name: 'order',
   initialState,

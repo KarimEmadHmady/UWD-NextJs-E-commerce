@@ -20,6 +20,10 @@ const initialState: CategoryState = {
   error: null,
 };
 
+/**
+ * categorySlice - Redux slice for managing product categories state.
+ * Handles fetching, loading, and error state for categories.
+ */
 const categorySlice = createSlice({
   name: 'category',
   initialState,

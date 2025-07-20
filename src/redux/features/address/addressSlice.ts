@@ -25,6 +25,10 @@ const initialState: AddressState = {
   error: null,
 };
 
+/**
+ * addressSlice - Redux slice for managing user addresses state.
+ * Handles adding, updating, deleting, setting default, and error/loading state for addresses.
+ */
 const addressSlice = createSlice({
   name: 'address',
   initialState,

@@ -11,12 +11,16 @@ import {
 } from '@/redux/features/wishlist/wishlistSelectors';
 import type { Product } from '@/types/common';
 
+/**
+ * Custom hook for managing the wishlist state and actions.
+ * Handles adding, removing, clearing wishlist, and syncing with localStorage.
+ */
 export const useWishlist = () => {
   const dispatch = useAppDispatch();
   const items = useAppSelector(selectWishlistItems);
   const count = useAppSelector(selectWishlistCount);
 
-  //  localStorage <-> Redux
+  // Sync wishlist items from localStorage to Redux on mount
   useEffect(() => {
     if (items.length === 0) {
       const stored = localStorage.getItem('wishlist_items');
@@ -34,6 +38,7 @@ export const useWishlist = () => {
     // eslint-disable-next-line
   }, []);
 
+  // Sync wishlist items from Redux to localStorage on change
   useEffect(() => {
     localStorage.setItem('wishlist_items', JSON.stringify(items));
   }, [items]);

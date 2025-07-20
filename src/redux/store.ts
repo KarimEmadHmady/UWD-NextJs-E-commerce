@@ -14,6 +14,10 @@ import checkoutReducer from './features/checkout/checkoutSlice';
 import orderReducer from './features/order/orderSlice';
 import addressReducer from './features/address/addressSlice';
 
+/**
+ * Redux store configuration for the e-commerce app.
+ * Combines all feature reducers into a single store.
+ */
 export const store = configureStore({
   reducer: {
     cart: cartReducer,

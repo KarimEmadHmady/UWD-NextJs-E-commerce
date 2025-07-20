@@ -4,6 +4,10 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setSearchQuery } from '../redux/features/search/searchSlice';
 
+/**
+ * Custom hook for managing search state and recent searches.
+ * Handles search query, results, loading, error, and syncing recent searches with localStorage.
+ */
 export const useSearch = () => {
   const query = useSelector(selectSearchQuery);
   const results = useSelector(selectSearchResults);
@@ -11,7 +15,7 @@ export const useSearch = () => {
   const error = useSelector(selectSearchError);
   const dispatch = useDispatch();
 
-  // localStorage عند تغيير query
+  // Sync recent searches to localStorage when query changes
   useEffect(() => {
     if (query && query.trim() !== '') {
       let history = [];

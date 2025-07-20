@@ -28,6 +28,10 @@ const initialState: SearchState = {
   error: null,
 };
 
+/**
+ * searchSlice - Redux slice for managing search state.
+ * Handles search query, results, loading, and error state.
+ */
 const searchSlice = createSlice({
   name: 'search',
   initialState,

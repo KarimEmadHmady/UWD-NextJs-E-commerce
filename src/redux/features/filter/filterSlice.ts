@@ -17,6 +17,10 @@ const initialState: FilterState = {
   priceRange: [0, 5000],
 };
 
+/**
+ * filterSlice - Redux slice for managing product filter state.
+ * Handles selected categories, quantities, sizes, brands, and price range.
+ */
 const filterSlice = createSlice({
   name: 'filter',
   initialState,

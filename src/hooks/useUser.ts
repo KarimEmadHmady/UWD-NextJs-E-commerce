@@ -2,6 +2,10 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { loginUser, fetchUser, logoutUser } from '@/redux/features/user/userSlice';
 import { selectUser, selectIsAuthenticated, selectUserLoading, selectUserError } from '@/redux/features/user/userSelectors';
 
+/**
+ * Custom hook for user authentication and user state management.
+ * Handles login, logout, fetch user, and provides user info and status.
+ */
 export const useUser = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);

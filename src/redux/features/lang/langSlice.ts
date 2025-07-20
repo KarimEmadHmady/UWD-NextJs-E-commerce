@@ -8,6 +8,9 @@ const initialState: LangState = {
   lang: 'en',
 };
 
+/**
+ * langSlice - Redux slice for managing language state (ar/en).
+ */
 const langSlice = createSlice({
   name: 'lang',
   initialState,

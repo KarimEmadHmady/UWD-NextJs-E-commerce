@@ -8,6 +8,10 @@ const initialState: GlobalLoadingState = {
   loading: false,
 };
 
+/**
+ * globalLoadingSlice - Redux slice for managing global loading state.
+ * Handles loading flag for showing/hiding global loading overlays.
+ */
 const globalLoadingSlice = createSlice({
   name: 'globalLoading',
   initialState,

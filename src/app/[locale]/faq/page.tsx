@@ -6,6 +6,10 @@ import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/common/accordion/accordion"
 
+/**
+ * FAQPage component - Displays frequently asked questions and answers for the e-commerce site.
+ * Provides a searchable list of common questions and support contact.
+ */
 export default function FAQPage() {
   const faqItems = [
     {

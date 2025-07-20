@@ -24,6 +24,10 @@ const initialState: CheckoutState = {
   review: null,
 };
 
+/**
+ * checkoutSlice - Redux slice for managing checkout process state.
+ * Handles address, shipping, payment, review, and clearing checkout state.
+ */
 const checkoutSlice = createSlice({
   name: 'checkout',
   initialState,

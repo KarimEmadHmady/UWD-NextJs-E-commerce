@@ -19,6 +19,10 @@ const initialState: CartState = {
   total: 0,
 };
 
+/**
+ * cartSlice - Redux slice for managing shopping cart state.
+ * Handles adding, removing, updating items, clearing cart, and toggling cart UI.
+ */
 const cartSlice = createSlice({
   name: 'cart',
   initialState,

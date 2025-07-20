@@ -24,6 +24,10 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
+/**
+ * productsSlice - Redux slice for managing products state.
+ * Handles fetching, loading, and error state for products.
+ */
 const productsSlice = createSlice({
   name: 'products',
   initialState,

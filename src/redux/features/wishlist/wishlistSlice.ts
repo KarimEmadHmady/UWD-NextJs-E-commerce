@@ -9,6 +9,10 @@ const initialState: WishlistState = {
   items: [],
 };
 
+/**
+ * wishlistSlice - Redux slice for managing wishlist state.
+ * Handles adding, removing, and clearing wishlist items.
+ */
 const wishlistSlice = createSlice({
   name: 'wishlist',
   initialState,

@@ -17,6 +17,10 @@ const initialState: NotificationState = {
   notifications: [],
 };
 
+/**
+ * notificationSlice - Redux slice for managing notifications state.
+ * Handles adding, removing, and clearing notifications.
+ */
 const notificationSlice = createSlice({
   name: 'notifications',
   initialState,

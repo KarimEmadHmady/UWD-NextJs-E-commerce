@@ -7,6 +7,10 @@ import {
   selectPriceRange,
 } from '../redux/features/filter/filterSelectors';
 
+/**
+ * Custom hook for accessing filter state from Redux.
+ * Provides selected categories, quantities, sizes, brands, and price range.
+ */
 export const useFilter = () => {
   const selectedCategories = useSelector(selectSelectedCategories);
   const selectedQuantities = useSelector(selectSelectedQuantities);

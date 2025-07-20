@@ -50,6 +50,10 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+/**
+ * userSlice - Redux slice for managing user authentication and user state.
+ * Handles login, logout, fetch user, and user info.
+ */
 const userSlice = createSlice({
   name: 'user',
   initialState,

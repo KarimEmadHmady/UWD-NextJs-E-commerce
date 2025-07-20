@@ -19,6 +19,10 @@ import {
 } from '@/redux/features/cart/cartSelectors';
 import type { CartItem, Product } from '@/types/common';
 
+/**
+ * Custom hook for managing the shopping cart state and actions.
+ * Handles adding, removing, updating items, syncing with localStorage, and toggling the cart UI.
+ */
 export const useCart = () => {
   const dispatch = useAppDispatch();
   
@@ -30,7 +34,7 @@ export const useCart = () => {
   const total = useAppSelector(selectCartTotal);
   const itemsCount = useAppSelector(selectCartItemsCount);
 
-  //  localStorage <-> Redux
+  // Sync cart items from localStorage to Redux on mount
   useEffect(() => {
     if (items.length === 0) {
       const stored = localStorage.getItem('cart_items');
@@ -48,6 +52,7 @@ export const useCart = () => {
     // eslint-disable-next-line
   }, []);
 
+  // Sync cart items from Redux to localStorage on change
   useEffect(() => {
     localStorage.setItem('cart_items', JSON.stringify(items));
   }, [items]);

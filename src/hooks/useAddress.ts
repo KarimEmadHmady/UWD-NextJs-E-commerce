@@ -15,6 +15,10 @@ import {
 import { Address } from '@/redux/features/address/addressSlice';
 import { useEffect } from 'react';
 
+/**
+ * Custom hook for managing user addresses state and actions.
+ * Handles adding, updating, removing, setting default, and syncing with localStorage.
+ */
 export const useAddress = () => {
   const addresses = useSelector(selectAddresses);
   const defaultAddress = useSelector(selectDefaultAddress);
@@ -22,7 +26,7 @@ export const useAddress = () => {
   const error = useSelector(selectAddressError);
   const dispatch = useDispatch();
 
-  //  localStorage <-> Redux
+  // Sync addresses from localStorage to Redux on mount
   useEffect(() => {
     if (addresses.length === 0) {
       const stored = localStorage.getItem('addresses');
@@ -35,9 +39,10 @@ export const useAddress = () => {
         } catch {}
       }
     }
-        // eslint-disable-next-line
+    // eslint-disable-next-line
   }, []);
 
+  // Sync addresses from Redux to localStorage on change
   useEffect(() => {
     localStorage.setItem('addresses', JSON.stringify(addresses));
   }, [addresses]);
