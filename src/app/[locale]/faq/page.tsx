@@ -20,7 +20,7 @@ export default function FAQPage() {
     {
       question: "What payment methods do you accept?",
       answer:
-        "We accept major credit cards (Visa, MasterCard, American Express), PayPal, and other local payment options as available in your region.",
+        "We accept major credit cards (Visa, MasterCard, American Express), and other local payment options as available in your region.",
     },
     {
       question: "How can I track my order?",
