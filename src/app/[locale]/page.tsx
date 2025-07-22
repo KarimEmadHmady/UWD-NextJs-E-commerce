@@ -11,6 +11,7 @@ import { useMemo } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
+import Image from 'next/image';
 
 /**
  * HomePage component - Main landing page for the e-commerce site.
@@ -46,7 +47,7 @@ export default function HomePage() {
       <RevealOnScroll alwaysAnimate>
         <section className="relative py-10 overflow-hidden bg-black sm:py-16 lg:py-24 xl:py-32 h-[48vh] sm:h-[70vh] m-6 rounded-[30px] flex items-center justify-center sm:block">
           <div className="absolute inset-0 ">
-              <img className="object-cover w-full h-full md:object-left md:scale-150 md:origin-top-left" src="https://images.unsplash.com/photo-1540332788463-be4cdbc4be88?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Delicious Sweets" />
+              <Image className="object-cover w-full h-full md:object-left md:scale-150 md:origin-top-left" src="https://images.unsplash.com/photo-1540332788463-be4cdbc4be88?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Delicious Sweets" fill priority />
           </div>
           <div className="absolute inset-0 hidden bg-gradient-to-r md:block from-black to-transparent"></div>
           <div className="absolute inset-0 block bg-black/60 md:hidden"></div>
@@ -200,8 +201,8 @@ export default function HomePage() {
               </div>
               <div className="relative pl-20 pr-6 sm:pl-6 md:px-0">
                 <div className="relative w-full max-w-xs mt-4 mb-10 ml-auto">
-                  <img className="ml-auto" src="https://plus.unsplash.com/premium_photo-1676473229054-9d4abed0e1b7?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Celebration Sweets" />
-                  <img className="absolute -top-4 -left-12" src="https://cdn.rareblocks.xyz/collection/celebration/images/features/1/wavey-lines.svg" alt="" />
+                  <Image className="ml-auto" src="https://plus.unsplash.com/premium_photo-1676473229054-9d4abed0e1b7?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Celebration Sweets" width={400} height={400} />
+                  <Image className="absolute -top-4 -left-12" src="https://cdn.rareblocks.xyz/collection/celebration/images/features/1/wavey-lines.svg" alt="" width={120} height={40} />
                   <div className="absolute -bottom-10 -left-16">
                     <div className="bg-black">
                       <div className="px-8 py-10">
@@ -225,16 +226,16 @@ export default function HomePage() {
               </div>
               <div className="grid items-center grid-cols-2 gap-10 mt-12 md:grid-cols-4 sm:gap-y-16">
                   <div>
-                      <img className="object-contain w-auto mx-auto h-14" src="https://cdn.rareblocks.xyz/collection/celebration/images/logos/2/logo-1.png" alt="" />
+                      <Image className="object-contain w-auto mx-auto h-14" src="https://cdn.rareblocks.xyz/collection/celebration/images/logos/2/logo-1.png" alt="" width={120} height={56} />
                   </div>
                   <div>
-                      <img className="object-contain w-auto mx-auto h-14" src="https://cdn.rareblocks.xyz/collection/celebration/images/logos/2/logo-2.png" alt="" />
+                      <Image className="object-contain w-auto mx-auto h-14" src="https://cdn.rareblocks.xyz/collection/celebration/images/logos/2/logo-2.png" alt="" width={120} height={56} />
                   </div>
                   <div>
-                      <img className="object-contain w-auto h-10 mx-auto" src="https://cdn.rareblocks.xyz/collection/celebration/images/logos/2/logo-3.png" alt="" />
+                      <Image className="object-contain w-auto h-10 mx-auto" src="https://cdn.rareblocks.xyz/collection/celebration/images/logos/2/logo-3.png" alt="" width={120} height={40} />
                   </div>
                   <div>
-                      <img className="object-contain w-auto mx-auto h-14" src="https://cdn.rareblocks.xyz/collection/celebration/images/logos/2/logo-4.png" alt="" />
+                      <Image className="object-contain w-auto mx-auto h-14" src="https://cdn.rareblocks.xyz/collection/celebration/images/logos/2/logo-4.png" alt="" width={120} height={56} />
                   </div>
               </div>
           </div>
