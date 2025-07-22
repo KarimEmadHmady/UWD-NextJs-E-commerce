@@ -61,7 +61,7 @@ module.exports = {
             200: "#fbcfe8",
             300: "#f9a8d4",
             400: "#f472b6",
-            500: "#ec4899", // Default pink
+            500: "#73cdca", // Default pink
             600: "#db2777", // Darker pink for hover/active
             700: "#be185d",
             800: "#9d174d",

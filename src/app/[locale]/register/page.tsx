@@ -111,7 +111,7 @@ export default function RegisterPage() {
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700 py-3" disabled={isSubmitting}>
+              <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 py-3" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -128,7 +128,7 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex justify-center text-sm text-gray-600">
             Already have an account?{" "}
-            <Link href="/login" className="text-pink-600 hover:underline ml-1">
+            <Link href="/login" className="text-teal-600 hover:underline ml-1">
               Login
             </Link>
           </CardFooter>

@@ -199,14 +199,14 @@ export default function LocationStep({ onLocationSet, initialLocation }: Locatio
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="text-center mb-8">
-        <MapPin className="w-16 h-16 text-pink-600 mx-auto mb-4" />
+        <MapPin className="w-16 h-16 text-teal-600 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Set Your Delivery Location</h2>
         <p className="text-gray-600">We need your location to calculate shipping costs and delivery time</p>
       </div>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Navigation className="w-5 h-5 text-pink-600" />
+            <Navigation className="w-5 h-5 text-teal-600" />
             Use Current Location
           </CardTitle>
         </CardHeader>
@@ -214,7 +214,7 @@ export default function LocationStep({ onLocationSet, initialLocation }: Locatio
           <Button
             onClick={getCurrentLocation}
             disabled={isGettingLocation}
-            className="w-full bg-pink-600 hover:bg-pink-700"
+            className="w-full bg-teal-600 hover:bg-teal-700"
           >
             {isGettingLocation ? (
               <>
@@ -234,7 +234,7 @@ export default function LocationStep({ onLocationSet, initialLocation }: Locatio
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-pink-600" />
+            <MapPin className="w-5 h-5 text-teal-600" />
             Enter Address Manually
           </CardTitle>
         </CardHeader>
@@ -245,7 +245,7 @@ export default function LocationStep({ onLocationSet, initialLocation }: Locatio
               onChange={e => setManualAddress(e.target.value)}
               placeholder="Enter your delivery address"
             />
-            <Button onClick={searchManualLocation} className="bg-pink-600 hover:bg-pink-700 px-3" disabled={manualLoading}>
+            <Button onClick={searchManualLocation} className="bg-teal-600 hover:bg-teal-700 px-3" disabled={manualLoading}>
               {manualLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Find your location"}
             </Button>
           </div>
@@ -265,7 +265,7 @@ export default function LocationStep({ onLocationSet, initialLocation }: Locatio
           )}
           <Button
             onClick={confirmManualAddress}
-            className="w-full bg-pink-600 hover:bg-pink-700"
+            className="w-full bg-teal-600 hover:bg-teal-700"
             disabled={!manualLatLng}
           >
             Confirm Manual Address

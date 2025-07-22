@@ -58,10 +58,10 @@ export default function FAQPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <main className="flex-1">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-pink-600 to-pink-400 text-white">
+        <div className="bg-gradient-to-r from-teal-600 to-teal-400 text-white">
           <div className="max-w-7xl mx-auto px-4 py-16 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Frequently Asked Questions</h1>
-            <p className="text-xl text-pink-100 max-w-2xl mx-auto">
+            <p className="text-xl text-teal-100 max-w-2xl mx-auto">
               Find quick answers to the most common questions about our products and services.
             </p>
           </div>
@@ -77,7 +77,7 @@ export default function FAQPage() {
               <Accordion type="single" collapsible className="w-full">
                 {faqItems.map((item, index) => (
                   <AccordionItem key={index} value={`item-${index + 1}`}>
-                    <AccordionTrigger className="text-lg font-semibold text-gray-900 hover:text-pink-600">
+                    <AccordionTrigger className="text-lg font-semibold text-gray-900 hover:text-teal-600">
                       {item.question}
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-700 leading-relaxed">{item.answer}</AccordionContent>
@@ -90,7 +90,7 @@ export default function FAQPage() {
           <div className="text-center mt-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Can't find what you're looking for?</h2>
             <p className="text-lg text-gray-600 mb-6">Our support team is ready to assist you.</p>
-            <Button asChild className="bg-pink-600 hover:bg-pink-700 text-white py-3 px-8 text-lg">
+            <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white py-3 px-8 text-lg">
               <Link href="/customer-support">Contact Support</Link>
             </Button>
           </div>

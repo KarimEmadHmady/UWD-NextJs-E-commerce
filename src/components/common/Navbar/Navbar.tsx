@@ -203,10 +203,10 @@ export default function Navigation() {
           href={item.href}
           className={`
             flex items-center justify-between h-16 px-4 text-sm text-black transition-colors duration-250
-            hover:text-pink-600 md:hover:text-pink-600
+            hover:text-teal-600 md:hover:text-teal-600
             ${hasChildren ? "cursor-pointer" : ""}
             ${level > 0 ? "md:px-6 md:py-2 md:h-auto" : ""}
-            ${isOpen ? "text-pink-600" : ""}
+            ${isOpen ? "text-teal-600" : ""}
           `}
           onClick={(e) => {
             if (hasChildren && window.innerWidth <= 768) {
@@ -331,13 +331,13 @@ export default function Navigation() {
                 tabIndex={-1}
               >
                 <button
-                  className={`block w-full text-left px-4 py-2 text-sm ${lang === 'en' ? 'text-pink-600 font-bold' : 'text-black'} hover:bg-gray-50`}
+                  className={`block w-full text-left px-4 py-2 text-sm ${lang === 'en' ? 'text-teal-600 font-bold' : 'text-black'} hover:bg-gray-50`}
                   onClick={() => { handleLangSwitch('en'); setLangDropdownOpen(false); }}
                 >
                   EN
                 </button>
                 <button
-                  className={`block w-full text-left px-4 py-2 text-sm ${lang === 'ar' ? 'text-pink-600 font-bold' : 'text-black'} hover:bg-gray-50`}
+                  className={`block w-full text-left px-4 py-2 text-sm ${lang === 'ar' ? 'text-teal-600 font-bold' : 'text-black'} hover:bg-gray-50`}
                   onClick={() => { handleLangSwitch('ar'); setLangDropdownOpen(false); }}
                 >
                   AR
@@ -368,30 +368,30 @@ export default function Navigation() {
               </button>
             </li>
             <li>
-              <Link href="/search" className="p-1 text-lg text-black transition-colors duration-250 hover:text-pink-600 transition-transform duration-200 hover:scale-110">
+              <Link href="/search" className="p-1 text-lg text-black transition-colors duration-250 hover:text-teal-600 transition-transform duration-200 hover:scale-110">
                 <Search className="w-5 h-5" />
               </Link>
             </li>
             <li>
-              <Link href="/login" className="p-1 text-lg text-black transition-colors duration-250 hover:text-pink-600 transition-transform duration-200 hover:scale-110">
+              <Link href="/login" className="p-1 text-lg text-black transition-colors duration-250 hover:text-teal-600 transition-transform duration-200 hover:scale-110">
                 <User className="w-5 h-5" />
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="p-1 text-lg text-black transition-colors duration-250 hover:text-pink-600 transition-transform duration-200 hover:scale-110">
+              <Link href="/contact" className="p-1 text-lg text-black transition-colors duration-250 hover:text-teal-600 transition-transform duration-200 hover:scale-110">
                 <MapPin className="w-5 h-5" />
               </Link>
             </li>
             <li className="relative cursor-pointer">
               <button
                 type="button"
-                className="p-1 text-lg text-black transition-colors duration-250 hover:text-pink-600 cursor-pointer transition-transform duration-200 hover:scale-110"
+                className="p-1 text-lg text-black transition-colors duration-250 hover:text-teal-600 cursor-pointer transition-transform duration-200 hover:scale-110"
                 aria-label="Open cart"
                 onClick={() => setIsSideCartOpen(true)}
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-[5px] -right-[8px] bg-pink-600 text-white text-xs font-bold rounded-full  min-w-[18px] h-[18px] flex items-center justify-center border-2 bg-black ">
+                  <span className="absolute -top-[5px] -right-[8px] bg-teal-600 text-white text-xs font-bold rounded-full  min-w-[18px] h-[18px] flex items-center justify-center border-2 bg-black ">
                     {cartCount}
                   </span>
                 )}
@@ -425,7 +425,7 @@ export default function Navigation() {
             <li key={item.label} className="border-b border-gray-100 last:border-b-0">
               <Link
                 href={item.href}
-                className="block px-6 py-3 text-base font-medium text-black hover:text-pink-600 md:hover:text-bule-600 transition-colors duration-200"
+                className="block px-6 py-3 text-base font-medium text-black hover:text-teal-600 md:hover:text-bule-600 transition-colors duration-200"
                 onClick={toggleMobileMenu}
               >
                 {menuTranslations[item.label]?.[lang] || item.label}
@@ -440,14 +440,14 @@ export default function Navigation() {
           <div className="flex flex-row items-center justify-between gap-2 w-[70%]">
           <div className="flex justify-center gap-2 mb-2">
             <button
-              className={`p-1 cursor-pointer rounded-full border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'en' ? 'bg-pink-600 text-white border-pink-600' : 'bg-white text-pink-600 border-pink-600 hover:bg-pink-50'}`}
+              className={`p-1 cursor-pointer rounded-full border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'en' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-teal-600 border-teal-600 hover:bg-teal-50'}`}
               onClick={() => handleLangSwitch('en')}
               disabled={lang === 'en'}
             >
               EN
             </button>
             <button
-              className={`p-1 cursor-pointer rounded-full border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'ar' ? 'bg-pink-600 text-white border-pink-600' : 'bg-white text-pink-600 border-pink-600 hover:bg-pink-50'}`}
+              className={`p-1 cursor-pointer rounded-full border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'ar' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-teal-600 border-teal-600 hover:bg-teal-50'}`}
               onClick={() => handleLangSwitch('ar')}
               disabled={lang === 'ar'}
             >
@@ -456,21 +456,21 @@ export default function Navigation() {
           </div>
           <div className="flex justify-center gap-1 ">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full  flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-pink-600 group-hover:text-pink-700 transition-colors duration-200">
+              className="group rounded-full  flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-200 w-10 h-10">
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-teal-600 group-hover:text-teal-700 transition-colors duration-200">
                 <path fill="currentColor" d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/>
               </svg>
             </a>
             <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full  flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
+              className="group rounded-full  flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-200 w-10 h-10">
               {/* X Icon instead of Twitter */}
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="text-pink-600 group-hover:text-pink-600 transition-colors duration-200">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="text-teal-600 group-hover:text-teal-600 transition-colors duration-200">
                 <path d="M4 4L20 20M20 4L4 20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
               </svg>
             </a>
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-200 w-10 h-10">
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-pink-500 group-hover:text-pink-600 transition-colors duration-200">
+              className="group rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-200 w-10 h-10">
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-teal-500 group-hover:text-teal-600 transition-colors duration-200">
                 <path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.974 1.246 2.241 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.974.974-2.241 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.974-.974-1.246-2.241-1.308-3.608C2.175 15.647 2.163 15.267 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.974-.974 2.241-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.013 7.052.072 5.775.13 4.602.402 3.635 1.37 2.668 2.338 2.396 3.511 2.338 4.788.013 8.332 0 8.741 0 12c0 3.259.013 3.668.072 4.948.058 1.277.33 2.45 1.298 3.418.968.968 2.141 1.24 3.418 1.298C8.332 23.987 8.741 24 12 24c3.259 0 3.668-.013 4.948-.072 1.277-.058 2.45-.33 3.418-1.298.968-.968 1.24-2.141 1.298-3.418.059-1.28.072-1.689.072-4.948 0-3.259-.013-3.668-.072-4.948-.058-1.277-.33-2.45-1.298-3.418-.968-.968-2.141-1.24-3.418-1.298C15.668.013 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/>
               </svg>
             </a>

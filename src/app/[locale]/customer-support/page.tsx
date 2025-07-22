@@ -13,8 +13,8 @@ export default function CustomerSupportPage() {
       description: "Send us an email and we'll respond within 24 hours.",
       details: "support@email.com",
       link: "mailto:support@email.com",
-      color: "text-pink-600",
-      bgColor: "bg-pink-100",
+      color: "text-teal-600",
+      bgColor: "bg-teal-100",
     },
     {
       icon: Phone,
@@ -22,8 +22,8 @@ export default function CustomerSupportPage() {
       description: "Speak directly with our customer service team.",
       details: "+20 115-5666-555 (Mon-Fri, 9 AM - 5 PM EST)",
       link: "tel:+20",
-      color: "text-pink-600",
-      bgColor: "bg-pink-100",
+      color: "text-teal-600",
+      bgColor: "bg-teal-100",
     },
     {
       icon: MessageCircle,
@@ -31,8 +31,8 @@ export default function CustomerSupportPage() {
       description: "Get instant help from our online support agents.",
       details: "Available during business hours",
       link: "#", // Link to live chat widget
-      color: "text-pink-600",
-      bgColor: "bg-pink-100",
+      color: "text-teal-600",
+      bgColor: "bg-teal-100",
     },
     {
       icon: MapPin,
@@ -40,8 +40,8 @@ export default function CustomerSupportPage() {
       description: "Schedule an appointment for in-person assistance.",
       details: "123 cairo, Suite 100, City, State, ",
       link: "#", // Link to map or appointment booking
-      color: "text-pink-600",
-      bgColor: "bg-pink-100",
+      color: "text-teal-600",
+      bgColor: "bg-teal-100",
     },
   ]
 
@@ -58,11 +58,11 @@ export default function CustomerSupportPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <main className="flex-1">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-pink-600 to-pink-400 text-white">
+        <div className="bg-gradient-to-r from-teal-600 to-teal-400 text-white">
           <div className="max-w-7xl mx-auto px-4 py-16 text-center">
             <HelpCircle className="w-16 h-16 mx-auto mb-4" />
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Customer Support</h1>
-            <p className="text-xl text-pink-100 max-w-2xl mx-auto">
+            <p className="text-xl text-teal-100 max-w-2xl mx-auto">
               We're here to help you with any questions or issues you may have.
             </p>
           </div>
@@ -83,7 +83,7 @@ export default function CustomerSupportPage() {
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2">{method.title}</h3>
                     <p className="text-sm text-gray-600 mb-3">{method.description}</p>
-                    <Link href={method.link} className="text-pink-600 hover:underline text-sm font-medium">
+                    <Link href={method.link} className="text-teal-600 hover:underline text-sm font-medium">
                       {method.details}
                     </Link>
                   </CardContent>
@@ -103,7 +103,7 @@ export default function CustomerSupportPage() {
                     <p className="text-sm text-gray-600 mb-4">{issue.description}</p>
                     <Button
                       variant="outline"
-                      className="w-full bg-transparent border-pink-300 text-pink-600 hover:bg-pink-50"
+                      className="w-full bg-transparent border-teal-300 text-teal-600 hover:bg-teal-50"
                     >
                       Learn More
                     </Button>
@@ -120,13 +120,13 @@ export default function CustomerSupportPage() {
               Explore our comprehensive FAQ section or send us a direct message.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button asChild className="bg-pink-600 hover:bg-pink-700 text-white py-3 px-8 text-lg">
+              <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white py-3 px-8 text-lg">
                 <Link href="/faq">Visit FAQ</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
-                className="bg-transparent border-pink-600 text-pink-600 hover:bg-pink-50 py-3 px-8 text-lg"
+                className="bg-transparent border-teal-600 text-teal-600 hover:bg-teal-50 py-3 px-8 text-lg"
               >
                 <Link href="/contact">Send a Message</Link>
               </Button>

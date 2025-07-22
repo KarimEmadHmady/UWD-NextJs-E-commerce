@@ -114,7 +114,7 @@ export default function CategorySection() {
                   <div
                     className={
                       `relative w-16 h-16 rounded-full bg-gray-100 p-2 overflow-hidden flex items-center justify-center transition-all duration-300 ` +
-                      (selectedCategory === category.id.toString() ? "ring-2 ring-pink-500 ring-offset-2" : "")
+                      (selectedCategory === category.id.toString() ? "ring-2 ring-teal-500 ring-offset-2" : "")
                     }
                   >
                     <Image

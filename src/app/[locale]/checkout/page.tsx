@@ -227,7 +227,7 @@ export default function CheckoutPage() {
           <div className="max-w-2xl mx-auto space-y-6">
              <RevealOnScroll alwaysAnimate>
             <div className="text-center mb-8">
-              <CreditCard className="w-16 h-16 text-pink-600 mx-auto mb-4" />
+              <CreditCard className="w-16 h-16 text-teal-600 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Information</h2>
               <p className="text-gray-600">Enter your payment details to complete the order</p>
             </div>
@@ -237,9 +237,9 @@ export default function CheckoutPage() {
               </CardHeader>
               <CardContent className="space-y-4 text-gray-900">
                 <div className="flex flex-col gap-4">
-                  <Button onClick={() => handlePaymentSelect('card')} className={`w-full ${paymentMethod === 'card' ? 'bg-pink-600 text-white' : 'bg-white text-pink-600 border border-pink-600'}`}>Pay by Card</Button>
-                  <Button onClick={() => handlePaymentSelect('cash')} className={`w-full ${paymentMethod === 'cash' ? 'bg-pink-600 text-white' : 'bg-white text-pink-600 border border-pink-600'}`}>Cash on Delivery</Button>
-                  <Button onClick={() => handlePaymentSelect('pickup')} className={`w-full ${paymentMethod === 'pickup' ? 'bg-pink-600 text-white' : 'bg-white text-pink-600 border border-pink-600'}`}>Pickup from Store</Button>
+                  <Button onClick={() => handlePaymentSelect('card')} className={`w-full ${paymentMethod === 'card' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'}`}>Pay by Card</Button>
+                  <Button onClick={() => handlePaymentSelect('cash')} className={`w-full ${paymentMethod === 'cash' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'}`}>Cash on Delivery</Button>
+                  <Button onClick={() => handlePaymentSelect('pickup')} className={`w-full ${paymentMethod === 'pickup' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'}`}>Pickup from Store</Button>
                 </div>
                 {paymentMethod === 'card' && (
                   <div className="mt-6 space-y-4">
@@ -249,11 +249,11 @@ export default function CheckoutPage() {
                       <Input id="cvv" placeholder="CVV" value={cardDetails.cvv} onChange={handleCardInput} maxLength={3} />
                     </div>
                     {cardError && <div className="text-red-500 text-sm">{cardError}</div>}
-                    <Button onClick={handleCardContinue} className="w-full bg-pink-600 hover:bg-pink-700 text-white mt-2">Continue to Review</Button>
+                    <Button onClick={handleCardContinue} className="w-full bg-teal-600 hover:bg-teal-700 text-white mt-2">Continue to Review</Button>
                   </div>
                 )}
                 {paymentMethod !== 'card' && (
-                  <Button onClick={() => setCurrentStep(4)} className="w-full bg-pink-600 hover:bg-pink-700 text-white mt-4">Continue to Review</Button>
+                  <Button onClick={() => setCurrentStep(4)} className="w-full bg-teal-600 hover:bg-teal-700 text-white mt-4">Continue to Review</Button>
                 )}
                 <Button variant="outline" onClick={() => setCurrentStep(2)} className="w-full mt-2">Back</Button>
               </CardContent>
@@ -352,10 +352,10 @@ export default function CheckoutPage() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
         <RevealOnScroll>
         <div className=" p-8 rounded-xl text-center max-w-md w-full">
-          <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-pink-500" />
+          <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-teal-500" />
           <h2 className="text-2xl font-bold mb-2 text-gray-900">Your cart is empty</h2>
           <p className="text-gray-600 mb-6">You can't proceed to checkout without any products in your cart.</p>
-          <Button onClick={() => router.push('/shop')} className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full font-semibold shadow">
+          <Button onClick={() => router.push('/shop')} className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-full font-semibold shadow">
             Go Shopping Now
           </Button>
         </div>
@@ -393,7 +393,7 @@ export default function CheckoutPage() {
                       key={step.number}
                       className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
                         currentStep === step.number
-                          ? "bg-pink-50 border border-pink-200"
+                          ? "bg-teal-50 border border-teal-200"
                           : step.completed
                             ? "bg-green-50 border border-green-200"
                             : "bg-gray-50"
@@ -406,7 +406,7 @@ export default function CheckoutPage() {
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                           currentStep === step.number
-                            ? "bg-pink-600 text-white"
+                            ? "bg-teal-600 text-white"
                             : step.completed
                               ? "bg-green-600 text-white"
                               : "bg-gray-300 text-gray-600"
@@ -418,7 +418,7 @@ export default function CheckoutPage() {
                         <p
                           className={`font-medium ${
                             currentStep === step.number
-                              ? "text-pink-900"
+                              ? "text-teal-900"
                               : step.completed
                                 ? "text-green-900"
                                 : "text-gray-600"

@@ -83,7 +83,7 @@ export default function AccountPage() {
       case "delivered":
         return "bg-green-100 text-green-800"
       case "shipped":
-        return "bg-pink-100 text-pink-800"
+        return "bg-teal-100 text-teal-800"
       case "processing":
         return "bg-yellow-100 text-yellow-800"
       default:
@@ -131,8 +131,8 @@ export default function AccountPage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
-                    <Package className="w-6 h-6 text-pink-600" />
+                  <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                    <Package className="w-6 h-6 text-teal-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">{user.totalOrders}</p>
@@ -260,8 +260,8 @@ export default function AccountPage() {
                       className="flex flex-col md:flex-row items-center justify-between p-6 border border-gray-200 rounded-lg"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
-                          <Package className="w-6 h-6 text-pink-600" />
+                        <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                          <Package className="w-6 h-6 text-teal-600" />
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900">{order.id}</p>
@@ -304,7 +304,7 @@ export default function AccountPage() {
                         <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
                         <p className="text-lg font-bold text-gray-900 mb-3">{formatPrice(item.price)}</p>
                         <div className="space-y-2">
-                          <Button className="w-full bg-pink-600 hover:bg-pink-700 cursor-pointer">
+                          <Button className="w-full bg-teal-600 hover:bg-teal-700 cursor-pointer">
                             Add to Cart
                           </Button>
                           <Button variant="outline" className="w-full bg-transparent cursor-pointer">
@@ -358,7 +358,7 @@ export default function AccountPage() {
                         <input name="notes" placeholder="Notes (optional)" value={addressForm.notes} onChange={handleAddressFormChange} className="border rounded px-2 py-1 col-span-2 bg-gray-100 placeholder-gray-500 text-gray-900" />
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" className="bg-pink-600 text-white" onClick={handleAddAddress}>Save</Button>
+                        <Button size="sm" className="bg-teal-600 text-white" onClick={handleAddAddress}>Save</Button>
                         <Button size="sm" variant="outline" onClick={() => setShowAddressForm(false)}>Cancel</Button>
                       </div>
                     </div>

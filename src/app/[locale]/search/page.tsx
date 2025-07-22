@@ -137,7 +137,7 @@ export default function SearchPage() {
                 placeholder="Search for products..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="pl-12 pr-4 py-4 text-lg border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="pl-12 pr-4 py-4 text-lg border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
               {searchQuery && (
                 <Button
@@ -200,7 +200,7 @@ export default function SearchPage() {
                   <X className="w-3 h-3 cursor-pointer" onClick={() => handleBrandToggle(filter)} />
                 </Badge>
               ))}
-              <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-pink-600">
+              <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-teal-600">
                 Clear all
               </Button>
             </div>

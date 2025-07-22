@@ -195,7 +195,7 @@ export default function FilterSidebar({ isOpen, onClose, hideCategories = false 
                   onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
                   className={`
                     flex items-center gap-2 w-full p-2 rounded-lg transition-colors
-                    ${selectedRating === rating ? "bg-pink-50 border border-pink-200" : "hover:bg-gray-50"}
+                    ${selectedRating === rating ? "bg-teal-50 border border-teal-200" : "hover:bg-gray-50"}
                   `}
                 >
                   <div className="flex items-center">
@@ -224,7 +224,7 @@ export default function FilterSidebar({ isOpen, onClose, hideCategories = false 
           </div>
 
           {/* Apply Filters Button */}
-          <Button className="w-full bg-pink-600 hover:bg-pink-700 cursor-pointer">Apply Filters</Button>
+          <Button className="w-full bg-teal-600 hover:bg-teal-700 cursor-pointer">Apply Filters</Button>
         </div>
       </div>
     </>

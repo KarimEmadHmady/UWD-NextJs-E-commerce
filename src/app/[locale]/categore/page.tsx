@@ -38,7 +38,7 @@ export default function Categore() {
                 />
                 <div className="absolute inset-0 bg-black/25 transition ease-out group-hover:bg-black/0" />
                 <div className="absolute inset-0 flex items-center justify-center p-4">
-                  <div className="rounded-3xl bg-white/95 px-4 py-3 text-sm font-semibold tracking-wide uppercase transition ease-out group-hover:bg-pink-600 group-hover:text-white dark:border-gray-800 dark:bg-gray-900/90">
+                  <div className="rounded-3xl bg-white/95 px-4 py-3 text-sm font-semibold tracking-wide uppercase transition ease-out group-hover:bg-teal-600 group-hover:text-white dark:border-gray-800 dark:bg-gray-900/90">
                     {cat.name}
                   </div>
                 </div>

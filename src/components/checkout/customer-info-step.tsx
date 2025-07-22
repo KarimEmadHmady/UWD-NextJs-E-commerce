@@ -81,35 +81,35 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
           <div className="flex flex-col gap-3">
             <Button
               variant={shippingMethod === 'Express' ? 'default' : 'outline'}
-              className={shippingMethod === 'Express' ? 'bg-pink-600 text-white' : ''}
+              className={shippingMethod === 'Express' ? 'bg-teal-600 text-white' : ''}
               onClick={() => setShippingMethod('Express')}
             >
               Express Delivery (E.L 100, 1-2 days)
             </Button>
             <Button
               variant={shippingMethod === 'Standard' ? 'default' : 'outline'}
-              className={shippingMethod === 'Standard' ? 'bg-pink-600 text-white' : ''}
+              className={shippingMethod === 'Standard' ? 'bg-teal-600 text-white' : ''}
               onClick={() => setShippingMethod('Standard')}
             >
               Standard Delivery (E.L 50, 3-5 days)
             </Button>
             <Button
               variant={shippingMethod === 'Pickup from Store' ? 'default' : 'outline'}
-              className={shippingMethod === 'Pickup from Store' ? 'bg-pink-600 text-white' : ''}
+              className={shippingMethod === 'Pickup from Store' ? 'bg-teal-600 text-white' : ''}
               onClick={() => setShippingMethod('Pickup from Store')}
             >
               Pickup from Store (Free)
             </Button>
           </div>
           {shippingMethod === 'Pickup from Store' && (
-            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded text-pink-800 text-sm">
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded text-teal-800 text-sm">
               When you choose pickup from store, no shipping fees will be charged. You can collect your order directly from our branch.
             </div>
           )}
         </CardContent>
       </Card>
       {formError && <div className="text-red-500 text-sm">{formError}</div>}
-      <Button onClick={handleSubmit} className="w-full bg-pink-600 hover:bg-pink-700 mt-2">Continue to Payment</Button>
+      <Button onClick={handleSubmit} className="w-full bg-teal-600 hover:bg-teal-700 mt-2">Continue to Payment</Button>
     </div>
   );
 } 

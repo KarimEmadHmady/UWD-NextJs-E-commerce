@@ -9,10 +9,10 @@ export default function PrivacyPolicyPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <main className="flex-1">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-pink-600 to-pink-400 text-white">
+        <div className="bg-gradient-to-r from-teal-600 to-teal-400 text-white">
           <div className="max-w-7xl mx-auto px-4 py-16 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Privacy Policy</h1>
-            <p className="text-xl text-pink-100 max-w-2xl mx-auto">
+            <p className="text-xl text-teal-100 max-w-2xl mx-auto">
               Your privacy is important to us. This policy explains how we collect, use, and protect your data.
             </p>
           </div>
@@ -140,7 +140,7 @@ export default function PrivacyPolicyPage() {
                 <li>By email: privacy@email.com</li>
                 <li>
                   By visiting this page on our website:{" "}
-                  <Link href="/contact" className="text-pink-600 hover:underline">
+                  <Link href="/contact" className="text-teal-600 hover:underline">
                     Contact Us
                   </Link>
                 </li>

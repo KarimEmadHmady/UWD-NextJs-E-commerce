@@ -47,7 +47,7 @@ export default function ShippingStep({ onShippingSelect }: ShippingStepProps) {
       description: "Faster delivery service",
       price: 15.99,
       estimatedDays: "2-3 business days",
-      icon: <Clock className="w-5 h-5 text-pink-600" />,
+      icon: <Clock className="w-5 h-5 text-teal-600" />,
     },
     {
       id: "overnight",
@@ -83,7 +83,7 @@ export default function ShippingStep({ onShippingSelect }: ShippingStepProps) {
           <Card
             key={option.id}
             className={`cursor-pointer transition-all ${
-              selectedShipping === option.id ? "border-pink-500 bg-pink-50" : "hover:border-gray-300"
+              selectedShipping === option.id ? "border-teal-500 bg-teal-50" : "hover:border-gray-300"
             }`}
           >
             <CardContent className="p-4">

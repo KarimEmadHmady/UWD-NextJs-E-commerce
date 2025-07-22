@@ -58,7 +58,7 @@ export default function WishlistItemComponent({
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button onClick={() => onAddToCart(id)} disabled={!inStock} className="flex-1 bg-pink-600 hover:bg-pink-700 cursor-pointer">
+          <Button onClick={() => onAddToCart(id)} disabled={!inStock} className="flex-1 bg-teal-600 hover:bg-teal-700 cursor-pointer">
             <ShoppingCart className="w-3 h-3 mr-1" />
             {inStock ? "Add to Cart" : "Out of Stock"}
           </Button>

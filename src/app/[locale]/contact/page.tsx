@@ -42,8 +42,8 @@ export default function ContactPage() {
       icon: MapPin,
       title: "Visit Our Sweets Shop",
       details: ["15 Dessert Avenue", "Sweet City", "Egypt"],
-      color: "text-pink-600",
-      bgColor: "bg-pink-100",
+      color: "text-teal-600",
+      bgColor: "bg-teal-100",
     },
     {
       icon: Phone,
@@ -187,7 +187,7 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button type="submit" disabled={isSubmitting} className="w-full bg-pink-600 hover:bg-pink-700 py-3">
+                  <Button type="submit" disabled={isSubmitting} className="w-full bg-teal-600 hover:bg-teal-700 py-3">
                     {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -236,11 +236,11 @@ export default function ContactPage() {
             </div>
 
             {/* FAQ Link */}
-            <Card className="bg-pink-50 border-pink-200">
+            <Card className="bg-teal-50 border-teal-200">
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-pink-900 mb-2">Frequently Asked Sweets Questions</h3>
-                <p className="text-pink-700 text-sm mb-4">Find quick answers to common sweets questions in our FAQ section.</p>
-                <Button variant="outline" className="bg-transparent border-pink-300 text-pink-700 hover:bg-pink-100">
+                <h3 className="font-semibold text-teal-900 mb-2">Frequently Asked Sweets Questions</h3>
+                <p className="text-teal-700 text-sm mb-4">Find quick answers to common sweets questions in our FAQ section.</p>
+                <Button variant="outline" className="bg-transparent border-teal-300 text-teal-700 hover:bg-teal-100">
                   View FAQ
                 </Button>
               </CardContent>

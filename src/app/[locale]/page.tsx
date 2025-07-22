@@ -56,7 +56,7 @@ export default function HomePage() {
                   <p className="mt-4 text-base text-gray-200">Indulge in our delicious cakes, pastries, oriental sweets, and more. Freshly baked, delivered fast, and made with love!</p>
                   <form action="#" method="POST" className="mt-8 lg:mt-12">
                       <div className="flex flex-col items-center sm:flex-row ">
-                          <button type="button" onClick={() => router.push('/shop')} className="cursor-pointer inline-flex items-center justify-center  w-[200px] px-4 py-4 mt-4 font-semibold text-white transition-all duration-200 bg-pink-600 border border-transparent rounded-md sm:mt-0  sm:w-auto hover:bg-pink-700 focus:bg-pink-700">
+                          <button type="button" onClick={() => router.push('/shop')} className="cursor-pointer inline-flex items-center justify-center  w-[200px] px-4 py-4 mt-4 font-semibold text-white transition-all duration-200 bg-teal-600 border border-transparent rounded-md sm:mt-0  sm:w-auto hover:bg-teal-700 focus:bg-teal-700">
                           Shop Sweets
                           </button>
                       </div>
