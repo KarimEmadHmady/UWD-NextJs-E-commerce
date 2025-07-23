@@ -11,6 +11,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/ca
 import { Label } from "@/components/common/label/label"
 import RevealOnScroll from "@/components/common/RevealOnScroll"
 import { useNotifications } from '@/hooks/useNotifications';
+import dynamic from 'next/dynamic';
+import { WorldMapDemo } from "@/components/common/ui/WorldMapDemo";
+
+const branches = [
+  { name: "Downtown Branch", address: "15 Dessert Ave, Cairo", lat: 30.0444, lng: 31.2357 },
+  { name: "Alexandria Branch", address: "22 Sweet St, Alexandria", lat: 31.2001, lng: 29.9187 },
+  { name: "Giza Branch", address: "8 Cake Road, Giza", lat: 30.0131, lng: 31.2089 },
+  { name: "Mansoura Branch", address: "77 Sugar Blvd, Mansoura", lat: 31.0364, lng: 31.3807 },
+  { name: "Tanta Branch", address: "5 Candy St, Tanta", lat: 30.7865, lng: 31.0004 },
+];
+
+const MapWithMarkers = dynamic(() => import("@/components/common/ui/MapWithMarkers"), { ssr: false });
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -97,7 +109,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-
+    <WorldMapDemo />
      <RevealOnScroll>
 
       <div className="max-w-7xl mx-auto px-4 py-16">
@@ -254,15 +266,22 @@ export default function ContactPage() {
         <div className="mt-16">
           <Card>
             <CardHeader>
-              <CardTitle>Find Our Sweets Shop Location</CardTitle>
-              <p className="text-gray-600">Visit our sweets shop for in-person orders, tastings, and support.</p>
+              <CardTitle>Find Our Sweets Shop Locations</CardTitle>
+              <p className="text-gray-600">Visit any of our branches for in-person orders, tastings, and support.</p>
             </CardHeader>
             <CardContent>
-              <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500">Interactive map would be displayed here</p>
-                  <p className="text-sm text-gray-400">15 Dessert Avenue, Sweet City, Egypt</p>
+              <div className="w-full flex flex-col md:flex-row gap-8">
+                <div className="flex-1 min-h-[350px] h-[350px]">
+                  <MapWithMarkers branches={branches} />
+                </div>
+                <div className="w-full md:w-72 max-h-[350px] overflow-y-auto border-l md:pl-4">
+                  <h4 className="font-semibold mb-2 text-gray-900">Our Branches</h4>
+                  {branches.map((branch, idx) => (
+                    <div key={idx} className="mb-4 pb-2 border-b last:border-b-0">
+                      <b className="text-teal-700">{branch.name}</b><br />
+                      <span className="text-sm text-gray-600">{branch.address}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </CardContent>

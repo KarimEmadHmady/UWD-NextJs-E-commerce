@@ -9,6 +9,7 @@ import { Badge } from "@/components/common/Badge/Badge"
 import { useCheckout } from '@/hooks/useCheckout';
 import { useOrders } from '@/hooks/useOrders';
 import RevealOnScroll from '@/components/common/RevealOnScroll';
+import { BackgroundLinesDemo } from '@/components/common/ui/BackgroundLinesDemo';
 
 export default function OrderConfirmationPage() {
   const router = useRouter()
@@ -87,10 +88,14 @@ export default function OrderConfirmationPage() {
 
   return (
     <RevealOnScroll alwaysAnimate>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 relative overflow-hidden">
+        {/* خلفية الخطوط */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <BackgroundLinesDemo />
+        </div>
 
 
-        <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto px-4 py-8 relative z-10">
           {/* Success Header */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">

@@ -11,6 +11,7 @@ import { useMemo } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
+import { WobbleCardDemo } from '@/components/common/ui/WobbleCardDemo';
 
 /**
  * HomePage component - Main landing page for the e-commerce site.
@@ -189,6 +190,7 @@ export default function HomePage() {
         </div>
       
         </div>
+        <WobbleCardDemo />
         {/* Slogan */}
         <section className="py-10 bg-gray-50 sm:py-16 lg:py-24">
       <RevealOnScroll delay={0.3}>
