@@ -11,6 +11,9 @@ export interface Address {
   country: string;
   notes?: string;
   isDefault?: boolean;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 interface AddressState {

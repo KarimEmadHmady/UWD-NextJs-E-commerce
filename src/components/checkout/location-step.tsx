@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { MapPin, Navigation, Check, Loader2 } from "lucide-react";
+import { MapPin, Navigation, Loader2 } from "lucide-react";
 import { Button } from "../common/Button/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card";
-import { Input } from "@/components/common/input/input";
+import { Input } from "../common/input/input";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 
@@ -19,100 +18,54 @@ interface LocationStepProps {
   initialLocation?: LocationData | null;
 }
 
-// مكون الخريطة التفاعلية (يتم تحميله ديناميكياً لدعم SSR)
 const MapWithMarker = dynamic(() => import("./ManualMap"), { ssr: false });
 
 export default function LocationStep({ onLocationSet, initialLocation }: LocationStepProps) {
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState<LocationData | null>(null);
-  const [locationError, setLocationError] = useState<string | null>(null);
+  // إحداثيات مصر افتراضياً
+  const defaultCoords = { latitude: 30.0444, longitude: 31.2357, address: "Cairo, Egypt" };
+  const [location, setLocation] = useState<LocationData>(initialLocation || defaultCoords);
   const [manualAddress, setManualAddress] = useState("");
-  const [manualError, setManualError] = useState<string | null>(null);
-  const [manualLatLng, setManualLatLng] = useState<{lat: number, lng: number} | null>(null);
   const [manualLoading, setManualLoading] = useState(false);
-
-  // حالة الموقع التلقائي (currentLocation) + marker
-  const [currentMarker, setCurrentMarker] = useState<{lat: number, lng: number} | null>(null);
-  const [currentAddress, setCurrentAddress] = useState<string>("");
-  const [currentReverseLoading, setCurrentReverseLoading] = useState(false);
-
-  // حالة العنوان اليدوي: العنوان النصي الناتج من reverse geocoding
-  const [manualReverseAddress, setManualReverseAddress] = useState<string>("");
-  const [manualReverseLoading, setManualReverseLoading] = useState(false);
-
-  // عند mount، إذا كان initialLocation موجود، املأ currentLocation
+  const [error, setError] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  // Debounce البحث عن اقتراحات
   useEffect(() => {
-    if (initialLocation) setCurrentLocation(initialLocation);
+    if (manualAddress.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    const timeout = setTimeout(async () => {
+      setSuggestLoading(true);
+      try {
+        const isArabic = /^[\u0600-\u06FF]/.test(manualAddress.trim());
+        const lang = isArabic ? 'ar' : 'en';
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=eg&accept-language=${lang}&q=${encodeURIComponent(manualAddress)}`);
+        const data = await res.json();
+        setSuggestions(data);
+      } catch {
+        setSuggestions([]);
+      }
+      setSuggestLoading(false);
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [manualAddress]);
+
+  // عند mount، إذا كان initialLocation موجود، املأ location
+  useEffect(() => {
+    if (initialLocation) setLocation(initialLocation);
   }, [initialLocation]);
 
-  // عند جلب الموقع التلقائي، حدث marker والعنوان
-  useEffect(() => {
-    if (currentLocation) {
-      setCurrentMarker({ lat: currentLocation.latitude, lng: currentLocation.longitude });
-      setCurrentAddress(currentLocation.address);
-    }
-  }, [currentLocation]);
-
-  // عند تغيير marker في الموقع التلقائي، نفذ reverse geocoding
-  useEffect(() => {
-    const fetchAddress = async () => {
-      if (currentMarker) {
-        setCurrentReverseLoading(true);
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${currentMarker.lat}&lon=${currentMarker.lng}`);
-          const data = await res.json();
-          if (data && data.display_name) {
-            setCurrentAddress(data.display_name);
-          } else {
-            setCurrentAddress(`Lat: ${currentMarker.lat.toFixed(4)}, Lng: ${currentMarker.lng.toFixed(4)}`);
-          }
-        } catch {
-          setCurrentAddress(`Lat: ${currentMarker.lat.toFixed(4)}, Lng: ${currentMarker.lng.toFixed(4)}`);
-        }
-        setCurrentReverseLoading(false);
-      }
-    };
-    if (currentMarker && (currentMarker.lat !== currentLocation?.latitude || currentMarker.lng !== currentLocation?.longitude)) {
-      fetchAddress();
-    }
-  }, [currentMarker]);
-
-  // عند تغيير manualLatLng، نفذ reverse geocoding
-  useEffect(() => {
-    const fetchManualAddress = async () => {
-      if (manualLatLng) {
-        setManualReverseLoading(true);
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${manualLatLng.lat}&lon=${manualLatLng.lng}`);
-          const data = await res.json();
-          if (data && data.display_name) {
-            setManualReverseAddress(data.display_name);
-          } else {
-            setManualReverseAddress(`Lat: ${manualLatLng.lat.toFixed(4)}, Lng: ${manualLatLng.lng.toFixed(4)}`);
-          }
-        } catch {
-          setManualReverseAddress(`Lat: ${manualLatLng.lat.toFixed(4)}, Lng: ${manualLatLng.lng.toFixed(4)}`);
-        }
-        setManualReverseLoading(false);
-      }
-    };
-    if (manualLatLng) {
-      fetchManualAddress();
-    }
-  }, [manualLatLng]);
-
-  const getCurrentLocation = () => {
-    setIsGettingLocation(true);
-    setLocationError(null);
+  // جلب اللوكيشن من المتصفح
+  const handleGetLocation = () => {
+    setError(null);
     if (!navigator.geolocation) {
-      setLocationError("Geolocation is not supported by this browser");
-      setIsGettingLocation(false);
+      setError("Geolocation is not supported by this browser");
       return;
     }
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        // جلب العنوان النصي من Nominatim
         let address = `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`;
         try {
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
@@ -120,27 +73,13 @@ export default function LocationStep({ onLocationSet, initialLocation }: Locatio
           if (data && data.display_name) {
             address = data.display_name;
           }
-        } catch (e) {
-          // احتفظ بالعنوان الافتراضي إذا فشل الطلب
-        }
-        setCurrentLocation({ latitude, longitude, address });
-        setIsGettingLocation(false);
+        } catch {}
+        const loc = { latitude, longitude, address };
+        setLocation(loc);
+        // لا تستدعي onLocationSet هنا
       },
       (error) => {
-        let errorMessage = "Failed to get location";
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage = "Location access denied by user";
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage = "Location information unavailable";
-            break;
-          case error.TIMEOUT:
-            errorMessage = "Location request timed out";
-            break;
-        }
-        setLocationError(errorMessage);
-        setIsGettingLocation(false);
+        setError("Failed to get location from browser");
       },
       {
         enableHighAccuracy: true,
@@ -150,158 +89,120 @@ export default function LocationStep({ onLocationSet, initialLocation }: Locatio
     );
   };
 
-  const searchManualLocation = async () => {
-    setManualError(null);
-    setManualLatLng(null);
-    if (!manualAddress.trim()) {
-      setManualError("Please enter your address");
-      return;
-    }
+  // البحث عن عنوان يدوي وتحويله لإحداثيات
+  const handleManualSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
     setManualLoading(true);
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(manualAddress)}`);
+      const isArabic = /^[\u0600-\u06FF]/.test(manualAddress.trim());
+      const lang = isArabic ? 'ar' : 'en';
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=eg&accept-language=${lang}&q=${encodeURIComponent(manualAddress)}`);
       const data = await res.json();
       if (data && data.length > 0) {
-        setManualLatLng({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) });
+        const latitude = parseFloat(data[0].lat);
+        const longitude = parseFloat(data[0].lon);
+        let address = data[0].display_name || manualAddress;
+        const loc = { latitude, longitude, address };
+        setLocation(loc);
+        // لا تستدعي onLocationSet هنا
       } else {
-        setManualError("Location not found. Try a more specific address.");
+        setError("Location not found. Try a more specific address.");
       }
     } catch {
-      setManualError("Failed to fetch location. Try again.");
+      setError("Failed to fetch location. Try again.");
     }
     setManualLoading(false);
   };
 
-  // أعد تعريف دالة تأكيد الموقع الحالي
-  const confirmLocation = () => {
-    if (currentLocation) {
-      onLocationSet(currentLocation);
-    }
-  };
-
-  // عند التأكيد، أرسل الإحداثيات والعنوان الحالي
-  const confirmCurrentMarker = () => {
-    if (currentMarker && currentAddress) {
-      onLocationSet({ latitude: currentMarker.lat, longitude: currentMarker.lng, address: currentAddress });
-    }
-  };
-
-  // عند التأكيد، أرسل العنوان الناتج من reverse geocoding
-  const confirmManualAddress = () => {
-    if (!manualLatLng) {
-      setManualError("Please search and select a valid location");
-      return;
-    }
-    setManualError(null);
-    onLocationSet({ address: manualReverseAddress || manualAddress.trim(), latitude: manualLatLng.lat, longitude: manualLatLng.lng });
+  // عند تحريك الماركر على الخريطة
+  const handleMapChange = async (lat: number, lng: number) => {
+    let address = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+      const data = await res.json();
+      if (data && data.display_name) {
+        address = data.display_name;
+      }
+    } catch {}
+    const loc = { latitude: lat, longitude: lng, address };
+    setLocation(loc);
+    // onLocationSet(loc); // This line is removed as per the edit hint
   };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="text-center mb-8">
-        <MapPin className="w-16 h-16 text-teal-600 mx-auto mb-4" />
+      <div className="text-center mb-5">
+        <MapPin className="w-10 h-10 text-teal-600 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Set Your Delivery Location</h2>
-        <p className="text-gray-600">We need your location to calculate shipping costs and delivery time</p>
+        <p className="text-gray-600">Get your location from browser or enter it manually. The map will update automatically.</p>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Navigation className="w-5 h-5 text-teal-600" />
-            Use Current Location
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button
-            onClick={getCurrentLocation}
-            disabled={isGettingLocation}
-            className="w-full bg-teal-600 hover:bg-teal-700"
-          >
-            {isGettingLocation ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Getting Location...
-              </>
-            ) : (
-              <>
-                <MapPin className="w-4 h-4 mr-2" />
-                Get My Location
-              </>
-            )}
-          </Button>
-          {locationError && <p className="text-red-500 text-sm mt-2">{locationError}</p>}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-teal-600" />
-            Enter Address Manually
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2 mb-2">
+      <div className="flex flex-col md:flex-row gap-4 items-center mb-4">
+        <Button onClick={handleGetLocation} className="bg-teal-600 hover:bg-teal-700 w-full md:w-auto">
+          <Navigation className="w-4 h-4 mr-2" />
+          Get Location from Browser
+        </Button>
+        <form onSubmit={handleManualSubmit} className="flex gap-2 w-full md:w-auto relative">
+          <div className="w-full relative">
             <Input
               value={manualAddress}
               onChange={e => setManualAddress(e.target.value)}
-              placeholder="Enter your delivery address"
+              placeholder="Enter your address manually"
+              className="w-full"
+              autoComplete="off"
             />
-            <Button onClick={searchManualLocation} className="bg-teal-600 hover:bg-teal-700 px-3" disabled={manualLoading}>
-              {manualLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Find your location"}
-            </Button>
+            {suggestLoading && <div className="absolute right-2 top-2 text-xs text-gray-400">Loading...</div>}
+            {suggestions.length > 0 && (
+              <ul className="absolute z-[2000] bg-white border w-full min-w-[300px] max-h-72 overflow-auto rounded shadow-lg mt-1">
+                {suggestions.map(s => (
+                  <li
+                    key={s.place_id}
+                    className="p-2 hover:bg-teal-100 cursor-pointer text-sm font-medium text-gray-800"
+                    onClick={() => {
+                      setManualAddress(s.display_name);
+                      setSuggestions([]);
+                      const loc = {
+                        latitude: parseFloat(s.lat),
+                        longitude: parseFloat(s.lon),
+                        address: s.display_name
+                      };
+                      setLocation(loc);
+                    }}
+                  >
+                    {s.display_name}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          {manualError && <p className="text-red-500 text-sm mb-2">{manualError}</p>}
-          {manualLatLng && (
-            <div className="mb-2 w-full h-[280px] rounded overflow-hidden">
-              <MapWithMarker
-                lat={manualLatLng.lat}
-                lng={manualLatLng.lng}
-                onChange={(lat: number, lng: number) => setManualLatLng({ lat, lng })}
-              />
-              <p className="font-medium text-gray-900">
-                {manualReverseLoading ? "Loading address..." : manualReverseAddress}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">Lat: {manualLatLng.lat.toFixed(5)}, Lng: {manualLatLng.lng.toFixed(5)}</p>
-            </div>
-          )}
-          <Button
-            onClick={confirmManualAddress}
-            className="w-full bg-teal-600 hover:bg-teal-700"
-            disabled={!manualLatLng}
-          >
-            Confirm Manual Address
+          <Button type="submit" className="bg-teal-600 hover:bg-teal-700 px-3" disabled={manualLoading}>
+            {manualLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Set Address"}
           </Button>
-        </CardContent>
-      </Card>
-      {currentLocation && (
-        <Card className="border-green-200 bg-green-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-800">
-              <Check className="w-5 h-5" />
-              Location Found
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 mb-4">
-              {/* خريطة تفاعلية مع marker */}
-              <div className="mb-2 w-full h-[220px] rounded overflow-hidden">
-                <MapWithMarker
-                  lat={currentMarker?.lat || currentLocation.latitude}
-                  lng={currentMarker?.lng || currentLocation.longitude}
-                  onChange={(lat: number, lng: number) => setCurrentMarker({ lat, lng })}
-                />
-              </div>
-              <p className="font-medium text-gray-900">
-                {currentReverseLoading ? "Loading address..." : currentAddress}
-              </p>
-              <p className="text-sm text-gray-500">
-                Coordinates: {(currentMarker?.lat || currentLocation.latitude).toFixed(4)}, {(currentMarker?.lng || currentLocation.longitude).toFixed(4)}
-              </p>
+        </form>
+      </div>
+      {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+      {/* الخريطة تظهر دائماً */}
+      <div className="mb-2 w-full h-[215px] rounded overflow-hidden">
+        <MapWithMarker
+          lat={location.latitude}
+          lng={location.longitude}
+          onChange={handleMapChange}
+        />
+      </div>
+      {/* لا تظهر العنوان أو زر التأكيد إلا إذا تم اختيار عنوان غير الافتراضي */}
+      {location.address !== defaultCoords.address && (
+        <>
+          <div className="flex flex-col items-start gap-2 bg-teal-50 rounded-lg shadow p-3 mt-2">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-teal-600" />
+              <span className="font-semibold text-gray-900 break-words">{location.address}</span>
             </div>
-            <Button onClick={confirmCurrentMarker} className="w-full bg-green-600 hover:bg-green-700">
-              Confirm This Location
-            </Button>
-          </CardContent>
-        </Card>
+            <span className="text-xs text-gray-500 ml-7">Lat: {location.latitude.toFixed(5)}, Lng: {location.longitude.toFixed(5)}</span>
+          </div>
+          <Button className="w-full bg-teal-600 hover:bg-teal-700 mt-4" onClick={() => onLocationSet(location)}>
+            Confirm Location
+          </Button>
+        </>
       )}
     </div>
   );

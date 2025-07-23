@@ -21,6 +21,7 @@ import { clearCart } from '@/redux/features/cart/cartSlice';
 import { useAddress } from '@/hooks/useAddress';
 import { useEffect } from 'react';
 import RevealOnScroll from "@/components/common/RevealOnScroll"
+import { usePathname } from "next/navigation"
 
 interface LocationData {
   latitude: number
@@ -44,6 +45,9 @@ interface ShippingOption {
  */
 export default function CheckoutPage() {
   const router = useRouter()
+  const pathname = usePathname();
+  // استخراج locale من أول جزء في المسار
+  const locale = pathname.split("/")[1] || "en";
   const dispatch = useDispatch();
   const { address, shippingMethod, paymentMethod, review } = useCheckout();
   const { items: cartItems } = useCart();
@@ -56,6 +60,7 @@ export default function CheckoutPage() {
   const { createOrder } = useOrders();
   const user = useSelector(selectUser);
   const { addresses, defaultAddress, add: addAddress } = useAddress();
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   // حساب subtotal من السلة
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
@@ -72,10 +77,10 @@ export default function CheckoutPage() {
     shippingMethod === 'Standard Shipping'
   ) shippingCost = 50;
   else if (
-    shippingMethod === 'Pickup from Store' ||
-    shippingMethod === 'pickup' ||
+    shippingMethod === 'Pickup in Store' ||
+    shippingMethod === 'Payment in store' ||
     shippingMethod === 'Pickup' ||
-    shippingMethod === 'pickup from store'
+    shippingMethod === 'Pickup in Store'
   ) shippingCost = 0;
   else if (
     shippingMethod === 'overnight' ||
@@ -96,22 +101,24 @@ export default function CheckoutPage() {
   }
 
   const steps = [
-    { number: 1, title: "Location", icon: MapPin, completed: !!location },
-    { number: 2, title: "Customer Info & Shipping", icon: Truck, completed: !!customerInfo && !!shippingMethod },
-    { number: 3, title: "Payment", icon: CreditCard, completed: !!paymentMethod },
-    { number: 4, title: "Review", icon: CheckCircle, completed: !!review },
+    { number: 1, title: "Authentication", icon: null, completed: !!user },
+    { number: 2, title: "Location", icon: MapPin, completed: !!location },
+    { number: 3, title: "Customer Info & Shipping", icon: Truck, completed: !!customerInfo && !!shippingMethod },
+    { number: 4, title: "Payment", icon: CreditCard, completed: !!paymentMethod },
+    { number: 5, title: "Review", icon: CheckCircle, completed: !!review },
   ];
   const canGoToStep = (stepNum: number) => {
     if (stepNum === 1) return true;
-    if (stepNum === 2) return !!location;
-    if (stepNum === 3) return !!location && !!customerInfo && !!shippingMethod;
-    if (stepNum === 4) return !!location && !!customerInfo && !!shippingMethod && !!paymentMethod;
+    if (stepNum === 2) return !!user;
+    if (stepNum === 3) return !!user && !!location;
+    if (stepNum === 4) return !!user && !!location && !!customerInfo && !!shippingMethod;
+    if (stepNum === 5) return !!user && !!location && !!customerInfo && !!shippingMethod && !!paymentMethod;
     return false;
   };
 
   const handleLocationSet = (loc: any) => {
     setLocation(loc);
-    setCurrentStep(2);
+    setCurrentStep(3); // بدلاً من 2
   };
 
   const handleShippingSelect = (option: any) => {
@@ -119,15 +126,13 @@ export default function CheckoutPage() {
     setCurrentStep(3);
   }
 
-  const handlePaymentSelect = (method: 'card' | 'cash' | 'pickup') => {
+  const handlePaymentSelect = (method: 'card' | 'cash' | 'Payment in store') => {
     dispatch(setPaymentMethod(method));
     setCardError('');
     setCardDetails({ number: '', expiry: '', cvv: '' });
-    // لا تنتقل مباشرة للخطوة التالية إذا كانت بطاقة
     if (method !== 'card') setCurrentStep(4);
   };
 
-  // عند تحميل الصفحة، إذا كان هناك عنوان افتراضي ولم يتم تعبئة customerInfo، املأه تلقائياً
   useEffect(() => {
     if (!customerInfo && defaultAddress) {
       setCustomerInfo({
@@ -138,6 +143,14 @@ export default function CheckoutPage() {
         region: defaultAddress.region,
         notes: defaultAddress.notes || '',
         country: defaultAddress.country || '',
+      });
+    }
+    // تعيين اللوكيشن الافتراضي إذا كان موجوداً
+    if (!location && defaultAddress && defaultAddress.latitude && defaultAddress.longitude && defaultAddress.address) {
+      setLocation({
+        latitude: defaultAddress.latitude,
+        longitude: defaultAddress.longitude,
+        address: defaultAddress.address,
       });
     }
   }, [defaultAddress]);
@@ -167,11 +180,11 @@ export default function CheckoutPage() {
         isDefault: addresses.length === 0, // أول عنوان يصبح افتراضي
       });
     }
-    if (shipping === 'Pickup from Store') {
-      dispatch(setPaymentMethod('pickup'));
+    if (shipping === 'Pickup in Store') {
+      dispatch(setPaymentMethod('Payment in store'));
       setCurrentStep(4); // انتقل مباشرة للريفيو
     } else {
-      setCurrentStep(3);
+      setCurrentStep(4); // انتقل لمرحلة الدفع
     }
   };
 
@@ -194,10 +207,11 @@ export default function CheckoutPage() {
       return;
     }
     setCardError('');
-    setCurrentStep(4);
+    setCurrentStep(5); // انتقل للريفيو
   };
 
   const handleReview = (reviewData: any) => {
+    setIsPlacingOrder(true);
     // بناء بيانات الأوردر
     const order = {
       id: Date.now().toString(),
@@ -217,12 +231,29 @@ export default function CheckoutPage() {
   }
 
   const renderStepContent = () => {
+    if (currentStep === 1) {
+      if (!user) {
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[300px]">
+            <h2 className="text-2xl font-bold mb-4">Please Login or Register</h2>
+            <p className="mb-6 text-gray-600">You must be logged in to continue checkout.</p>
+            <div className="flex gap-4">
+              <button onClick={() => router.push(`/${locale}/login?from=checkout`)} className="bg-teal-600 text-white px-6 py-2 rounded">Login</button>
+              <button onClick={() => router.push(`/${locale}/register?from=checkout`)} className="bg-gray-200 text-gray-900 px-6 py-2 rounded">Register</button>
+            </div>
+          </div>
+        );
+      } else {
+        setCurrentStep(2);
+        return null;
+      }
+    }
     switch (currentStep) {
-      case 1:
-        return <LocationStep onLocationSet={handleLocationSet} initialLocation={location || undefined} />;
       case 2:
-        return <CustomerInfoStep onCustomerInfoSet={handleCustomerInfoSet} initialInfo={customerInfo || undefined} initialShippingMethod={shippingMethod || undefined} />;
+        return <LocationStep onLocationSet={handleLocationSet} initialLocation={location || undefined} />;
       case 3:
+        return <CustomerInfoStep onCustomerInfoSet={handleCustomerInfoSet} initialInfo={customerInfo || undefined} initialShippingMethod={shippingMethod || undefined} />;
+      case 4:
         return (
           <div className="max-w-2xl mx-auto space-y-6">
              <RevealOnScroll alwaysAnimate>
@@ -239,7 +270,7 @@ export default function CheckoutPage() {
                 <div className="flex flex-col gap-4">
                   <Button onClick={() => handlePaymentSelect('card')} className={`w-full ${paymentMethod === 'card' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'}`}>Pay by Card</Button>
                   <Button onClick={() => handlePaymentSelect('cash')} className={`w-full ${paymentMethod === 'cash' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'}`}>Cash on Delivery</Button>
-                  <Button onClick={() => handlePaymentSelect('pickup')} className={`w-full ${paymentMethod === 'pickup' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'}`}>Pickup from Store</Button>
+                  <Button onClick={() => handlePaymentSelect('Payment in store')} className={`w-full ${paymentMethod === 'Payment in store' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'}`}>Payment in store</Button>
                 </div>
                 {paymentMethod === 'card' && (
                   <div className="mt-6 space-y-4">
@@ -253,7 +284,7 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 {paymentMethod !== 'card' && (
-                  <Button onClick={() => setCurrentStep(4)} className="w-full bg-teal-600 hover:bg-teal-700 text-white mt-4">Continue to Review</Button>
+                  <Button onClick={() => setCurrentStep(5)} className="w-full bg-teal-600 hover:bg-teal-700 text-white mt-4">Continue to Review</Button>
                 )}
                 <Button variant="outline" onClick={() => setCurrentStep(2)} className="w-full mt-2">Back</Button>
               </CardContent>
@@ -261,7 +292,7 @@ export default function CheckoutPage() {
             </RevealOnScroll>
           </div>
         )
-      case 4:
+      case 5:
         return (
           <div className="max-w-2xl mx-auto space-y-6">
             <RevealOnScroll alwaysAnimate>
@@ -335,7 +366,7 @@ export default function CheckoutPage() {
                 >
                   Place Order
                 </Button>
-                <Button variant="outline" onClick={() => setCurrentStep(3)} className="w-full mt-2">Back</Button>
+                <Button variant="outline" onClick={() => setCurrentStep(4)} className="w-full mt-2">Back</Button>
               </CardContent>
             </Card>
             </RevealOnScroll>
@@ -346,7 +377,6 @@ export default function CheckoutPage() {
     }
   }
 
-  // إذا كانت السلة فارغة
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
@@ -366,6 +396,17 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {isPlacingOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[9999]">
+          <div className="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
+            <svg className="animate-spin h-8 w-8 text-teal-600 mb-4" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            <span className="text-teal-700 font-semibold">Placing your order...</span>
+          </div>
+        </div>
+      )}
       <RevealOnScroll>
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}

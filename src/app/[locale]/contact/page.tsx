@@ -10,6 +10,7 @@ import { Textarea } from "@/components/common/textarea/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Label } from "@/components/common/label/label"
 import RevealOnScroll from "@/components/common/RevealOnScroll"
+import { useNotifications } from '@/hooks/useNotifications';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ export default function ContactPage() {
     message: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { notify } = useNotifications();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -34,7 +36,7 @@ export default function ContactPage() {
     // Reset form
     setFormData({ name: "", email: "", subject: "", message: "" })
     // Show success message
-    alert("Message sent successfully!")
+    notify('success', 'Message sent successfully!')
   }
 
   const contactInfo = [

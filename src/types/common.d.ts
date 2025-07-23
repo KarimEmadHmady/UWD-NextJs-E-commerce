@@ -45,6 +45,9 @@ export interface Address {
   country: string;
   postalCode: string;
   isDefault: boolean;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface Order {

@@ -10,6 +10,11 @@ import { Button } from "@/components/common/Button/Button"
 import { Input } from "@/components/common/input/input"
 import { Label } from "@/components/common/label/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/common/card/card"
+import LocationStep from '@/components/checkout/location-step';
+import { AnimatePresence, motion } from 'framer-motion';
+import { X } from 'lucide-react';
+import { useSearchParams, usePathname } from 'next/navigation';
+import { useNotifications } from '@/hooks/useNotifications';
 
 /**
  * RegisterPage component - Provides a registration form for new users to create an account.
@@ -22,25 +27,74 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showLocationModal, setShowLocationModal] = useState(true); // يظهر مباشرة
+  const [location, setLocation] = useState<any>(null);
+  const searchParams = useSearchParams();
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  const locale = pathname.split("/")[1] || "en";
+  const { notify } = useNotifications();
+
+  const handleLocationSet = (loc: any) => {
+    setLocation(loc);
+    setShowLocationModal(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!")
-      return
+    if (!location) {
+      notify('error', 'Please select your location first!');
+      setShowLocationModal(true);
+      return;
     }
-
+    if (password !== confirmPassword) {
+      notify('error', 'Passwords do not match!');
+      return;
+    }
     setIsSubmitting(true)
     // Simulate API call for registration
     await new Promise((resolve) => setTimeout(resolve, 2000))
     setIsSubmitting(false)
-
-    alert("Registration successful! Please login.")
-    router.push("/login")
+    notify('success', 'Registration successful! Please login.');
+    const from = searchParams.get('from');
+    if (from === 'checkout') {
+      router.push(`/${locale}/checkout`);
+    } else {
+      router.push("/login");
+    }
   }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Location Modal */}
+      <AnimatePresence>
+        {showLocationModal && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 top-0 z-50 flex items-center justify-center bg-[#eee] h-auto"
+          >
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative h-[95vh] m-5 "
+            >
+              <button
+                className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
+                onClick={() => setShowLocationModal(false)}
+                aria-label="Close"
+                disabled={!location}
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <LocationStep onLocationSet={handleLocationSet} initialLocation={location || undefined} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <main className="flex-1 flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
@@ -111,6 +165,12 @@ export default function RegisterPage() {
                   />
                 </div>
               </div>
+              {location && (
+                <div className="bg-teal-50 rounded-lg p-3 mb-2 text-xs text-gray-700">
+                  <b>Location:</b> {location.address} <br />
+                  <span>Lat: {location.latitude?.toFixed(5)}, Lng: {location.longitude?.toFixed(5)}</span>
+                </div>
+              )}
               <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 py-3" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>

@@ -13,6 +13,13 @@ import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/features/user/userSelectors';
 import { useWishlist } from '@/hooks/useWishlist';
 import RevealOnScroll from "@/components/common/RevealOnScroll"
+import LocationStep from '@/components/checkout/location-step';
+import ManualMap from '@/components/checkout/ManualMap';
+import { AnimatePresence, motion } from 'framer-motion';
+import { X } from 'lucide-react';
+import { useCart } from '@/hooks/useCart';
+import { useOrders } from '@/hooks/useOrders';
+import { useNotifications } from '@/hooks/useNotifications';
 
 /**
  * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
@@ -24,19 +31,66 @@ export default function AccountPage() {
   const { addresses, defaultAddress, add, update, remove, setDefault } = useAddress();
   const userRedux = useSelector(selectUser);
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
   const [addressForm, setAddressForm] = useState({
-    name: '', phone: '', street: '', city: '', region: '', country: '', notes: ''
+    name: '', phone: '', street: '', city: '', region: '', country: '', notes: '',
+    location: null as null | { address: string, latitude: number, longitude: number }
   });
   const handleAddressFormChange = (e: any) => setAddressForm({ ...addressForm, [e.target.name]: e.target.value });
-  const handleAddAddress = () => {
-    add({
-      id: Date.now().toString(),
-      userId: userRedux?.id || 'guest',
-      ...addressForm,
-      isDefault: addresses.length === 0,
+  const [editAddressId, setEditAddressId] = useState<string | null>(null);
+  const handleEditAddress = (addr: any) => {
+    setAddressForm({
+      name: addr.name || '',
+      phone: addr.phone || '',
+      street: addr.street || '',
+      city: addr.city || '',
+      region: addr.region || '',
+      country: addr.country || '',
+      notes: addr.notes || '',
+      location: addr.latitude && addr.longitude && addr.address ? {
+        address: addr.address,
+        latitude: addr.latitude,
+        longitude: addr.longitude
+      } : null
     });
+    setEditAddressId(addr.id);
+    setShowAddressForm(true);
+  };
+  const handleAddOrEditAddress = () => {
+    if (!addressForm.location) {
+      notify('error', 'Please select your location!');
+      return;
+    }
+    if (editAddressId) {
+      // تعديل عنوان موجود
+      update({
+        id: editAddressId,
+        userId: userRedux?.id || 'guest',
+        ...addressForm,
+        address: addressForm.location.address,
+        latitude: addressForm.location.latitude,
+        longitude: addressForm.location.longitude,
+        isDefault: false,
+      });
+      setEditAddressId(null);
+    } else {
+      // إضافة عنوان جديد
+      add({
+        id: Date.now().toString(),
+        userId: userRedux?.id || 'guest',
+        ...addressForm,
+        address: addressForm.location.address,
+        latitude: addressForm.location.latitude,
+        longitude: addressForm.location.longitude,
+        isDefault: addresses.length === 0,
+      });
+    }
     setShowAddressForm(false);
-    setAddressForm({ name: '', phone: '', street: '', city: '', region: '', country: '', notes: '' });
+    setAddressForm({ name: '', phone: '', street: '', city: '', region: '', country: '', notes: '', location: null });
+  };
+  const handleLocationSet = (loc: any) => {
+    setAddressForm((prev) => ({ ...prev, location: loc }));
+    setShowLocationModal(false);
   };
 
   const user = {
@@ -48,31 +102,13 @@ export default function AccountPage() {
     totalSpent: 3150,
   }
 
-  const recentOrders = [
-    {
-      id: "ORD-2025-000789",
-      date: "July 10, 2025",
-      status: "Delivered",
-      total: 8999.00,
-      items: 2,
-    },
-    {
-      id: "ORD-2025-000788",
-      date: "June 22, 2025",
-      status: "Processing",
-      total: 4999.50,
-      items: 1,
-    },
-    {
-      id: "ORD-2025-000787",
-      date: "June 1, 2025",
-      status: "Shipped",
-      total: 2999.99,
-      items: 1,
-    },
-  ]
+  const { orders } = useOrders();
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
-  const { items: wishlistItems } = useWishlist();
+  const { items: wishlistItems, removeItem: removeWishlistItem } = useWishlist();
+  const { addItem: addCartItem, toggle: toggleCart } = useCart();
+  const { notify } = useNotifications();
 
   const formatPrice = (price: number) => {
     return `EGP ${price.toLocaleString("en-EG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
@@ -90,6 +126,9 @@ export default function AccountPage() {
         return "bg-gray-100 text-gray-800"
     }
   }
+
+  const totalOrders = orders.length;
+  const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -135,7 +174,7 @@ export default function AccountPage() {
                     <Package className="w-6 h-6 text-teal-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{user.totalOrders}</p>
+                    <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
                     <p className="text-sm text-gray-600">Total Orders</p>
                   </div>
                 </div>
@@ -149,7 +188,7 @@ export default function AccountPage() {
                     <CreditCard className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{formatPrice(user.totalSpent)}</p>
+                    <p className="text-2xl font-bold text-gray-900">{formatPrice(totalSpent)}</p>
                     <p className="text-sm text-gray-600">Total Spent</p>
                   </div>
                 </div>
@@ -191,24 +230,24 @@ export default function AccountPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {recentOrders.slice(0, 3).map((order) => (
+                    {orders.slice(0, 3).map((order) => (
                       <div
                         key={order.id}
                         className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                       >
                         <div>
                           <p className="font-semibold text-gray-900">{order.id}</p>
-                          <p className="text-sm text-gray-600">{order.date}</p>
-                          <p className="text-sm text-gray-600">{order.items} items</p>
+                          <p className="text-sm text-gray-600">{new Date(order.createdAt).toLocaleDateString()}</p>
+                          <p className="text-sm text-gray-600">{order.items.length} items</p>
                         </div>
                         <div className="text-right">
                           <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                          <p className="font-semibold text-gray-900 mt-1">{formatPrice(order.total)}</p>
+                          <p className="font-semibold text-gray-900 mt-1">EGP {order.total.toFixed(2)}</p>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" className="w-full mt-4 bg-transparent cursor-pointer">
+                  <Button variant="outline" className="w-full mt-4 bg-transparent cursor-pointer" onClick={() => setActiveTab('orders')}>
                     View All Orders
                   </Button>
                 </CardContent>
@@ -221,23 +260,15 @@ export default function AccountPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
-                      <Package className="w-4 h-4 mr-3" />
-                      Track an Order
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
+                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer" onClick={() => setActiveTab('wishlist')}>
                       <Heart className="w-4 h-4 mr-3" />
                       View Wishlist
                     </Button>
-                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
+                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer" onClick={() => setActiveTab('addresses')}>
                       <MapPin className="w-4 h-4 mr-3" />
                       Manage Addresses
                     </Button>
-                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
-                      <CreditCard className="w-4 h-4 mr-3" />
-                      Payment Methods
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
+                    <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer" onClick={() => setActiveTab('settings')}>
                       <Settings className="w-4 h-4 mr-3" />
                       Account Settings
                     </Button>
@@ -254,7 +285,7 @@ export default function AccountPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentOrders.map((order) => (
+                  {orders.map((order) => (
                     <div
                       key={order.id}
                       className="flex flex-col md:flex-row items-center justify-between p-6 border border-gray-200 rounded-lg"
@@ -265,15 +296,15 @@ export default function AccountPage() {
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900">{order.id}</p>
-                          <p className="text-sm text-gray-600">{order.date}</p>
+                          <p className="text-sm text-gray-600">{new Date(order.createdAt).toLocaleDateString()}</p>
                           <p className="text-sm text-gray-600">
-                            {order.items} items • {formatPrice(order.total)}
+                            {order.items.length} items • EGP {order.total.toFixed(2)}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                        <Button variant="outline" size="sm" className="bg-transparent cursor-pointer">
+                        <Button variant="outline" size="sm" className="bg-transparent cursor-pointer" onClick={() => { setSelectedOrder(order); setShowOrderDetails(true); }}>
                           View Details
                         </Button>
                       </div>
@@ -282,6 +313,50 @@ export default function AccountPage() {
                 </div>
               </CardContent>
             </Card>
+            {/* بوب أب تفاصيل الأوردر */}
+            <AnimatePresence>
+              {showOrderDetails && selectedOrder && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+                >
+                  <motion.div
+                    initial={{ y: 40, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 40, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative"
+                  >
+                    <button
+                      className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
+                      onClick={() => setShowOrderDetails(false)}
+                      aria-label="Close"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                    <h2 className="text-2xl text-black font-bold mb-2">Order #{selectedOrder.id}</h2>
+                    <div className="mb-2 text-sm text-gray-600">Date: {new Date(selectedOrder.createdAt).toLocaleString()}</div>
+                    <div className="mb-2 text-sm text-gray-600">Status: <Badge className={getStatusColor(selectedOrder.status)}>{selectedOrder.status}</Badge></div>
+                    <div className="mb-2 text-sm text-gray-600">Payment: {selectedOrder.paymentMethod}</div>
+                    <div className="mb-2 text-sm text-gray-600">Shipping: {selectedOrder.shippingMethod}</div>
+                    <div className="mb-2 text-sm text-gray-600">Address: {selectedOrder.address}</div>
+                    <div className="mb-4 text-sm text-gray-600">Total: <b>EGP {selectedOrder.total.toFixed(2)}</b></div>
+                    <div className="mb-2 text-black font-semibold">Products:</div>
+                    <ul className="mb-2 text-black space-y-2">
+                      {selectedOrder.items.map((item: any) => (
+                        <li key={item.id} className="flex justify-between text-sm border-b pb-1">
+                          <span>{item.name} x{item.quantity}</span>
+                          <span>EGP {(item.price * (item.quantity || 1)).toFixed(2)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </TabsContent>
 
           <TabsContent value="wishlist" className="mt-6">
@@ -304,10 +379,10 @@ export default function AccountPage() {
                         <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
                         <p className="text-lg font-bold text-gray-900 mb-3">{formatPrice(item.price)}</p>
                         <div className="space-y-2">
-                          <Button className="w-full bg-teal-600 hover:bg-teal-700 cursor-pointer">
+                          <Button className="w-full bg-teal-600 hover:bg-teal-700 cursor-pointer" onClick={() => { addCartItem(item, 1); removeWishlistItem(item.id); toggleCart(); }}>
                             Add to Cart
                           </Button>
-                          <Button variant="outline" className="w-full bg-transparent cursor-pointer">
+                          <Button variant="outline" className="w-full bg-transparent cursor-pointer" onClick={() => removeWishlistItem(item.id)}>
                             Remove
                           </Button>
                         </div>
@@ -329,20 +404,39 @@ export default function AccountPage() {
                   <>
                   {addresses.length === 0 && <div className="text-gray-500 text-center">No addresses saved yet.</div>}
                   {addresses.map(addr => (
-                    <div key={addr.id} className="p-4 border border-gray-200 rounded-lg flex items-start justify-between">
+                    <div className="flex flex-col gap-2 bg-white p-3 rounded-lg border border-gray-200 mb-5">
+                    <div key={addr.id} className="p-4 border border-gray-200 rounded-lg flex items-start justify-between gap-4">
                       <div>
                         <p className="font-semibold text-gray-900">{addr.name}</p>
                         <p className="text-gray-600">{addr.street}</p>
                         <p className="text-gray-600">{addr.city}, {addr.region}</p>
                         <p className="text-gray-600">{addr.country}</p>
                         <p className="text-gray-500 text-xs">{addr.phone}</p>
-                        {addr.notes && <p className="text-gray-400 text-xs">{addr.notes}</p>}
+
                       </div>
                       <div className="flex flex-col items-end gap-2">
                         {addr.isDefault && <Badge className="mb-1">Default</Badge>}
                         {!addr.isDefault && <Button size="sm" variant="outline" className="text-xs mb-1" onClick={() => setDefault(addr.id)}>Set Default</Button>}
                         <Button size="sm" variant="outline" className="text-xs text-red-600 border-red-200 hover:bg-red-50" onClick={() => remove(addr.id)}>Delete</Button>
+                        <Button size="sm" variant="outline" className="text-xs text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => handleEditAddress(addr)}>Edit</Button>
                       </div>
+                    </div>
+                    <div>
+                                              {addr.notes && <p className="text-gray-400 text-xs">{addr.notes}</p>}
+                        {addr.address && (
+                          <div className="mt-2 text-xs text-gray-600 bg-teal-50 rounded p-2">
+                            <b>Location:</b> {addr.address}<br />
+                            {addr.latitude && addr.longitude && (
+                              <span>Lat: {addr.latitude.toFixed(5)}, Lng: {addr.longitude.toFixed(5)}</span>
+                            )}
+                          </div>
+                        )}
+                        {addr.latitude && addr.longitude && (
+                          <div className="mt-2 w-full h-[120px] rounded overflow-hidden">
+                            <ManualMap lat={addr.latitude} lng={addr.longitude} onChange={()=>{}} />
+                          </div>
+                        )}
+                    </div>
                     </div>
                   ))}
                   </>
@@ -357,9 +451,19 @@ export default function AccountPage() {
                         <input name="country" placeholder="Country" value={addressForm.country} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
                         <input name="notes" placeholder="Notes (optional)" value={addressForm.notes} onChange={handleAddressFormChange} className="border rounded px-2 py-1 col-span-2 bg-gray-100 placeholder-gray-500 text-gray-900" />
                       </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" className="bg-teal-600 text-white" onClick={handleAddAddress}>Save</Button>
-                        <Button size="sm" variant="outline" onClick={() => setShowAddressForm(false)}>Cancel</Button>
+                      {/* LocationStep يظهر دائماً */}
+                      <div className="mb-2">
+                        <LocationStep onLocationSet={(loc) => setAddressForm((prev) => ({ ...prev, location: loc }))} initialLocation={addressForm.location || undefined} />
+                      </div>
+                      {addressForm.location && (
+                        <div className="bg-teal-50 rounded-lg p-2 mb-2 text-xs text-gray-700">
+                          <b>Location:</b> {addressForm.location.address} <br />
+                          <span>Lat: {addressForm.location.latitude?.toFixed(5)}, Lng: {addressForm.location.longitude?.toFixed(5)}</span>
+                        </div>
+                      )}
+                      <div className="flex gap-2 mb-2">
+                        <Button size="sm" className="bg-teal-600 text-white" onClick={handleAddOrEditAddress}>{editAddressId ? 'Save Changes' : 'Save'}</Button>
+                        <Button size="sm" variant="outline" onClick={() => { setShowAddressForm(false); setEditAddressId(null); }}>Cancel</Button>
                       </div>
                     </div>
                   )}

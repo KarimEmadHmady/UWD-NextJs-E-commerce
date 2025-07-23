@@ -79,13 +79,7 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-3">
-            <Button
-              variant={shippingMethod === 'Express' ? 'default' : 'outline'}
-              className={shippingMethod === 'Express' ? 'bg-teal-600 text-white' : ''}
-              onClick={() => setShippingMethod('Express')}
-            >
-              Express Delivery (E.L 100, 1-2 days)
-            </Button>
+
             <Button
               variant={shippingMethod === 'Standard' ? 'default' : 'outline'}
               className={shippingMethod === 'Standard' ? 'bg-teal-600 text-white' : ''}
@@ -94,16 +88,17 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
               Standard Delivery (E.L 50, 3-5 days)
             </Button>
             <Button
-              variant={shippingMethod === 'Pickup from Store' ? 'default' : 'outline'}
-              className={shippingMethod === 'Pickup from Store' ? 'bg-teal-600 text-white' : ''}
-              onClick={() => setShippingMethod('Pickup from Store')}
+              variant={shippingMethod === 'Pickup  Store' ? 'default' : 'outline'}
+              className={shippingMethod === 'Pickup in Store' ? 'bg-teal-600 text-white' : ''}
+              onClick={() => setShippingMethod('Pickup in Store')}
             >
-              Pickup from Store (Free)
+              Pickup in Store 
             </Button>
           </div>
-          {shippingMethod === 'Pickup from Store' && (
-            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded text-teal-800 text-sm">
-              When you choose pickup from store, no shipping fees will be charged. You can collect your order directly from our branch.
+          {shippingMethod === 'Pickup in Store' && (
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded text-teal-800 text-[12px]">
+              📍 Thanks for choosing pickup in store! Your order will be ready for collection one hour after confirmation <br />
+              ⚠️ Kindly wait at least one hour before coming to pick it up in store.
             </div>
           )}
         </CardContent>

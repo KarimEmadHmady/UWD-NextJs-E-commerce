@@ -227,12 +227,16 @@ export default function OrderConfirmationPage() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between text-gray-600">
-                      <span>Subtotal</span>
+                      <span>Subtotal :</span>
                       <span>{formatPrice(orderSummary.subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
-                      <span>Shipping</span>
+                      <span>Shipping :</span>
                       <span>{latestOrder.shippingMethod ? latestOrder.shippingMethod : (orderSummary.shipping === 0 ? "Free Delivery" : formatPrice(orderSummary.shipping))}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Payment :</span>
+                      <span>{latestOrder.paymentMethod}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
                       <span>Tax</span>

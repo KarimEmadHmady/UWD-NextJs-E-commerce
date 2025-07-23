@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Mail, Lock, LogIn } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
 import { Input } from "@/components/common/input/input"
@@ -19,6 +19,9 @@ import RevealOnScroll from "@/components/common/RevealOnScroll"
  */
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams();
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  const locale = pathname.split("/")[1] || "en";
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const { login, isAuthenticated, loading, error } = useUser();
@@ -27,9 +30,14 @@ export default function LoginPage() {
   useEffect(() => {
     if (isAuthenticated) {
       stop();
-      router.push("/account");
+      const from = searchParams.get('from');
+      if (from === 'checkout') {
+        router.push(`/${locale}/checkout`);
+      } else {
+        router.push("/account");
+      }
     }
-  }, [isAuthenticated, router, stop]);
+  }, [isAuthenticated, router, stop, searchParams, locale]);
 
   useEffect(() => {
     if (loading) {

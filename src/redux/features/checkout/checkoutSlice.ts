@@ -10,7 +10,7 @@ export interface CheckoutState {
     notes?: string;
   } | null;
   shippingMethod: string | null;
-  paymentMethod: 'card' | 'cash' | 'pickup' | null;
+  paymentMethod: 'card' | 'cash' | 'Payment in store' | null;
   review: {
     comment?: string;
     rating?: number;
@@ -38,7 +38,7 @@ const checkoutSlice = createSlice({
     setShippingMethod(state, action: PayloadAction<string>) {
       state.shippingMethod = action.payload;
     },
-    setPaymentMethod(state, action: PayloadAction<'card' | 'cash' | 'pickup'>) {
+    setPaymentMethod(state, action: PayloadAction<'card' | 'cash' | 'Payment in store'>) {
       state.paymentMethod = action.payload;
     },
     setReview(state, action: PayloadAction<CheckoutState['review']>) {

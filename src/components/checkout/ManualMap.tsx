@@ -1,5 +1,5 @@
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import { useRef } from 'react';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import { useRef, useEffect } from 'react';
 import L from 'leaflet';
 
 interface ManualMapProps {
@@ -43,6 +43,14 @@ function DraggableMarker({ lat, lng, onChange }: ManualMapProps) {
   );
 }
 
+function CenterMapOnMarker({ lat, lng }: { lat: number; lng: number }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView([lat, lng], map.getZoom(), { animate: true });
+  }, [lat, lng]);
+  return null;
+}
+
 export default function ManualMap({ lat, lng, onChange }: ManualMapProps) {
   return (
     <MapContainer
@@ -55,6 +63,7 @@ export default function ManualMap({ lat, lng, onChange }: ManualMapProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <DraggableMarker lat={lat} lng={lng} onChange={onChange} />
+      <CenterMapOnMarker lat={lat} lng={lng} />
     </MapContainer>
   );
 } 
