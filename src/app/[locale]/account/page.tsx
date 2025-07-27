@@ -14,6 +14,7 @@ import { selectUser } from '@/redux/features/user/userSelectors';
 import { useWishlist } from '@/hooks/useWishlist';
 import RevealOnScroll from "@/components/common/RevealOnScroll"
 import LocationStep from '@/components/checkout/location-step';
+import LocationStepCheckout from '@/components/checkout/location-step-checkout';
 import ManualMap from '@/components/checkout/ManualMap';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -453,7 +454,7 @@ export default function AccountPage() {
                       </div>
                       {/* LocationStep يظهر دائماً */}
                       <div className="mb-2">
-                        <LocationStep onLocationSet={(loc) => setAddressForm((prev) => ({ ...prev, location: loc }))} initialLocation={addressForm.location || undefined} />
+                        <LocationStepCheckout onLocationSet={(loc: { address: string, latitude: number, longitude: number }) => setAddressForm((prev) => ({ ...prev, location: loc }))} initialLocation={addressForm.location || undefined} />
                       </div>
                       {addressForm.location && (
                         <div className="bg-teal-50 rounded-lg p-2 mb-2 text-xs text-gray-700">

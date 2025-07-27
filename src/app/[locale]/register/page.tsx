@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { User, Mail, Lock, CheckCircle, LogIn } from "lucide-react"
@@ -15,6 +15,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useAuth } from '@/hooks/useAuth';
+import { LocationData } from '@/services/authService';
 
 /**
  * RegisterPage component - Provides a registration form for new users to create an account.
@@ -26,17 +28,84 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showLocationModal, setShowLocationModal] = useState(true); // يظهر مباشرة
-  const [location, setLocation] = useState<any>(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [city, setCity] = useState("");
+  const [states, setStates] = useState("");
+  const [showLocationModal, setShowLocationModal] = useState(true); // Shows immediately
+  const [location, setLocation] = useState<LocationData | null>(null);
   const searchParams = useSearchParams();
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
   const locale = pathname.split("/")[1] || "en";
   const { notify } = useNotifications();
+  
+  // Redux auth state
+  const {
+    checkLocation,
+    registerUser,
+    locationCheckLoading,
+    locationCheckError,
+    registrationLoading,
+    registrationError,
+    registrationSuccess,
+    clearLocationError,
+    clearRegistrationError
+  } = useAuth();
 
-  const handleLocationSet = (loc: any) => {
-    setLocation(loc);
-    setShowLocationModal(false);
+  const didRedirect = useRef(false);
+
+  // Monitor Redux state changes
+  useEffect(() => {
+    console.log('locationCheckError changed:', locationCheckError);
+    if (locationCheckError) {
+      console.log('Showing location error:', locationCheckError);
+      notify('error', locationCheckError);
+      clearLocationError();
+    }
+  }, [locationCheckError, notify, clearLocationError]);
+
+  useEffect(() => {
+    console.log('registrationError changed:', registrationError);
+    if (registrationError) {
+      console.log('Showing registration error:', registrationError);
+      notify('error', registrationError);
+      clearRegistrationError();
+    }
+  }, [registrationError, notify, clearRegistrationError]);
+
+  useEffect(() => {
+    if (registrationSuccess && !didRedirect.current) {
+      didRedirect.current = true;
+      notify('success', 'Registration successful! Please login.');
+      const from = searchParams.get('from');
+      if (from === 'checkout') {
+        router.push(`/${locale}/checkout`);
+      } else {
+        router.push(`/${locale}/login`);
+      }
+    }
+  }, [registrationSuccess, router, locale, searchParams, notify]);
+
+  const handleLocationSet = async (loc: LocationData) => {
+    try {
+      // Check location using Redux
+      const result = await checkLocation(loc);
+      
+      // Debug: Log the result
+      console.log('Location check result:', result);
+      
+      if (result.meta.requestStatus === 'fulfilled') {
+        setLocation(loc);
+        setShowLocationModal(false);
+      } else {
+        // The error will be handled by the useEffect that monitors locationCheckError
+        setShowLocationModal(true);
+        setLocation(null);
+      }
+    } catch (error) {
+      console.error('Location check error:', error);
+      setShowLocationModal(true);
+      setLocation(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,16 +119,41 @@ export default function RegisterPage() {
       notify('error', 'Passwords do not match!');
       return;
     }
-    setIsSubmitting(true)
-    // Simulate API call for registration
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsSubmitting(false)
-    notify('success', 'Registration successful! Please login.');
-    const from = searchParams.get('from');
-    if (from === 'checkout') {
-      router.push(`/${locale}/checkout`);
-    } else {
-      router.push("/login");
+    
+    try {
+      // Check location again before registration
+      const locationResult = await checkLocation(location);
+      
+      // Debug: Log the location result
+      console.log('Location check in submit:', locationResult);
+      
+      if (locationResult.meta.requestStatus !== 'fulfilled') {
+        // The error will be handled by the useEffect that monitors locationCheckError
+        setShowLocationModal(true);
+        return;
+      }
+      
+      // Register user
+      const registrationResult = await registerUser({
+        username: name,
+        email,
+        password,
+        phone_number: phoneNumber,
+        city,
+        states,
+        lat: location.latitude,
+        long: location.longitude,
+        address: location.address
+      });
+      
+      // Debug: Log the registration result
+      console.log('Registration result:', registrationResult);
+      
+      // The success/error will be handled by the useEffect hooks
+      
+    } catch (error) {
+      console.error('Submit error:', error);
+      notify('error', 'An error occurred during registration, please try again');
     }
   }
 
@@ -86,11 +180,15 @@ export default function RegisterPage() {
                 className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
                 onClick={() => setShowLocationModal(false)}
                 aria-label="Close"
-                disabled={!location}
+                disabled={!location || locationCheckLoading}
               >
                 <X className="w-6 h-6" />
               </button>
-              <LocationStep onLocationSet={handleLocationSet} initialLocation={location || undefined} />
+              <LocationStep 
+                onLocationSet={handleLocationSet} 
+                initialLocation={location || undefined} 
+                isChecking={locationCheckLoading}
+              />
             </motion.div>
           </motion.div>
         )}
@@ -165,14 +263,56 @@ export default function RegisterPage() {
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone_number">Phone Number</Label>
+                <div className="relative">
+                  <Input
+                    id="phone_number"
+                    type="text"
+                    placeholder="01xxxxxxxxx"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="city">City</Label>
+                <div className="relative">
+                  <Input
+                    id="city"
+                    type="text"
+                    placeholder="City"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    required
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="states">District/Area</Label>
+                <div className="relative">
+                  <Input
+                    id="states"
+                    type="text"
+                    placeholder="District/Area"
+                    value={states}
+                    onChange={(e) => setStates(e.target.value)}
+                    required
+                    className="pl-10"
+                  />
+                </div>
+              </div>
               {location && (
                 <div className="bg-teal-50 rounded-lg p-3 mb-2 text-xs text-gray-700">
                   <b>Location:</b> {location.address} <br />
                   <span>Lat: {location.latitude?.toFixed(5)}, Lng: {location.longitude?.toFixed(5)}</span>
                 </div>
               )}
-              <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 py-3" disabled={isSubmitting}>
-                {isSubmitting ? (
+              <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 py-3" disabled={registrationLoading}>
+                {registrationLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                     Registering...

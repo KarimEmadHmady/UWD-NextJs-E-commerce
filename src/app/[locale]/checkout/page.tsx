@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, MapPin, Truck, CreditCard, CheckCircle, ShoppingCart } from "lucide-react"
 import LocationStep from "@/components/checkout/location-step"
+import LocationStepCheckout from "@/components/checkout/location-step-checkout"
 import ShippingStep from "@/components/checkout/shipping-step"
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
@@ -22,6 +23,7 @@ import { useAddress } from '@/hooks/useAddress';
 import { useEffect } from 'react';
 import RevealOnScroll from "@/components/common/RevealOnScroll"
 import { usePathname } from "next/navigation"
+import { useAuth } from '@/hooks/useAuth';
 
 interface LocationData {
   latitude: number
@@ -58,7 +60,7 @@ export default function CheckoutPage() {
   const [location, setLocation] = useState<any>(null);
   const [customerInfo, setCustomerInfo] = useState<any>(null);
   const { createOrder } = useOrders();
-  const user = useSelector(selectUser);
+  const { isAuthenticated, user } = useAuth();
   const { addresses, defaultAddress, add: addAddress } = useAddress();
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
@@ -101,7 +103,7 @@ export default function CheckoutPage() {
   }
 
   const steps = [
-    { number: 1, title: "Authentication", icon: null, completed: !!user },
+    { number: 1, title: "Authentication", icon: null, completed: isAuthenticated },
     { number: 2, title: "Location", icon: MapPin, completed: !!location },
     { number: 3, title: "Customer Info & Shipping", icon: Truck, completed: !!customerInfo && !!shippingMethod },
     { number: 4, title: "Payment", icon: CreditCard, completed: !!paymentMethod },
@@ -109,16 +111,16 @@ export default function CheckoutPage() {
   ];
   const canGoToStep = (stepNum: number) => {
     if (stepNum === 1) return true;
-    if (stepNum === 2) return !!user;
-    if (stepNum === 3) return !!user && !!location;
-    if (stepNum === 4) return !!user && !!location && !!customerInfo && !!shippingMethod;
-    if (stepNum === 5) return !!user && !!location && !!customerInfo && !!shippingMethod && !!paymentMethod;
+    if (stepNum === 2) return isAuthenticated;
+    if (stepNum === 3) return isAuthenticated && !!location;
+    if (stepNum === 4) return isAuthenticated && !!location && !!customerInfo && !!shippingMethod;
+    if (stepNum === 5) return isAuthenticated && !!location && !!customerInfo && !!shippingMethod && !!paymentMethod;
     return false;
   };
 
-  const handleLocationSet = (loc: any) => {
+  const handleLocationSet = async (loc: any) => {
     setLocation(loc);
-    setCurrentStep(3); // بدلاً من 2
+    setCurrentStep(3); 
   };
 
   const handleShippingSelect = (option: any) => {
@@ -154,6 +156,18 @@ export default function CheckoutPage() {
       });
     }
   }, [defaultAddress]);
+
+  useEffect(() => {
+    if (isAuthenticated && currentStep === 1) {
+      setCurrentStep(2); // تخطي خطوة تسجيل الدخول
+    }
+  }, [isAuthenticated, currentStep]);
+
+  useEffect(() => {
+    if (!isAuthenticated && currentStep !== 1) {
+      setCurrentStep(1);
+    }
+  }, [isAuthenticated, currentStep]);
 
   const handleCustomerInfoSet = (info: any, shipping: string) => {
     setCustomerInfo(info);
@@ -250,7 +264,7 @@ export default function CheckoutPage() {
     }
     switch (currentStep) {
       case 2:
-        return <LocationStep onLocationSet={handleLocationSet} initialLocation={location || undefined} />;
+        return <LocationStepCheckout onLocationSet={handleLocationSet} initialLocation={location || undefined} />;
       case 3:
         return <CustomerInfoStep onCustomerInfoSet={handleCustomerInfoSet} initialInfo={customerInfo || undefined} initialShippingMethod={shippingMethod || undefined} />;
       case 4:

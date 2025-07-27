@@ -9,8 +9,8 @@ import { Button } from "@/components/common/Button/Button"
 import { Input } from "@/components/common/input/input"
 import { Label } from "@/components/common/label/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/common/card/card"
-import { useUser } from '@/hooks/useUser';
-import { useGlobalLoading } from '@/hooks/useGlobalLoading';
+import { useAuth } from '@/hooks/useAuth';
+import { useNotifications } from '@/hooks/useNotifications';
 import RevealOnScroll from "@/components/common/RevealOnScroll"
 
 /**
@@ -22,34 +22,34 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
   const locale = pathname.split("/")[1] || "en";
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const { login, isAuthenticated, loading, error } = useUser();
-  const { start, stop } = useGlobalLoading();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { login, isAuthenticated, registrationError, registrationLoading } = useAuth();
+  const { notify } = useNotifications();
+  const [redirected, setRedirected] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      stop();
+    if (isAuthenticated && !redirected) {
+      setRedirected(true);
       const from = searchParams.get('from');
       if (from === 'checkout') {
         router.push(`/${locale}/checkout`);
+      } else if (document.referrer && !document.referrer.includes('/login')) {
+        // إذا كان هناك referrer (الصفحة السابقة) وليس صفحة تسجيل الدخول نفسها
+        window.location.href = document.referrer;
       } else {
-        router.push("/account");
+        router.push('/account');
       }
     }
-  }, [isAuthenticated, router, stop, searchParams, locale]);
-
-  useEffect(() => {
-    if (loading) {
-      start();
-    } else {
-      stop();
-    }
-  }, [loading, start, stop]);
+  }, [isAuthenticated, router, searchParams, locale, redirected]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    login(email, password);
+    e.preventDefault();
+    if (!username || !password) {
+      notify('error', 'Please enter your email/phone and password');
+      return;
+    }
+    await login({ username, password });
   }
 
   return (
@@ -64,15 +64,15 @@ export default function LoginPage() {
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Email or Phone</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="username"
+                    type="text"
+                    placeholder="your@example.com or 01xxxxxxxxx"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                     className="pl-10"
                   />
@@ -96,11 +96,11 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              {error && (
-                <div className="text-red-600 text-sm text-center font-bold">{error}</div>
+              {registrationError && (
+                <div className="text-red-600 text-sm text-center font-bold">{registrationError}</div>
               )}
-              <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 py-3" disabled={loading}>
-                {loading ? (
+              <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 py-3" disabled={registrationLoading}>
+                {registrationLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                     Logging In...

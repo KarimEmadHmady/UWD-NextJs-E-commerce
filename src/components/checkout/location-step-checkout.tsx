@@ -13,15 +13,14 @@ interface LocationData {
   address: string;
 }
 
-interface LocationStepProps {
-  onLocationSet: (location: LocationData) => Promise<void>;
+interface LocationStepCheckoutProps {
+  onLocationSet: (location: LocationData) => void;
   initialLocation?: LocationData | null;
-  isChecking?: boolean;
 }
 
 const MapWithMarker = dynamic(() => import("./ManualMap"), { ssr: false });
 
-export default function LocationStep({ onLocationSet, initialLocation, isChecking = false }: LocationStepProps) {
+export default function LocationStepCheckout({ onLocationSet, initialLocation }: LocationStepCheckoutProps) {
   // Default coordinates for Egypt
   const defaultCoords = { latitude: 30.0444, longitude: 31.2357, address: "Cairo, Egypt" };
   const [location, setLocation] = useState<LocationData>(initialLocation || defaultCoords);
@@ -30,6 +29,7 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [suggestLoading, setSuggestLoading] = useState(false);
+
   // Debounce search suggestions
   useEffect(() => {
     if (manualAddress.length < 3) {
@@ -77,7 +77,6 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
         } catch {}
         const loc = { latitude, longitude, address };
         setLocation(loc);
-        // لا تستدعي onLocationSet هنا
       },
       (error) => {
         setError("Failed to get location from browser");
@@ -90,7 +89,7 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
     );
   };
 
-  // البحث عن عنوان يدوي وتحويله لإحداثيات
+  // Manual address search
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -106,7 +105,6 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
         let address = data[0].display_name || manualAddress;
         const loc = { latitude, longitude, address };
         setLocation(loc);
-        // Don't call onLocationSet here
       } else {
         setError("Location not found. Try a more specific address.");
       }
@@ -128,7 +126,6 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
     } catch {}
     const loc = { latitude: lat, longitude: lng, address };
     setLocation(loc);
-    // onLocationSet(loc); // This line is removed as per the edit hint
   };
 
   return (
@@ -137,10 +134,7 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
         <MapPin className="w-10 h-10 text-teal-600 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Set Your Delivery Location</h2>
         <p className="text-gray-600">
-          {isChecking 
-            ? "Checking location..." 
-            : "Get your location from browser or enter it manually. The map will update automatically."
-          }
+          Get your location from browser or enter it manually. The map will update automatically.
         </p>
       </div>
       <div className="flex flex-col md:flex-row gap-4 items-center mb-4">
@@ -207,26 +201,12 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
           </div>
           <Button 
             className="w-full bg-teal-600 hover:bg-teal-700 mt-4" 
-            onClick={async () => {
-              try {
-                await onLocationSet(location);
-              } catch (error) {
-                console.error('Error setting location:', error);
-              }
-            }}
-            disabled={isChecking}
+            onClick={() => onLocationSet(location)}
           >
-            {isChecking ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                Checking Location...
-              </>
-            ) : (
-              'Confirm Location'
-            )}
+            Confirm Location
           </Button>
         </>
       )}
     </div>
   );
-}
+} 

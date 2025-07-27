@@ -12,6 +12,9 @@ import Link from "next/link"
 import { Search, User, MapPin, ShoppingCart, ChevronLeft, ChevronRight, ChevronDown, X, Heart } from "lucide-react"
 import dynamic from "next/dynamic";
 import { useLang } from "@/hooks/useLang";
+import { useAuth } from "@/hooks/useAuth"
+import { Button } from "../Button/Button"
+import { LogOut } from "lucide-react"
 // Lazy load SideCart for better performance
 const SideCart = dynamic(() => import("@/components/cart/side-cart/side-cart"), { ssr: false });
 
@@ -59,6 +62,16 @@ export default function Navigation() {
   const cartCount = items.reduce((total, item) => total + item.quantity, 0);
   const { items: wishlistItems } = useWishlist();
   const wishlistCount = wishlistItems.length;
+  const { user, isAuthenticated, logout, userLocation } = useAuth()
+
+  useEffect(() => {
+    if (isAuthenticated && typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        logout();
+      }
+    }
+  }, [isAuthenticated, logout]);
 
   // Menu translations
   const menuTranslations: Record<string, { en: string; ar: string }> = {
@@ -373,9 +386,20 @@ export default function Navigation() {
               </Link>
             </li>
             <li>
-              <Link href="/login" className="p-1 text-lg text-black transition-colors duration-250 hover:text-teal-600 transition-transform duration-200 hover:scale-110">
-                <User className="w-5 h-5" />
-              </Link>
+              {isAuthenticated ? (
+                <button
+                  onClick={logout}
+                  className=" text-lg text-black transition-colors duration-250 hover:text-red-600 transition-transform duration-200 hover:scale-110 flex items-center cursor-pointer"
+                  aria-label="Logout"
+                >
+                  <LogOut className="w-5 h-5 " />
+                  
+                </button>
+              ) : (
+                <Link href="/login" className="p-1 text-lg text-black transition-colors duration-250 hover:text-teal-600 transition-transform duration-200 hover:scale-110">
+                  <User className="w-5 h-5" />
+                </Link>
+              )}
             </li>
             <li>
               <Link href="/contact" className="p-1 text-lg text-black transition-colors duration-250 hover:text-teal-600 transition-transform duration-200 hover:scale-110">

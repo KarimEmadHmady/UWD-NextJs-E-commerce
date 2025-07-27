@@ -178,6 +178,14 @@ All libraries are carefully chosen for performance, developer experience, and us
 
 ---
 
+## Environment Setup
+
+Before running the project, create a `.env.local` file in the root directory with the following variables:
+
+```env
+NEXT_PUBLIC_API_URL=url
+```
+
 ## How to Run
 
 1. **Install dependencies**
@@ -185,12 +193,17 @@ All libraries are carefully chosen for performance, developer experience, and us
    npm install
    ```
 
-2. **Run the development server**
+2. **Create environment file**
+   ```bash
+   # Create .env.local file with the required variables
+   ```
+
+3. **Run the development server**
    ```bash
    npm run dev
    ```
 
-3. **Open in browser**
+4. **Open in browser**
    ```
    http://localhost:3000
    ```

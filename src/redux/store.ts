@@ -13,6 +13,7 @@ import filterReducer from './features/filter/filterSlice';
 import checkoutReducer from './features/checkout/checkoutSlice';
 import orderReducer from './features/order/orderSlice';
 import addressReducer from './features/address/addressSlice';
+import authReducer from './features/auth/authSlice';
 
 /**
  * Redux store configuration for the e-commerce app.
@@ -33,6 +34,7 @@ export const store = configureStore({
     checkout: checkoutReducer,
     address: addressReducer,
     order: orderReducer,
+    auth: authReducer,
   },
 });
 
