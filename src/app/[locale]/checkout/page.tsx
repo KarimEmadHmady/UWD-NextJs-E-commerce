@@ -421,9 +421,9 @@ export default function CheckoutPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Progress Steps */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-4">
+          {/* Progress Steps - Mobile: Bottom, Desktop: Left */}
+          <div className="order-2 lg:order-1 lg:col-span-1">
+            <Card className="lg:sticky lg:top-4">
               <CardHeader>
                 <CardTitle>Checkout Progress</CardTitle>
               </CardHeader>
@@ -499,8 +499,8 @@ export default function CheckoutPage() {
             </Card>
           </div>
 
-          {/* Step Content */}
-          <div className="lg:col-span-3">{renderStepContent()}</div>
+          {/* Step Content - Mobile: Top, Desktop: Right */}
+          <div className="order-1 lg:order-2 lg:col-span-3">{renderStepContent()}</div>
         </div>
       </div>
       </RevealOnScroll>

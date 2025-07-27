@@ -80,7 +80,7 @@ export default function RegisterPage() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 40, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative h-[95vh] m-5 "
+              className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative h-auto my-10 "
             >
               <button
                 className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
