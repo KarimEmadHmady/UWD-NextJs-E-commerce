@@ -16,8 +16,9 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 
 const normalize = (str: string) => str.replace(/\s+/g, '-').toLowerCase();
 
-export default function CategoryPage({ params }: { params: { category: string; locale: string } }) {
-  const { category } = params;
+export default async function CategoryPage(props: { params: Promise<{ category: string; locale: string }> }) {
+  const { category } = await props.params;
+
   const catObj = categories.find((cat) => normalize(cat.name) === normalize(category));
   if (!catObj) return notFound();
 

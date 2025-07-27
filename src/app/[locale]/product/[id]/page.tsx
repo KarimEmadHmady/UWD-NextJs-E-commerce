@@ -1,26 +1,25 @@
-// Product details dynamic route page
-
+import { notFound } from 'next/navigation';
 import RevealOnScroll from '@/components/common/RevealOnScroll';
 import ProductDetails from '@/components/product/ProductDetails/ProductDetails';
 import { products } from '@/components/product/product-data';
-import { notFound } from 'next/navigation';
 
-interface Props {
-  params: { id: string }
-}
+type ParamsType = {
+  locale?: string;
+  id?: string;
+};
 
-/**
- * ProductPage component - Displays the details of a single product based on the dynamic route ID.
- * Fetches the product and renders the ProductDetails component, or shows not found if missing.
- */
-export default function ProductPage({ params }: Props) {
-  const product = products.find(p => p.id === Number(params.id));
-  if (!product) return notFound();
+export default async function ProductPage(props: { params: Promise<ParamsType> }) {
+  const { id } = await props.params;
+
+  const product = products.find((p) => p.id === Number(id));
+  if (!product) {
+    notFound();
+    return null;
+  }
+
   return (
-    <>
     <RevealOnScroll>
-  <ProductDetails product={product} />
+      <ProductDetails product={product} />
     </RevealOnScroll>
-    </>
-  )   
+  );
 }
