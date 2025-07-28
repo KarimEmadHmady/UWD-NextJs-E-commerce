@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { fetchUserAddresses } from '@/services/addressService';
 
 export interface Address {
   id: string;
@@ -14,6 +15,7 @@ export interface Address {
   address?: string;
   latitude?: number;
   longitude?: number;
+  label?: string;
 }
 
 interface AddressState {
@@ -27,6 +29,18 @@ const initialState: AddressState = {
   loading: false,
   error: null,
 };
+
+export const fetchUserAddressesAsync = createAsyncThunk(
+  'address/fetchUserAddresses',
+  async (token: string, { rejectWithValue }) => {
+    try {
+      const data = await fetchUserAddresses(token);
+      return Array.isArray(data) ? data : data.addresses || [];
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch addresses');
+    }
+  }
+);
 
 /**
  * addressSlice - Redux slice for managing user addresses state.
@@ -75,6 +89,11 @@ const addressSlice = createSlice({
     clearAddresses(state) {
       state.addresses = [];
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchUserAddressesAsync.fulfilled, (state, action) => {
+      state.addresses = action.payload;
+    });
   },
 });
 

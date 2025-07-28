@@ -132,7 +132,7 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className=" mx-auto space-y-6">
       <div className="text-center mb-5">
         <MapPin className="w-10 h-10 text-teal-600 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Set Your Delivery Location</h2>
@@ -143,23 +143,26 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
           }
         </p>
       </div>
-      <div className="flex flex-col md:flex-row gap-4 items-center mb-4">
+      <div className="flex flex-col md:flex-row gap-4 items-center mb-4 justify-between w-full">
         <Button onClick={handleGetLocation} className="bg-teal-600 hover:bg-teal-700 w-full md:w-auto">
           <Navigation className="w-4 h-4 mr-2" />
           Get Location from Browser
         </Button>
-        <form onSubmit={handleManualSubmit} className="flex gap-2 w-full md:w-auto relative">
-          <div className="w-full relative">
+        <form onSubmit={handleManualSubmit} className="flex gap-2 w-full flex-1 relative">
+          <div className="w-full flex-1 relative flex items-center">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4-4m0 0A7 7 0 104 4a7 7 0 0013 13z" /></svg>
+            </span>
             <Input
               value={manualAddress}
               onChange={e => setManualAddress(e.target.value)}
-              placeholder="Enter your address manually"
-              className="w-full"
+              placeholder="Search for your address..."
+              className="w-full flex-1 pl-10 text-black border-2 border-teal-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 rounded-lg shadow-sm"
               autoComplete="off"
             />
             {suggestLoading && <div className="absolute right-2 top-2 text-xs text-gray-400">Loading...</div>}
             {suggestions.length > 0 && (
-              <ul className="absolute z-[2000] bg-white border w-full min-w-[300px] max-h-72 overflow-auto rounded shadow-lg mt-1">
+              <ul className="absolute left-0 top-full z-[9999] bg-white border w-full max-h-72 overflow-auto rounded shadow-lg mt-1">
                 {suggestions.map(s => (
                   <li
                     key={s.place_id}

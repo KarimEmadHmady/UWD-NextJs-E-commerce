@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/redux/store';
-import { 
-  checkLocationAsync, 
+import {
+  checkLocationAsync,
   registerUserAsync,
   loginUserAsync,
   loadUserFromStorage,
@@ -11,7 +11,7 @@ import {
   setUserLocation,
   logout
 } from '@/redux/features/auth/authSlice';
-import { 
+import {
   selectUser,
   selectIsAuthenticated,
   selectLocationCheckLoading,
@@ -57,7 +57,7 @@ export const useAuth = () => {
     return dispatch(checkLocationAsync(location));
   };
 
-  const registerUser = (userData: {
+  const registerUser = async (userData: {
     username: string;
     email: string;
     password: string;
@@ -69,11 +69,19 @@ export const useAuth = () => {
     address: string;
     address_1?: string;
   }) => {
-    return dispatch(registerUserAsync(userData));
+    const result = await dispatch(registerUserAsync(userData));
+    if (result.meta.requestStatus === 'fulfilled') {
+      dispatch(loadUserFromStorage());
+    }
+    return result;
   };
 
-  const login = (loginData: { username: string; password: string }) => {
-    return dispatch(loginUserAsync(loginData));
+  const login = async (loginData: { username: string; password: string }) => {
+    const result = await dispatch(loginUserAsync(loginData));
+    if (result.meta.requestStatus === 'fulfilled') {
+      dispatch(loadUserFromStorage());
+    }
+    return result;
   };
 
   const clearLocationErrorAction = () => {

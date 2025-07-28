@@ -24,6 +24,8 @@ import RevealOnScroll from "@/components/common/RevealOnScroll"
 import { usePathname } from "next/navigation"
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
+import AddressSelector from '@/components/checkout/address-selector';
+import { useUserAddresses } from '@/hooks/useUserAddresses';
 
 interface LocationData {
   latitude: number
@@ -59,11 +61,14 @@ export default function CheckoutPage() {
   const [cardError, setCardError] = useState('');
   const [location, setLocation] = useState<any>(null);
   const [customerInfo, setCustomerInfo] = useState<any>(null);
+  const [selectedAddress, setSelectedAddress] = useState<any>(null);
   const { orders, createOrder } = useOrders();
   const { isAuthenticated, user, checkLocation, locationCheckError, clearLocationError, locationCheckLoading, userLatLong } = useAuth();
   const { addresses, defaultAddress, add: addAddress } = useAddress();
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const { notify } = useNotifications();
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
+  const { addresses: backendAddresses, loading: addressesLoading } = useUserAddresses(token);
 
   // إعداد بيانات العميل الافتراضية من بيانات اليوزر
   const defaultCustomerInfo = user ? {
@@ -289,6 +294,72 @@ export default function CheckoutPage() {
     router.push('/order-confirmation');
   }
 
+  // معالجة user.adresses وتوحيدها كـ array
+  let rawAdresses: any[] = [];
+  if (Array.isArray(user?.adresses)) {
+    rawAdresses = user.adresses;
+  } else if (user?.adresses && typeof user.adresses === 'object') {
+    rawAdresses = [user.adresses];
+  } // else: []
+
+  const normalizedAdresses = rawAdresses.flatMap(addr => {
+    if (typeof addr === 'object' && !Array.isArray(addr)) {
+      const keys = Object.keys(addr);
+      if (keys.length === 1 && typeof addr[keys[0]] === 'object') {
+        return [{ id: keys[0], ...addr[keys[0]] }];
+      }
+      return [{ ...addr, id: addr.id || Date.now().toString() }];
+    }
+    return [];
+  });
+  const uniqueAdresses = normalizedAdresses.filter((addr, idx, arr) =>
+    idx === arr.findIndex(a => (a.id && a.id === addr.id) || (a.address_1 && a.address_1 === addr.address_1))
+  );
+  const allAddresses = [
+    ...(backendAddresses || []),
+    ...addresses.map(addr => ({
+      ...addr,
+      address_1: addr.address || addr.street || '',
+      label: (addr as any).label || 'Address',
+      country: addr.country || '',
+      latitude: typeof addr.latitude === 'number' ? addr.latitude : 0,
+      longitude: typeof addr.longitude === 'number' ? addr.longitude : 0,
+    })),
+  ];
+  const mappedAddresses = allAddresses.filter((addr, idx, arr) =>
+    idx === arr.findIndex(a =>
+      (a.id && a.id === addr.id) ||
+      (a.address_1 && a.address_1 === addr.address_1) ||
+      (a.latitude === addr.latitude && a.longitude === addr.longitude)
+    )
+  );
+  // إذا لم يوجد أي عنوان isDefault، اجعل أول عنوان هو الافتراضي
+  const hasDefault = mappedAddresses.some(addr => addr.isDefault);
+  if (!hasDefault && mappedAddresses.length > 0) {
+    mappedAddresses[0].isDefault = true;
+  }
+  // عند الدخول للخطوة الثانية، حدد تلقائيًا العنوان الافتراضي أو أول عنوان
+  useEffect(() => {
+    if (currentStep === 2 && mappedAddresses.length > 0 && !selectedAddress) {
+      const def = mappedAddresses.find(a => a.isDefault) || mappedAddresses[0];
+      setSelectedAddress(def);
+      setLocation({ latitude: def.latitude, longitude: def.longitude, address: def.address_1 });
+      // Call onSelect logic to sync AddressSelector UI
+      // (simulate user selection)
+    }
+    // eslint-disable-next-line
+  }, [currentStep, mappedAddresses.length]);
+
+  // Helper to extract city/region from address_1 if not present
+  function extractCityRegion(address: string) {
+    if (!address) return { city: '', region: '' };
+    const parts = address.split(',').map(s => s.trim()).filter(Boolean);
+    return {
+      region: parts[2] || '',
+      city: parts[3] || '',
+    };
+  }
+
   const renderStepContent = () => {
     if (currentStep === 1) {
       if (!user) {
@@ -309,11 +380,66 @@ export default function CheckoutPage() {
     }
     switch (currentStep) {
       case 2:
-        return <LocationStep onLocationSet={handleLocationSet} initialLocation={
-          location || undefined
-        } isChecking={locationCheckLoading} />;
+        return <>
+          {addressesLoading && <div className="text-center text-gray-500 py-4">Loading addresses...</div>}
+          <AddressSelector
+            addresses={allAddresses}
+            selectedId={selectedAddress?.id || ''}
+            onAddAddress={(addr) => {
+              addAddress({
+                ...addr,
+                userId: user?.id || 'guest',
+              });
+            }}
+            onSelect={(addr) => {
+              setLocation({
+                latitude: addr.latitude,
+                longitude: addr.longitude,
+                address: addr.address_1,
+              });
+              setSelectedAddress(addr);
+            }}
+            defaultAddressId={defaultAddress?.id}
+            user={user}
+            token={token}
+          />
+          <div className="mt-6 flex justify-end">
+            <Button
+              className="bg-teal-600 text-white px-8 py-2 rounded-lg font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                if (!selectedAddress) return;
+                setCustomerInfo(null);
+                setCurrentStep(3);
+              }}
+              disabled={!selectedAddress}
+              title={!selectedAddress ? 'Please select an address to continue' : ''}
+            >
+              Continue
+            </Button>
+          </div>
+        </>;
       case 3:
-        return <CustomerInfoStep onCustomerInfoSet={handleCustomerInfoSet} initialInfo={customerInfo || defaultCustomerInfo} initialShippingMethod={shippingMethod || undefined} />;
+        // Autofill logic for CustomerInfoStep
+        let initialInfo = customerInfo;
+        if (!initialInfo && selectedAddress) {
+          const city = selectedAddress.city || extractCityRegion(selectedAddress.address_1).city;
+          const region = selectedAddress.region || selectedAddress.state || extractCityRegion(selectedAddress.address_1).region;
+          initialInfo = {
+            name: selectedAddress.name || selectedAddress.first_name || '',
+            phone: selectedAddress.phone || '',
+            street: selectedAddress.street || selectedAddress.address_1 || '',
+            city,
+            region,
+            notes: selectedAddress.notes || '',
+          };
+        } else if (!initialInfo) {
+          initialInfo = defaultCustomerInfo;
+        }
+        return <CustomerInfoStep
+          onCustomerInfoSet={handleCustomerInfoSet}
+          initialInfo={initialInfo}
+          initialShippingMethod={shippingMethod || undefined}
+        />;
       case 4:
         return (
           <div className="max-w-2xl mx-auto space-y-6">
@@ -377,7 +503,6 @@ export default function CheckoutPage() {
                       <li><b>Phone:</b> {customerInfo.phone}</li>
                       <li><b>Address:</b> {customerInfo.address}</li>
                       <li><b>City:</b> {customerInfo.city}</li>
-                      <li><b>Country:</b> {customerInfo.country}</li>
                     </ul>
                   )}
                   {location && (

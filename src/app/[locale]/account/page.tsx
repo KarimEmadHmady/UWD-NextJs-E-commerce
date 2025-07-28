@@ -22,6 +22,10 @@ import { useCart } from '@/hooks/useCart';
 import useOrders from '@/hooks/useOrders';
 import { useNotifications } from '@/hooks/useNotifications';
 import type { Product } from '@/types/product';
+import AddressSelector from '@/components/checkout/address-selector';
+import { useUserAddresses } from '@/hooks/useUserAddresses';
+import { Input } from "@/components/common/input/input";
+import { useAuth } from '@/hooks/useAuth';
 
 /**
  * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
@@ -35,8 +39,7 @@ export default function AccountPage() {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [addressForm, setAddressForm] = useState({
-    name: '', phone: '', street: '', city: '', region: '', country: '', notes: '',
-    location: null as null | { address: string, latitude: number, longitude: number }
+    name: '', phone: '', street: '', city: '', region: '', country: '', notes: '', location: null as null | { address: string, latitude: number, longitude: number }, label: ''
   });
   const handleAddressFormChange = (e: any) => setAddressForm({ ...addressForm, [e.target.name]: e.target.value });
   const [editAddressId, setEditAddressId] = useState<string | null>(null);
@@ -53,7 +56,8 @@ export default function AccountPage() {
         address: addr.address,
         latitude: addr.latitude,
         longitude: addr.longitude
-      } : null
+      } : null,
+      label: addr.label || '',
     });
     setEditAddressId(addr.id);
     setShowAddressForm(true);
@@ -79,16 +83,23 @@ export default function AccountPage() {
       // إضافة عنوان جديد
       add({
         id: Date.now().toString(),
-        userId: String(userRedux?.id || 'guest'),
-        ...addressForm,
-        address: addressForm.location.address,
-        latitude: addressForm.location.latitude,
-        longitude: addressForm.location.longitude,
-        isDefault: addresses.length === 0,
+        userId: userRedux?.id?.toString() || 'guest',
+        name: addressForm.name || '',
+        phone: addressForm.phone || '',
+        street: addressForm.street || addressForm.location?.address || '',
+        city: addressForm.city || '',
+        region: addressForm.region || '',
+        country: addressForm.country || '',
+        notes: addressForm.notes || '',
+        isDefault: allAddresses.length === 0,
+        address: addressForm.location?.address || '',
+        latitude: addressForm.location?.latitude,
+        longitude: addressForm.location?.longitude,
+        label: addressForm.label || '',
       });
     }
     setShowAddressForm(false);
-    setAddressForm({ name: '', phone: '', street: '', city: '', region: '', country: '', notes: '', location: null });
+    setAddressForm({ name: '', phone: '', street: '', city: '', region: '', country: '', notes: '', location: null, label: '' });
   };
   const handleLocationSet = (loc: any) => {
     setAddressForm((prev) => ({ ...prev, location: loc }));
@@ -153,6 +164,30 @@ export default function AccountPage() {
     shippingMethod?: string;
     address?: string;
   };
+
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
+  const { addresses: backendAddresses, loading: addressesLoading } = useUserAddresses(token);
+
+  const allAddresses = [
+    ...(backendAddresses || []),
+    ...addresses.map(addr => ({
+      ...addr,
+      address_1: addr.address || addr.street || '',
+      label: (addr as any).label || 'Address',
+      country: addr.country || '',
+      latitude: typeof addr.latitude === 'number' ? addr.latitude : 0,
+      longitude: typeof addr.longitude === 'number' ? addr.longitude : 0,
+    })),
+  ];
+
+  const { checkLocation, locationCheckLoading } = useAuth();
+  const [locationCheckMsg, setLocationCheckMsg] = useState('');
+  const [newLocation, setNewLocation] = useState<any>(null);
+
+  const [defaultAddressId, setDefaultAddressId] = useState(() => {
+    const firstDefault = allAddresses.find(a => a.isDefault)?.id;
+    return firstDefault || allAddresses[0]?.id || '';
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -439,79 +474,139 @@ export default function AccountPage() {
                 <CardTitle>Saved Addresses</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <>
-                  {addresses.length === 0 && <div className="text-gray-500 text-center">No addresses saved yet.</div>}
-                  {addresses.map((addr: any) => (
-                    <div className="flex flex-col gap-2 bg-white p-3 rounded-lg border border-gray-200 mb-5">
-                    <div key={addr.id} className="p-4 border border-gray-200 rounded-lg flex items-start justify-between gap-4">
-                      <div>
-                        <p className="font-semibold text-gray-900">{addr.name}</p>
-                        <p className="text-gray-600">{addr.street}</p>
-                        <p className="text-gray-600">{addr.city}, {addr.region}</p>
-                        <p className="text-gray-600">{addr.country}</p>
-                        <p className="text-gray-500 text-xs">{addr.phone}</p>
-
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        {addr.isDefault && <Badge className="mb-1">Default</Badge>}
-                        {!addr.isDefault && <Button size="sm" variant="outline" className="text-xs mb-1" onClick={() => setDefault(addr.id)}>Set Default</Button>}
-                        <Button size="sm" variant="outline" className="text-xs text-red-600 border-red-200 hover:bg-red-50" onClick={() => remove(addr.id)}>Delete</Button>
-                        <Button size="sm" variant="outline" className="text-xs text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => handleEditAddress(addr)}>Edit</Button>
-                      </div>
-                    </div>
-                    <div>
-                                              {addr.notes && <p className="text-gray-400 text-xs">{addr.notes}</p>}
-                        {addr.address && (
-                          <div className="mt-2 text-xs text-gray-600 bg-teal-50 rounded p-2">
-                            <b>Location:</b> {addr.address}<br />
-                            {addr.latitude && addr.longitude && (
-                              <span>Lat: {addr.latitude.toFixed(5)}, Lng: {addr.longitude.toFixed(5)}</span>
-                            )}
-                          </div>
-                        )}
-                        {addr.latitude && addr.longitude && (
-                          <div className="mt-2 w-full h-[120px] rounded overflow-hidden">
-                            <ManualMap lat={addr.latitude} lng={addr.longitude} onChange={()=>{}} />
-                          </div>
-                        )}
-                    </div>
-                    </div>
-                  ))}
-                  </>
-                  {showAddressForm && (
-                    <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
-                        <input name="name" placeholder="Name" value={addressForm.name} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
-                        <input name="phone" placeholder="Phone" value={addressForm.phone} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
-                        <input name="street" placeholder="Street" value={addressForm.street} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
-                        <input name="city" placeholder="City" value={addressForm.city} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
-                        <input name="region" placeholder="Region" value={addressForm.region} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
-                        <input name="country" placeholder="Country" value={addressForm.country} onChange={handleAddressFormChange} className="border rounded px-2 py-1 bg-gray-100 placeholder-gray-500 text-gray-900" />
-                        <input name="notes" placeholder="Notes (optional)" value={addressForm.notes} onChange={handleAddressFormChange} className="border rounded px-2 py-1 col-span-2 bg-gray-100 placeholder-gray-500 text-gray-900" />
-                      </div>
-                      {/* LocationStep يظهر دائماً */}
-                      <div className="mb-2">
-                        <LocationStepCheckout onLocationSet={(loc: { address: string, latitude: number, longitude: number }) => setAddressForm((prev) => ({ ...prev, location: loc }))} initialLocation={addressForm.location || undefined} />
-                      </div>
-                      {addressForm.location && (
-                        <div className="bg-teal-50 rounded-lg p-2 mb-2 text-xs text-gray-700">
-                          <b>Location:</b> {addressForm.location.address} <br />
-                          <span>Lat: {addressForm.location.latitude?.toFixed(5)}, Lng: {addressForm.location.longitude?.toFixed(5)}</span>
-                        </div>
-                      )}
-                      <div className="flex gap-2 mb-2">
-                        <Button size="sm" className="bg-teal-600 text-white" onClick={handleAddOrEditAddress}>{editAddressId ? 'Save Changes' : 'Save'}</Button>
-                        <Button size="sm" variant="outline" onClick={() => { setShowAddressForm(false); setEditAddressId(null); }}>Cancel</Button>
-                      </div>
-                    </div>
-                  )}
-                  <Button variant="outline" className="w-full bg-transparent cursor-pointer" onClick={() => setShowAddressForm(true)}>
-                    Add New Address
+                {addressesLoading && <div className="text-center text-gray-500 py-4">Loading addresses...</div>}
+                <div className="flex justify-end mb-4">
+                  <Button className="bg-teal-600 text-white" onClick={() => setShowLocationModal(true)}>
+                    + Add New Address
                   </Button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {allAddresses.length === 0 && !addressesLoading && (
+                    <div className="text-gray-500 col-span-3 text-center">No addresses found.</div>
+                  )}
+                  {allAddresses.map((addr, idx) => {
+                    const isDefault = defaultAddressId === addr.id;
+                    return (
+                      <div
+                        key={addr.id || idx}
+                        className={`relative border rounded-lg p-4 bg-white shadow-sm flex flex-col gap-2 ${isDefault ? 'border-teal-600 ring-2 ring-teal-200' : 'border-gray-200'}`}
+                      >
+                        {isDefault && (
+                          <span className="absolute top-2 right-2 bg-teal-600 text-white text-xs px-2 py-1 rounded-full z-10">Default</span>
+                        )}
+                        {addr.label && (
+                          <span className="absolute -top-2 -left-3 bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full z-10">{addr.label}</span>
+                        )}
+                        <div className="font-semibold text-lg text-gray-900">{addr.name || addr.first_name || '-'}</div>
+                        <div className="text-gray-700 text-sm">{addr.phone || '-'}</div>
+                        <div className="text-gray-700 text-sm break-words">{addr.address_1 || addr.street || '-'}</div>
+                        <div className="flex gap-2 text-gray-500 text-xs mt-1">
+                          <span>{addr.city || '-'}</span>
+                          <span>|</span>
+                          <span>{addr.region || addr.state || '-'}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <input
+                            type="radio"
+                            name="default-address"
+                            checked={isDefault}
+                            onChange={() => setDefaultAddressId(addr.id)}
+                            className="accent-teal-600 w-4 h-4"
+                            id={`default-radio-${addr.id}`}
+                          />
+                          <label htmlFor={`default-radio-${addr.id}`} className="text-xs text-gray-700 select-none">
+                            Set as default
+                          </label>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
+            {/* Modal for adding new address */}
+            {showLocationModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                <div className="bg-white rounded-lg shadow-lg sm:w-[70%] w-[95%] p-6 relative">
+                  <button
+                    className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
+                    onClick={() => setShowLocationModal(false)}
+                    aria-label="Close"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                  <h2 className="text-xl font-bold mb-4 text-gray-900">Add New Address</h2>
+                  <LocationStep
+                    onLocationSet={async (loc) => {
+                      setLocationCheckMsg('');
+                      setNewLocation(null);
+                      if (!loc) return;
+                      const result = await checkLocation({
+                        latitude: loc.latitude,
+                        longitude: loc.longitude,
+                        address: loc.address,
+                      });
+                      if (result.meta?.requestStatus === 'fulfilled') {
+                        setLocationCheckMsg('✔️ This address is within our service area.');
+                        setNewLocation(loc);
+                        setAddressForm((prev) => ({ ...prev, location: loc }));
+                      } else {
+                        setLocationCheckMsg('❌ This address is outside our service area.');
+                        setNewLocation(null);
+                        setAddressForm((prev) => ({ ...prev, location: null }));
+                      }
+                    }}
+                  />
+                  {locationCheckMsg && <div className={`mt-2 text-sm ${locationCheckMsg.startsWith('✔️') ? 'text-green-600' : 'text-red-600'}`}>{locationCheckMsg}</div>}
+                  <div className="mt-4 flex flex-col gap-2">
+                    <Input
+                      name="label"
+                      placeholder="Label (e.g. Home, Work)"
+                      value={addressForm.label || ''}
+                      onChange={e => setAddressForm({ ...addressForm, label: e.target.value })}
+                    />
+                    <Input
+                      name="phone"
+                      placeholder="Phone Number"
+                      value={addressForm.phone || ''}
+                      onChange={e => setAddressForm({ ...addressForm, phone: e.target.value })}
+                    />
+                  </div>
+                  <Button
+                    className="mt-4 w-full bg-teal-600 text-white"
+                    onClick={() => {
+                      if (!newLocation) {
+                        notify('error', 'Please select a valid location within our service area!');
+                        return;
+                      }
+                      add({
+                        id: Date.now().toString(),
+                        userId: userRedux?.id?.toString() || 'guest',
+                        name: addressForm.name || '',
+                        phone: addressForm.phone || '',
+                        street: addressForm.street || newLocation.address || '',
+                        city: addressForm.city || '',
+                        region: addressForm.region || '',
+                        country: addressForm.country || '',
+                        notes: addressForm.notes || '',
+                        isDefault: allAddresses.length === 0,
+                        address: newLocation.address || '',
+                        latitude: newLocation.latitude,
+                        longitude: newLocation.longitude,
+                        label: addressForm.label || '',
+                      });
+                      setShowLocationModal(false);
+                      setAddressForm({ name: '', phone: '', street: '', city: '', region: '', country: '', notes: '', location: null, label: '' });
+                      setLocationCheckMsg('');
+                      setNewLocation(null);
+                    }}
+                    disabled={locationCheckLoading}
+                  >
+                    {locationCheckLoading ? 'Checking...' : 'Save Address'}
+                  </Button>
+                </div>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="settings" className="mt-6">

@@ -12,4 +12,5 @@ export interface User {
   address?: string;
   avatar?: string;
   role?: 'user' | 'admin';
-} 
+  adresses?: any; 
+}
