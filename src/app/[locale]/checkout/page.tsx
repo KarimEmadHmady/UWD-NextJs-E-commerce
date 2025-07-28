@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, MapPin, Truck, CreditCard, CheckCircle, ShoppingCart } from "lucide-react"
 import LocationStep from "@/components/checkout/location-step"
-import LocationStepCheckout from "@/components/checkout/location-step-checkout"
 import ShippingStep from "@/components/checkout/shipping-step"
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
@@ -24,6 +23,7 @@ import { useEffect } from 'react';
 import RevealOnScroll from "@/components/common/RevealOnScroll"
 import { usePathname } from "next/navigation"
 import { useAuth } from '@/hooks/useAuth';
+import { useNotifications } from '@/hooks/useNotifications';
 
 interface LocationData {
   latitude: number
@@ -60,9 +60,18 @@ export default function CheckoutPage() {
   const [location, setLocation] = useState<any>(null);
   const [customerInfo, setCustomerInfo] = useState<any>(null);
   const { orders, createOrder } = useOrders();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, checkLocation, locationCheckError, clearLocationError, locationCheckLoading } = useAuth();
   const { addresses, defaultAddress, add: addAddress } = useAddress();
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const { notify } = useNotifications();
+
+  // Monitor location check errors
+  useEffect(() => {
+    if (locationCheckError) {
+      notify('error', locationCheckError);
+      clearLocationError();
+    }
+  }, [locationCheckError, notify, clearLocationError]);
 
   // حساب subtotal من السلة
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
@@ -119,8 +128,24 @@ export default function CheckoutPage() {
   };
 
   const handleLocationSet = async (loc: any) => {
-    setLocation(loc);
-    setCurrentStep(3); 
+    try {
+      // Check location using Redux
+      const result = await checkLocation(loc);
+      
+      // Debug: Log the result
+      console.log('Location check result:', result);
+      
+      if (result.meta.requestStatus === 'fulfilled') {
+        setLocation(loc);
+        setCurrentStep(3);
+      } else {
+        // The error will be handled by the useEffect that monitors locationCheckError
+        setLocation(null);
+      }
+    } catch (error) {
+      console.error('Location check error:', error);
+      setLocation(null);
+    }
   };
 
   const handleShippingSelect = (option: any) => {
@@ -264,7 +289,7 @@ export default function CheckoutPage() {
     }
     switch (currentStep) {
       case 2:
-        return <LocationStepCheckout onLocationSet={handleLocationSet} initialLocation={
+        return <LocationStep onLocationSet={handleLocationSet} initialLocation={
           defaultAddress && defaultAddress.latitude && defaultAddress.longitude && defaultAddress.address
             ? {
                 latitude: defaultAddress.latitude,
@@ -272,7 +297,7 @@ export default function CheckoutPage() {
                 address: defaultAddress.address
               }
             : (location || undefined)
-        } />;
+        } isChecking={locationCheckLoading} />;
       case 3:
         return <CustomerInfoStep onCustomerInfoSet={handleCustomerInfoSet} initialInfo={customerInfo || undefined} initialShippingMethod={shippingMethod || undefined} />;
       case 4:
