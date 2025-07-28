@@ -10,9 +10,8 @@ import { Button } from "../common/Button/Button"
 import { Badge } from "../common/Badge/Badge"
 import { useCart } from "@/hooks/useCart"
 import { useWishlist } from "@/hooks/useWishlist"
-import { Product as GlobalProduct } from "@/types/common"
+import { Product as GlobalProduct } from "@/types/product"
 import { useNotifications } from '@/hooks/useNotifications';
-import { useProducts } from '@/hooks/useProducts';
 import { useEffect } from 'react';
 import ProductListItem from '../shop/product-list-item';
 

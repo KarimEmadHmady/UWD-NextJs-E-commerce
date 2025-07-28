@@ -12,7 +12,6 @@ import { products as productsData } from "@/components/product/product-data"
 import { Toaster } from "sonner"
 import Link from "next/link"
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
-import { useProducts } from '@/hooks/useProducts';
 import { useEffect } from 'react';
 import { useFilter } from '@/hooks/useFilter';
 import { setCategories, setQuantities, setSizes, setBrands, clearFilters } from '@/redux/features/filter/filterSlice';

@@ -6,7 +6,7 @@ import CartItemComponent from "@/components/cart/CartItem/cart-item"
 import CartSummary from "@/components/cart/CartSummary/cart-summary"
 import { Button } from "@/components/common/Button/Button"
 import { useCart } from "@/hooks/useCart"
-import type { Product } from "@/types/common"
+import type { Product } from "@/types/product"
 import RevealOnScroll from "@/components/common/RevealOnScroll"
 
 /**

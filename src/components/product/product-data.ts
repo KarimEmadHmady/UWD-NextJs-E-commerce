@@ -1,4 +1,5 @@
-import type { CartItem, Product as CommonProduct } from '@/types/common'
+import type { CartItem } from '@/types/cart'
+import type {  Product as CommonProduct } from '@/types/product'
 
 export interface Product extends Omit<CommonProduct, 'images' | 'stock' | 'brand' | 'tags'> {
   image: string;

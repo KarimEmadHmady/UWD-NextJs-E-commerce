@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/common/Button/Button';
 import { Badge } from '@/components/common/Badge/Badge';
-import type { Product } from '@/types/common';
+import type { Product } from '@/types/product';
 
 interface ProductCardProps {
   product: Product;

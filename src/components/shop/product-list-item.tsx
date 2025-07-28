@@ -8,24 +8,9 @@ import { Badge } from "../common/Badge/Badge"
 import { useWishlist } from "@/hooks/useWishlist"
 import { useNotifications } from '@/hooks/useNotifications';
 import { useCart } from '@/hooks/useCart';
-import { Product as GlobalProduct } from "@/types/common"
+import { Product as GlobalProduct } from "@/types/product"
 import { AnimatePresence, motion } from 'framer-motion';
-
-interface Product {
-  id: number
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  rating: number
-  reviews: number
-  category: string
-  description: string
-  isNew?: boolean
-  isSale?: boolean
-  discount?: number
-  inStock: boolean
-}
+import type { Product } from '../product/product-data';
 
 interface ProductListItemProps {
   product: Product

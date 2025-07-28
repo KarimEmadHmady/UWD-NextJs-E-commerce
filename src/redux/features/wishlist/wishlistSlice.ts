@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { Product } from '@/types/common';
+import type { Product } from '@/types/product';
 
 interface WishlistState {
   items: Product[];

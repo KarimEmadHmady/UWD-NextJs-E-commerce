@@ -6,7 +6,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { Minus, Plus, Trash2, Heart } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
-import type { CartItem as CartItemType } from '@/types/common'
+import type { CartItem as CartItemType } from '@/types/cart'
 
 interface CartItemProps {
   item: CartItemType;

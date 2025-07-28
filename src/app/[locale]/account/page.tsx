@@ -134,7 +134,7 @@ export default function AccountPage() {
 
   // Types for orders and items
 
-  type ItemType = {
+  type WishlistItemType = {
     id: string;
     name: string;
     price: number;
@@ -146,7 +146,7 @@ export default function AccountPage() {
   type OrderType = {
     id: string;
     createdAt: string;
-    items: ItemType[];
+    items: WishlistItemType[];
     total: number;
     status: string;
     paymentMethod?: string;
@@ -370,7 +370,7 @@ export default function AccountPage() {
                     <div className="mb-4 text-sm text-gray-600">Total: <b>EGP {selectedOrder.total.toFixed(2)}</b></div>
                     <div className="mb-2 text-black font-semibold">Products:</div>
                     <ul className="mb-2 text-black space-y-2">
-                      {selectedOrder.items.map((item: ItemType) => (
+                      {selectedOrder.items.map((item: WishlistItemType) => (
                         <li key={item.id} className="flex justify-between text-sm border-b pb-1">
                           <span>{item.name} x{item.quantity}</span>
                           <span>EGP {(item.price * (item.quantity || 1)).toFixed(2)}</span>
@@ -393,7 +393,7 @@ export default function AccountPage() {
                   {wishlistItems.length === 0 ? (
                     <div className="text-gray-500 text-center col-span-3">Your wishlist is empty.</div>
                   ) : (
-                    wishlistItems.map((item: ItemType) => {
+                    wishlistItems.map((item: any) => {
                       // تحويل ItemType إلى Product
                       const product: Product = {
                         id: Number(item.id),

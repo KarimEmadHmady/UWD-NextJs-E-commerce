@@ -15,7 +15,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import type { Product } from "../product-data"
 import { convertToCartProduct } from "../product-data"
 import { useWishlist } from "@/hooks/useWishlist"
-import { Product as GlobalProduct } from "@/types/common"
+import { Product as GlobalProduct } from "@/types/product"
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import Skeleton from '@/components/common/Skeleton';
 
