@@ -7,6 +7,7 @@ import ReduxProvider from "@/redux/ReduxProvider";
 import { Toaster } from "sonner";
 import NotificationContainer from '@/components/common/NotificationContainer';
 import GlobalLoadingOverlay from '@/components/common/GlobalLoadingOverlay';
+import QueryProvider from '@/components/common/QueryProvider';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,14 +32,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ReduxProvider>
-          <GlobalLoadingOverlay />
-          <NotificationContainer />
-          {children}
-          <Footer/>
-          <ScrollToTopButton />
-          <Toaster position="top-center" richColors />
-        </ReduxProvider>
+        <QueryProvider>
+          <ReduxProvider>
+            <GlobalLoadingOverlay />
+            <NotificationContainer />
+            {children}
+            <Footer/>
+            <ScrollToTopButton />
+            <Toaster position="top-center" richColors />
+          </ReduxProvider>
+        </QueryProvider>
       </body>
     </html>
   );

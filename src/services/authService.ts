@@ -28,7 +28,7 @@ export const checkLocation = async (location: LocationData): Promise<LocationChe
     formData.append('lat', String(location.latitude));
     formData.append('long', String(location.longitude));
 
-    const response = await fetch(`${API_BASE}check/locaion`, {
+    const response = await fetch(`${API_BASE}/check/locaion`, {
       method: 'POST',
       body: formData,
     });
@@ -90,7 +90,7 @@ export const registerUser = async (userData: {
   address: string;
 }) => {
   try {
-    const response = await fetch(`${API_BASE}auth/register`, {
+    const response = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -144,11 +144,11 @@ export const registerUser = async (userData: {
 };
 
 export const loginUser = async (loginData: {
-  username: string; // يمكن أن يكون email أو phone_number
+  username: string; 
   password: string;
 }) => {
   try {
-    const response = await fetch(`${API_BASE}auth/login`, {
+    const response = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

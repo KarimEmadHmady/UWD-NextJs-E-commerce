@@ -7,14 +7,36 @@ import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Badge } from "@/components/common/Badge/Badge"
 import { useCheckout } from '@/hooks/useCheckout';
-import { useOrders } from '@/hooks/useOrders';
+import useOrders from '@/hooks/useOrders';
 import RevealOnScroll from '@/components/common/RevealOnScroll';
 import { BackgroundLinesDemo } from '@/components/common/ui/BackgroundLinesDemo';
+
+// Types for orders and items
+
+type ItemType = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image?: string;
+  images?: string[];
+};
+
+type OrderType = {
+  id: string;
+  createdAt: string;
+  items: ItemType[];
+  total: number;
+  status: string;
+  paymentMethod?: string;
+  shippingMethod?: string;
+  address?: string;
+};
 
 export default function OrderConfirmationPage() {
   const router = useRouter()
   const { orders } = useOrders();
-  const latestOrder = orders && orders.length > 0 ? orders[0] : null;
+  const latestOrder: OrderType | null = orders && orders.length > 0 ? orders[0] : null;
 
   if (!latestOrder) {
     return (
@@ -32,11 +54,11 @@ export default function OrderConfirmationPage() {
     );
   }
 
-  const orderItems = latestOrder.items;
+  const orderItems: ItemType[] = latestOrder.items;
   const orderSummary = {
-    subtotal: orderItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0),
+    subtotal: orderItems.reduce((sum: number, item: ItemType) => sum + (item.price * (item.quantity || 1)), 0),
     shipping: latestOrder.shippingMethod === 'Express' ? 100 : latestOrder.shippingMethod === 'Standard' ? 50 : 0,
-    tax: orderItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0) * 0.08,
+    tax: orderItems.reduce((sum: number, item: ItemType) => sum + (item.price * (item.quantity || 1)), 0) * 0.08,
     total: latestOrder.total,
   };
 
@@ -65,7 +87,7 @@ export default function OrderConfirmationPage() {
       `Payment: ${latestOrder.paymentMethod}`,
       '',
       'Items:',
-      ...orderItems.map(item => `- ${item.name} x${item.quantity} = E.L ${(item.price * (item.quantity || 1)).toFixed(2)}`),
+      ...orderItems.map((item: ItemType) => `- ${item.name} x${item.quantity} = E.L ${(item.price * (item.quantity || 1)).toFixed(2)}`),
       '',
       `Subtotal: ${formatPrice(orderSummary.subtotal)}`,
       `Shipping: ${orderSummary.shipping === 0 ? 'Free' : formatPrice(orderSummary.shipping)}`,
@@ -159,7 +181,7 @@ export default function OrderConfirmationPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {orderItems.map((item) => (
+                    {orderItems.map((item: ItemType) => (
                       <div key={item.id} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg">
                         <img
                           src={item.image || item.images?.[0] || "/placeholder.svg"}

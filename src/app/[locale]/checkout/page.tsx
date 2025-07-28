@@ -15,7 +15,7 @@ import { setAddress, setShippingMethod, setPaymentMethod, setReview } from '@/re
 import { useCheckout } from '@/hooks/useCheckout';
 import { useCart } from '@/hooks/useCart';
 import CustomerInfoStep from '@/components/checkout/customer-info-step';
-import { useOrders } from '@/hooks/useOrders';
+import useOrders from '@/hooks/useOrders';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/features/user/userSelectors';
 import { clearCart } from '@/redux/features/cart/cartSlice';
@@ -59,7 +59,7 @@ export default function CheckoutPage() {
   const [cardError, setCardError] = useState('');
   const [location, setLocation] = useState<any>(null);
   const [customerInfo, setCustomerInfo] = useState<any>(null);
-  const { createOrder } = useOrders();
+  const { orders, createOrder } = useOrders();
   const { isAuthenticated, user } = useAuth();
   const { addresses, defaultAddress, add: addAddress } = useAddress();
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
@@ -264,7 +264,15 @@ export default function CheckoutPage() {
     }
     switch (currentStep) {
       case 2:
-        return <LocationStepCheckout onLocationSet={handleLocationSet} initialLocation={location || undefined} />;
+        return <LocationStepCheckout onLocationSet={handleLocationSet} initialLocation={
+          defaultAddress && defaultAddress.latitude && defaultAddress.longitude && defaultAddress.address
+            ? {
+                latitude: defaultAddress.latitude,
+                longitude: defaultAddress.longitude,
+                address: defaultAddress.address
+              }
+            : (location || undefined)
+        } />;
       case 3:
         return <CustomerInfoStep onCustomerInfoSet={handleCustomerInfoSet} initialInfo={customerInfo || undefined} initialShippingMethod={shippingMethod || undefined} />;
       case 4:

@@ -1,15 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-
-export interface UserData {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  // أضف أي بيانات أخرى حسب الحاجة
-}
+import type { User } from '@/types/auth';
 
 interface UserState {
-  user: UserData | null;
+  user: User | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
@@ -29,7 +22,7 @@ export const loginUser = createAsyncThunk(
     // هنا سيتم استدعاء API لاحقاً
     // const response = await api.login(credentials);
     // return response.data;
-    return { id: '1', name: 'Demo User', email: credentials.email };
+    return { id: 1, username: 'Demo User', email: credentials.email } as User;
   }
 );
 
@@ -38,7 +31,7 @@ export const fetchUser = createAsyncThunk(
   async (_, thunkAPI) => {
     // const response = await api.getUser();
     // return response.data;
-    return { id: '1', name: 'Demo User', email: 'demo@email.com' };
+    return { id: 1, username: 'Demo User', email: 'demo@email.com' } as User;
   }
 );
 
@@ -67,7 +60,7 @@ const userSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action: PayloadAction<UserData>) => {
+      .addCase(loginUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
@@ -82,7 +75,7 @@ const userSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUser.fulfilled, (state, action: PayloadAction<UserData>) => {
+      .addCase(fetchUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = true;

@@ -6,6 +6,7 @@ import { Button } from "../common/Button/Button";
 import { Input } from "../common/input/input";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
+import { useAuth } from '@/hooks/useAuth';
 
 interface LocationData {
   latitude: number;
@@ -29,6 +30,7 @@ export default function LocationStepCheckout({ onLocationSet, initialLocation }:
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [suggestLoading, setSuggestLoading] = useState(false);
+  const { checkLocation } = useAuth();
 
   // Debounce search suggestions
   useEffect(() => {
@@ -104,7 +106,14 @@ export default function LocationStepCheckout({ onLocationSet, initialLocation }:
         const longitude = parseFloat(data[0].lon);
         let address = data[0].display_name || manualAddress;
         const loc = { latitude, longitude, address };
-        setLocation(loc);
+        // Validation
+        const result = await checkLocation({ latitude, longitude, address });
+        if (result && result.meta && result.meta.requestStatus === 'fulfilled') {
+          setLocation(loc);
+          setError(null);
+        } else {
+          setError('Out of coverage');
+        }
       } else {
         setError("Location not found. Try a more specific address.");
       }
@@ -125,7 +134,14 @@ export default function LocationStepCheckout({ onLocationSet, initialLocation }:
       }
     } catch {}
     const loc = { latitude: lat, longitude: lng, address };
-    setLocation(loc);
+    // Validation
+    const result = await checkLocation({ latitude: lat, longitude: lng, address });
+    if (result && result.meta && result.meta.requestStatus === 'fulfilled') {
+      setLocation(loc);
+      setError(null);
+    } else {
+      setError('Out of coverage');
+    }
   };
 
   return (
@@ -201,7 +217,8 @@ export default function LocationStepCheckout({ onLocationSet, initialLocation }:
           </div>
           <Button 
             className="w-full bg-teal-600 hover:bg-teal-700 mt-4" 
-            onClick={() => onLocationSet(location)}
+            onClick={() => { if (!error) onLocationSet(location); }}
+            disabled={!!error}
           >
             Confirm Location
           </Button>

@@ -9,7 +9,7 @@ import {
   selectWishlistItems,
   selectWishlistCount,
 } from '@/redux/features/wishlist/wishlistSelectors';
-import type { Product } from '@/types/common';
+import type { Product } from '@/types/product';
 
 /**
  * Custom hook for managing the wishlist state and actions.

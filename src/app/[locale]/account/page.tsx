@@ -19,8 +19,9 @@ import ManualMap from '@/components/checkout/ManualMap';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
-import { useOrders } from '@/hooks/useOrders';
+import useOrders from '@/hooks/useOrders';
 import { useNotifications } from '@/hooks/useNotifications';
+import type { Product } from '@/types/product';
 
 /**
  * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
@@ -65,8 +66,8 @@ export default function AccountPage() {
     if (editAddressId) {
       // تعديل عنوان موجود
       update({
-        id: editAddressId,
-        userId: userRedux?.id || 'guest',
+        id: String(editAddressId),
+        userId: String(userRedux?.id || 'guest'),
         ...addressForm,
         address: addressForm.location.address,
         latitude: addressForm.location.latitude,
@@ -78,7 +79,7 @@ export default function AccountPage() {
       // إضافة عنوان جديد
       add({
         id: Date.now().toString(),
-        userId: userRedux?.id || 'guest',
+        userId: String(userRedux?.id || 'guest'),
         ...addressForm,
         address: addressForm.location.address,
         latitude: addressForm.location.latitude,
@@ -105,7 +106,7 @@ export default function AccountPage() {
 
   const { orders } = useOrders();
   const [showOrderDetails, setShowOrderDetails] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
 
   const { items: wishlistItems, removeItem: removeWishlistItem } = useWishlist();
   const { addItem: addCartItem, toggle: toggleCart } = useCart();
@@ -129,7 +130,29 @@ export default function AccountPage() {
   }
 
   const totalOrders = orders.length;
-  const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+  const totalSpent = orders.reduce((sum: number, o: OrderType) => sum + (o.total || 0), 0);
+
+  // Types for orders and items
+
+  type ItemType = {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image?: string;
+    images?: string[];
+  };
+
+  type OrderType = {
+    id: string;
+    createdAt: string;
+    items: ItemType[];
+    total: number;
+    status: string;
+    paymentMethod?: string;
+    shippingMethod?: string;
+    address?: string;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -231,7 +254,7 @@ export default function AccountPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {orders.slice(0, 3).map((order) => (
+                    {orders.slice(0, 3).map((order: OrderType) => (
                       <div
                         key={order.id}
                         className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
@@ -286,7 +309,7 @@ export default function AccountPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {orders.map((order) => (
+                  {orders.map((order: OrderType) => (
                     <div
                       key={order.id}
                       className="flex flex-col md:flex-row items-center justify-between p-6 border border-gray-200 rounded-lg"
@@ -347,7 +370,7 @@ export default function AccountPage() {
                     <div className="mb-4 text-sm text-gray-600">Total: <b>EGP {selectedOrder.total.toFixed(2)}</b></div>
                     <div className="mb-2 text-black font-semibold">Products:</div>
                     <ul className="mb-2 text-black space-y-2">
-                      {selectedOrder.items.map((item: any) => (
+                      {selectedOrder.items.map((item: ItemType) => (
                         <li key={item.id} className="flex justify-between text-sm border-b pb-1">
                           <span>{item.name} x{item.quantity}</span>
                           <span>EGP {(item.price * (item.quantity || 1)).toFixed(2)}</span>
@@ -370,25 +393,40 @@ export default function AccountPage() {
                   {wishlistItems.length === 0 ? (
                     <div className="text-gray-500 text-center col-span-3">Your wishlist is empty.</div>
                   ) : (
-                    wishlistItems.map((item) => (
-                      <div key={item.id} className="border border-gray-200 rounded-lg p-4">
-                        <img
-                          src={item.images?.[0] || "/placeholder.svg"}
-                          alt={item.name}
-                          className="w-40 h-40 mx-auto object-cover bg-gray-50 rounded-xl border mb-4"
-                        />
-                        <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
-                        <p className="text-lg font-bold text-gray-900 mb-3">{formatPrice(item.price)}</p>
-                        <div className="space-y-2">
-                          <Button className="w-full bg-teal-600 hover:bg-teal-700 cursor-pointer" onClick={() => { addCartItem(item, 1); removeWishlistItem(item.id); toggleCart(); }}>
-                            Add to Cart
-                          </Button>
-                          <Button variant="outline" className="w-full bg-transparent cursor-pointer" onClick={() => removeWishlistItem(item.id)}>
-                            Remove
-                          </Button>
+                    wishlistItems.map((item: ItemType) => {
+                      // تحويل ItemType إلى Product
+                      const product: Product = {
+                        id: Number(item.id),
+                        name: item.name,
+                        description: '', // أو ضع قيمة مناسبة
+                        price: item.price,
+                        images: item.images || [],
+                        category: '', // أو ضع قيمة مناسبة
+                        rating: 0, // أو ضع قيمة مناسبة
+                        stock: 1, // أو ضع قيمة مناسبة
+                        brand: '', // أو ضع قيمة مناسبة
+                        tags: [], // أو ضع قيمة مناسبة
+                      };
+                      return (
+                        <div key={item.id} className="border border-gray-200 rounded-lg p-4">
+                          <img
+                            src={item.images?.[0] || "/placeholder.svg"}
+                            alt={item.name}
+                            className="w-40 h-40 mx-auto object-cover bg-gray-50 rounded-xl border mb-4"
+                          />
+                          <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
+                          <p className="text-lg font-bold text-gray-900 mb-3">{formatPrice(item.price)}</p>
+                          <div className="space-y-2">
+                            <Button className="w-full bg-teal-600 hover:bg-teal-700 cursor-pointer" onClick={() => { addCartItem(product, 1); removeWishlistItem(Number(item.id)); toggleCart(); }}>
+                              Add to Cart
+                            </Button>
+                            <Button variant="outline" className="w-full bg-transparent cursor-pointer" onClick={() => removeWishlistItem(Number(item.id))}>
+                              Remove
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
               </CardContent>
@@ -404,7 +442,7 @@ export default function AccountPage() {
                 <div className="space-y-4">
                   <>
                   {addresses.length === 0 && <div className="text-gray-500 text-center">No addresses saved yet.</div>}
-                  {addresses.map(addr => (
+                  {addresses.map((addr: any) => (
                     <div className="flex flex-col gap-2 bg-white p-3 rounded-lg border border-gray-200 mb-5">
                     <div key={addr.id} className="p-4 border border-gray-200 rounded-lg flex items-start justify-between gap-4">
                       <div>

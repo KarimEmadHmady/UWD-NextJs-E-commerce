@@ -1,42 +1,5 @@
 // src/types/common.d.ts
 
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  images: string[];
-  category: string;
-  rating: number;
-  stock: number;
-  brand: string;
-  tags: string[];
-}
-
-export interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  images: string[];
-  description: string;
-  category: string;
-  stock: number;
-  brand: string;
-  tags: string[];
-  rating?: number;
-}
-
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone?: string;
-  avatar?: string;
-  role: 'user' | 'admin';
-  addresses: Address[];
-}
-
 export interface Address {
   id: number;
   street: string;

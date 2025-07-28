@@ -17,7 +17,10 @@ import {
   selectCartTotal,
   selectCartItemsCount,
 } from '@/redux/features/cart/cartSelectors';
-import type { CartItem, Product } from '@/types/common';
+import type { CartItem } from '@/types/cart';
+import type { Product } from '@/types/product';
+import { getCartItemsApi } from '@/services/cartService';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * Custom hook for managing the shopping cart state and actions.
@@ -33,6 +36,13 @@ export const useCart = () => {
   const tax = useAppSelector(selectCartTax);
   const total = useAppSelector(selectCartTotal);
   const itemsCount = useAppSelector(selectCartItemsCount);
+
+  // React Query لجلب بيانات السلة من السيرفر
+  const { data: serverCart, isLoading: cartLoading, error: cartError } = useQuery({
+    queryKey: ['cart'],
+    queryFn: getCartItemsApi,
+    enabled: false, // فعلها إذا أردت جلب السلة من السيرفر تلقائيًا
+  });
 
   // Sync cart items from localStorage to Redux on mount
   useEffect(() => {

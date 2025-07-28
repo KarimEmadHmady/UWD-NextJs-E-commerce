@@ -1,25 +1,17 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { selectOrders, selectOrderLoading, selectOrderError } from '@/redux/features/order/orderSelectors';
+import { useQuery } from '@tanstack/react-query';
+import { getOrders } from '@/services/orderService';
+import { useDispatch, useSelector } from 'react-redux';
 import { addOrder } from '@/redux/features/order/orderSlice';
+import { selectOrders } from '@/redux/features/order/orderSelectors';
 
-/**
- * Custom hook for managing orders state and actions.
- * Handles fetching, creating orders, and provides order info and status.
- */
-export const useOrders = () => {
-  const orders = useSelector(selectOrders);
-  const loading = useSelector(selectOrderLoading);
-  const error = useSelector(selectOrderError);
+export default function useOrders() {
   const dispatch = useDispatch();
-
+  const orders = useSelector(selectOrders);
   const createOrder = (order: any) => {
     dispatch(addOrder(order));
   };
-
   return {
     orders,
-    loading,
-    error,
     createOrder,
   };
-}; 
+} 
