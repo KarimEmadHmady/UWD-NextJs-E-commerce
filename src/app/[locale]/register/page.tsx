@@ -143,7 +143,8 @@ export default function RegisterPage() {
         states,
         lat: location.latitude,
         long: location.longitude,
-        address: location.address
+        address: location.address,
+        address_1: location.address // أضف هذا
       });
       
       // Debug: Log the registration result

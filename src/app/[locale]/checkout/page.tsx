@@ -60,10 +60,20 @@ export default function CheckoutPage() {
   const [location, setLocation] = useState<any>(null);
   const [customerInfo, setCustomerInfo] = useState<any>(null);
   const { orders, createOrder } = useOrders();
-  const { isAuthenticated, user, checkLocation, locationCheckError, clearLocationError, locationCheckLoading } = useAuth();
+  const { isAuthenticated, user, checkLocation, locationCheckError, clearLocationError, locationCheckLoading, userLatLong } = useAuth();
   const { addresses, defaultAddress, add: addAddress } = useAddress();
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const { notify } = useNotifications();
+
+  // إعداد بيانات العميل الافتراضية من بيانات اليوزر
+  const defaultCustomerInfo = user ? {
+    name: user.name || user.username || '',
+    phone: user.phone_number || '',
+    street: user.addresses?.[0]?.address_1 || user.adresses?.[0]?.address_1 || user.address || '',
+    city: user.city || user.addresses?.[0]?.city || user.adresses?.[0]?.city || '',
+    region: user.states || user.addresses?.[0]?.state || user.adresses?.[0]?.state || '',
+    notes: '',
+  } : undefined;
 
   // Monitor location check errors
   useEffect(() => {
@@ -194,6 +204,16 @@ export default function CheckoutPage() {
     }
   }, [isAuthenticated, currentStep]);
 
+  useEffect(() => {
+    if (isAuthenticated && userLatLong && !location) {
+      setLocation({
+        latitude: userLatLong.lat,
+        longitude: userLatLong.long,
+        address: user?.addresses?.[0]?.address_1 || user?.adresses?.[0]?.address_1 || '',
+      });
+    }
+  }, [isAuthenticated, userLatLong, location, user]);
+
   const handleCustomerInfoSet = (info: any, shipping: string) => {
     setCustomerInfo(info);
     dispatch(setShippingMethod(shipping));
@@ -290,16 +310,10 @@ export default function CheckoutPage() {
     switch (currentStep) {
       case 2:
         return <LocationStep onLocationSet={handleLocationSet} initialLocation={
-          defaultAddress && defaultAddress.latitude && defaultAddress.longitude && defaultAddress.address
-            ? {
-                latitude: defaultAddress.latitude,
-                longitude: defaultAddress.longitude,
-                address: defaultAddress.address
-              }
-            : (location || undefined)
+          location || undefined
         } isChecking={locationCheckLoading} />;
       case 3:
-        return <CustomerInfoStep onCustomerInfoSet={handleCustomerInfoSet} initialInfo={customerInfo || undefined} initialShippingMethod={shippingMethod || undefined} />;
+        return <CustomerInfoStep onCustomerInfoSet={handleCustomerInfoSet} initialInfo={customerInfo || defaultCustomerInfo} initialShippingMethod={shippingMethod || undefined} />;
       case 4:
         return (
           <div className="max-w-2xl mx-auto space-y-6">

@@ -88,6 +88,7 @@ export const registerUser = async (userData: {
   lat: number;
   long: number;
   address: string;
+  address_1?: string;
 }) => {
   try {
     const response = await fetch(`${API_BASE}/auth/register`, {
@@ -95,7 +96,7 @@ export const registerUser = async (userData: {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(userData),
+      body: JSON.stringify(userData), // address_1 سيتم إرساله إذا كان موجود
     });
 
     const data = await response.json();

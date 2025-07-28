@@ -398,14 +398,14 @@ export default function AccountPage() {
                       const product: Product = {
                         id: Number(item.id),
                         name: item.name,
-                        description: '', // أو ضع قيمة مناسبة
+                        description: '', 
                         price: item.price,
                         images: item.images || [],
-                        category: '', // أو ضع قيمة مناسبة
-                        rating: 0, // أو ضع قيمة مناسبة
-                        stock: 1, // أو ضع قيمة مناسبة
-                        brand: '', // أو ضع قيمة مناسبة
-                        tags: [], // أو ضع قيمة مناسبة
+                        category: '', 
+                        rating: 0, 
+                        stock: 1, 
+                        brand: '', 
+                        tags: [], 
                       };
                       return (
                         <div key={item.id} className="border border-gray-200 rounded-lg p-4">

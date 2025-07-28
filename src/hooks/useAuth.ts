@@ -43,6 +43,15 @@ export const useAuth = () => {
   const registrationSuccess = useSelector(selectRegistrationSuccess);
   const userLocation = useSelector(selectUserLocation);
 
+  // lat/long from first address if available
+  let userLatLong: { lat: number; long: number } | null = null;
+  if (user) {
+    const addr = (user.addresses && user.addresses[0]) || (user.adresses && user.adresses[0]);
+    if (addr && typeof addr.lat === 'number' && typeof addr.long === 'number') {
+      userLatLong = { lat: addr.lat, long: addr.long };
+    }
+  }
+
   // Actions
   const checkLocation = (location: LocationData) => {
     return dispatch(checkLocationAsync(location));
@@ -58,6 +67,7 @@ export const useAuth = () => {
     lat: number;
     long: number;
     address: string;
+    address_1?: string;
   }) => {
     return dispatch(registerUserAsync(userData));
   };
@@ -93,6 +103,7 @@ export const useAuth = () => {
     registrationError,
     registrationSuccess,
     userLocation,
+    userLatLong, // أضف هذا
 
     // Actions
     checkLocation,

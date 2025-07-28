@@ -87,6 +87,7 @@ export const loadUserFromStorage = createAsyncThunk(
 interface AuthState {
   user: {
     id?: string;
+    name?: string; // أضف هذا
     username?: string;
     email?: string;
     phone_number?: string;
@@ -95,6 +96,8 @@ interface AuthState {
     lat?: number;
     long?: number;
     address?: string;
+    addresses?: any[]; // addresses من backend
+    adresses?: any[]; // دعم التسمية الأخرى
   } | null;
   isAuthenticated: boolean;
   locationCheck: {
@@ -186,20 +189,25 @@ const authSlice = createSlice({
         state.registration.error = null;
         // Set user data if registration includes user info
         if (action.payload.data?.user) {
+          const backendUser = action.payload.data.user;
           state.user = {
-            id: action.payload.data.user?.id || action.meta.arg.email || action.meta.arg.username || "",
-            username: action.payload.data.user?.username || action.meta.arg.username || "",
-            email: action.payload.data.user?.email || action.meta.arg.email || "",
-            phone_number: action.payload.data.user?.phone_number || action.meta.arg.phone_number || "",
-            city: action.payload.data.user?.city || action.meta.arg.city || "",
-            states: action.payload.data.user?.states || action.meta.arg.states || "",
-            lat: action.payload.data.user?.lat || action.meta.arg.lat || 0,
-            long: action.payload.data.user?.long || action.meta.arg.long || 0,
-            address: action.payload.data.user?.address || action.meta.arg.address || "",
+            id: backendUser.id || action.meta.arg.email || action.meta.arg.username || "",
+            name: backendUser.name || action.meta.arg.username || "", // أضف هذا
+            username: backendUser.username || action.meta.arg.username || "",
+            email: backendUser.email || action.meta.arg.email || "",
+            phone_number: backendUser.phone_number || action.meta.arg.phone_number || "",
+            city: backendUser.city || action.meta.arg.city || "",
+            states: backendUser.states || action.meta.arg.states || "",
+            lat: backendUser.lat || action.meta.arg.lat || (backendUser.adresses?.[0]?.lat ?? backendUser.addresses?.[0]?.lat ?? 0),
+            long: backendUser.long || action.meta.arg.long || (backendUser.adresses?.[0]?.long ?? backendUser.addresses?.[0]?.long ?? 0),
+            address: backendUser.address || action.meta.arg.address || (backendUser.adresses?.[0]?.address_1 ?? backendUser.addresses?.[0]?.address_1 ?? ""),
+            addresses: backendUser.addresses || backendUser.adresses || [],
+            adresses: backendUser.adresses || undefined,
           };
           state.isAuthenticated = true;
         } else {
           state.user = {
+            name: action.meta.arg.username, // أضف هذا
             username: action.meta.arg.username,
             email: action.meta.arg.email,
             phone_number: action.meta.arg.phone_number,
@@ -208,6 +216,7 @@ const authSlice = createSlice({
             lat: action.meta.arg.lat,
             long: action.meta.arg.long,
             address: action.meta.arg.address,
+            addresses: [],
           };
           state.isAuthenticated = true;
         }
@@ -230,14 +239,17 @@ const authSlice = createSlice({
         const token = action.payload.data.data?.token;
         state.user = {
           id: backendUser.id || backendUser.email || backendUser.username || "",
+          name: backendUser.name || backendUser.username || "", // أضف هذا
           username: backendUser.username || "",
           email: backendUser.email || "",
           phone_number: backendUser.phone_number || "",
           city: backendUser.city || "",
           states: backendUser.states || "",
-          lat: backendUser.lat || 0,
-          long: backendUser.long || 0,
-          address: backendUser.address || "",
+          lat: backendUser.lat || (backendUser.adresses?.[0]?.lat ?? backendUser.addresses?.[0]?.lat ?? 0),
+          long: backendUser.long || (backendUser.adresses?.[0]?.long ?? backendUser.addresses?.[0]?.long ?? 0),
+          address: backendUser.address || (backendUser.adresses?.[0]?.address_1 ?? backendUser.addresses?.[0]?.address_1 ?? ""),
+          addresses: backendUser.addresses || backendUser.adresses || [],
+          adresses: backendUser.adresses || undefined,
         };
         state.isAuthenticated = true;
         if (typeof window !== 'undefined') {
