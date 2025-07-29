@@ -34,6 +34,7 @@ interface AddressSelectorProps {
   user?: any;
   token?: string;
   selectedId?: string;
+  renderAddressActions?: (address: Address) => React.ReactNode;
 }
 
 // Helper to parse city and state from address string
@@ -45,7 +46,7 @@ function parseCityStateFromAddress(address: string) {
   };
 }
 
-export default function AddressSelector({ addresses, onAddAddress, onSelect, defaultAddressId, user, token, selectedId }: AddressSelectorProps) {
+export default function AddressSelector({ addresses, onAddAddress, onSelect, defaultAddressId, user, token, selectedId, renderAddressActions }: AddressSelectorProps) {
   const [showAdd, setShowAdd] = useState(false);
   // Remove internal selectedId state, use prop instead
   // const [selectedId, setSelectedId] = useState(defaultAddressId || addresses[0]?.id || '');
@@ -169,6 +170,11 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
                 <span className="text-xs text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full border border-green-200 z-20">Default</span>
               )}
             </div>
+            {renderAddressActions && (
+              <div className="absolute bottom-[40px] right-[70px] cursor-pointer">
+                {renderAddressActions(addr)}
+              </div>
+            )}
             {/* بيانات العنوان + الراديو */}
             <div className="flex flex-row justify-between items-center">
               <div className="flex flex-col gap-0.5 flex-1">

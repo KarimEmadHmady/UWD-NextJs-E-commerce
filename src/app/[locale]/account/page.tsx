@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { User, Package, Heart, Settings, MapPin, CreditCard, Bell, Shield, LogOut,  Home, ChevronRight } from "lucide-react"
+import { User, Package, Heart, Settings, MapPin, CreditCard, Bell, Shield, LogOut,  Home, ChevronRight, Phone } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/avatar/avatar"
@@ -14,7 +14,6 @@ import { selectUser } from '@/redux/features/user/userSelectors';
 import { useWishlist } from '@/hooks/useWishlist';
 import RevealOnScroll from "@/components/common/RevealOnScroll"
 import LocationStep from '@/components/checkout/location-step';
-
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
@@ -25,6 +24,9 @@ import { useUserAddresses } from '@/hooks/useUserAddresses';
 import { Input } from "@/components/common/input/input";
 import { useAuth } from '@/hooks/useAuth';
 import { addAddressService } from '@/services/addressService';
+import AddressEditModal from '@/components/checkout/address-edit-modal';
+import { Edit } from 'lucide-react';
+import { Label } from "@/components/common/label/label";
 
 /**
  * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
@@ -122,6 +124,8 @@ export default function AccountPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+
+  const [editAddress, setEditAddress] = useState<any>(null);
 
   // Helper to parse city and state from address string
   function parseCityStateFromAddress(address: string) {
@@ -432,34 +436,36 @@ export default function AccountPage() {
                     return (
                       <div
                         key={addr.id || idx}
-                        className={`relative border rounded-lg p-4 bg-white shadow-sm flex flex-col gap-2 ${isDefault ? 'border-teal-600 ring-2 ring-teal-200' : 'border-gray-200'}`}
+                        className={`relative bg-white rounded-2xl shadow-sm hover:shadow-lg border transition-shadow duration-200 p-6 flex flex-col gap-2 ${isDefault ? 'border-teal-600 ring-2 ring-teal-200' : 'border-gray-200'}`}
+                        style={{ minHeight: 180 }}
                       >
                         {isDefault && (
                           <span className="absolute top-2 right-2 bg-teal-600 text-white text-xs px-2 py-1 rounded-full z-10">Default</span>
                         )}
                         {addr.label && (
-                          <span className="absolute -top-2 -left-3 bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full z-10">{addr.label}</span>
+                          <span className="absolute -top-2 -left-3 bg-teal-600 text-white text-xs px-2 py-1 rounded-full z-10 shadow">{addr.label}</span>
                         )}
-                        <div className="font-semibold text-lg text-gray-900">{addr.name || addr.first_name || '-'}</div>
-                        <div className="text-gray-700 text-sm">{addr.phone || '-'}</div>
-                        <div className="text-gray-700 text-sm break-words">{addr.address_1 || addr.street || '-'}</div>
-                        <div className="flex gap-2 text-gray-500 text-xs mt-1">
+                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 cursor-pointer" onClick={() => setEditAddress(addr)}>
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <div className="flex flex-col mb-1">
+                          <span className="text-xl font-bold text-gray-900">{addr.name || addr.first_name || '-'}</span>
+                          {addr.email && (
+                            <span className="text-xs text-gray-400 mt-0 mb-0">{addr.email}</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-700 text-sm mb-1">
+                          <Phone className="w-4 h-4 text-teal-400" />
+                          <span className="font-medium">{addr.phone || '-'}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-700 text-sm mt-1">
+                          <MapPin className="w-4 h-4 text-teal-500" />
+                          <span className="break-words">{addr.address_1 || addr.street || '-'}</span>
+                        </div>
+                        <div className="flex gap-2 text-gray-500 text-xs mt-2">
                           <span>{addr.city || '-'}</span>
                           <span>|</span>
                           <span>{addr.region || addr.state || '-'}</span>
-                        </div>
-                        <div className="flex items-center gap-2 mt-2">
-                          <input
-                            type="radio"
-                            name="default-address"
-                            checked={isDefault}
-                            onChange={() => setDefaultAddressId(addr.id)}
-                            className="accent-teal-600 w-4 h-4"
-                            id={`default-radio-${addr.id}`}
-                          />
-                          <label htmlFor={`default-radio-${addr.id}`} className="text-xs text-gray-700 select-none">
-                            Set as default
-                          </label>
                         </div>
                       </div>
                     );
@@ -501,37 +507,61 @@ export default function AccountPage() {
                     }}
                   />
                   {locationCheckMsg && <div className={`mt-2 text-sm ${locationCheckMsg.startsWith('✔️') ? 'text-green-600' : 'text-red-600'}`}>{locationCheckMsg}</div>}
-                  <div className="mt-4 flex flex-col gap-2">
-                    <Input
-                      name="label"
-                      placeholder="Label (e.g. Home, Work)"
-                      value={addressForm.label || ''}
-                      onChange={e => setAddressForm({ ...addressForm, label: e.target.value })}
-                    />
-                    <Input
-                      name="phone"
-                      placeholder="Phone Number"
-                      value={addressForm.phone || ''}
-                      onChange={e => setAddressForm({ ...addressForm, phone: e.target.value })}
-                    />
-                    <Input
-                      name="firstName"
-                      placeholder="First Name"
-                      value={firstName}
-                      onChange={e => setFirstName(e.target.value)}
-                    />
-                    <Input
-                      name="lastName"
-                      placeholder="Last Name"
-                      value={lastName}
-                      onChange={e => setLastName(e.target.value)}
-                    />
-                    <Input
-                      name="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                    />
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                    <div>
+                      <Label className="text-xs mb-1">Label</Label>
+                      <Input
+                        name="label"
+                        placeholder="Label (e.g. Home, Work)"
+                        value={addressForm.label || ''}
+                        onChange={e => setAddressForm({ ...addressForm, label: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs mb-1">Phone</Label>
+                      <Input
+                        name="phone"
+                        placeholder="Phone Number"
+                        value={addressForm.phone || ''}
+                        onChange={e => setAddressForm({ ...addressForm, phone: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs mb-1">First Name</Label>
+                      <Input
+                        name="firstName"
+                        placeholder="First Name"
+                        value={firstName}
+                        onChange={e => setFirstName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs mb-1">Last Name</Label>
+                      <Input
+                        name="lastName"
+                        placeholder="Last Name"
+                        value={lastName}
+                        onChange={e => setLastName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs mb-1">Email</Label>
+                      <Input
+                        name="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs mb-1">Region</Label>
+                      <Input
+                        name="region"
+                        placeholder="Region"
+                        value={addressForm.region || ''}
+                        onChange={e => setAddressForm({ ...addressForm, region: e.target.value })}
+                      />
+                    </div>
                   </div>
                   <Button
                     className="mt-4 w-full bg-teal-600 text-white"
@@ -585,6 +615,15 @@ export default function AccountPage() {
                   </Button>
                 </div>
               </div>
+            )}
+            {/* مودال التعديل */}
+            {editAddress && (
+              <AddressEditModal
+                address={editAddress}
+                token={token}
+                onClose={() => setEditAddress(null)}
+                onSave={refetch}
+              />
             )}
           </TabsContent>
 

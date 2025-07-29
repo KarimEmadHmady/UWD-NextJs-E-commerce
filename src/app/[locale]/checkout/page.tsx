@@ -26,6 +26,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import AddressSelector from '@/components/checkout/address-selector';
 import { useUserAddresses } from '@/hooks/useUserAddresses';
+import AddressEditModal from '@/components/checkout/address-edit-modal';
+import { Edit } from 'lucide-react';
 
 interface LocationData {
   latitude: number
@@ -70,6 +72,7 @@ export default function CheckoutPage() {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
   // استخرج refetch من useUserAddresses
   const { addresses: backendAddresses, loading: addressesLoading, refetch } = useUserAddresses(token);
+  const [editAddress, setEditAddress] = useState<any>(null);
 
   // إعداد بيانات العميل الافتراضية من بيانات اليوزر
   const defaultCustomerInfo = user ? {
@@ -404,7 +407,20 @@ export default function CheckoutPage() {
             defaultAddressId={defaultAddress?.id}
             user={user}
             token={token}
+            renderAddressActions={(addr) => (
+              <Button variant="ghost" size="icon" className="absolute cursor-pointer" onClick={() => setEditAddress(addr)}>
+                <Edit className="w-4 h-4" />
+              </Button>
+            )}
           />
+          {editAddress && (
+            <AddressEditModal
+              address={editAddress}
+              token={token}
+              onClose={() => setEditAddress(null)}
+              onSave={refetch}
+            />
+          )}
           <div className="mt-6 flex justify-end">
             <Button
               className="bg-teal-600 text-white px-8 py-2 rounded-lg font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
