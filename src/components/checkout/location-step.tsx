@@ -148,7 +148,7 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
           <Navigation className="w-4 h-4 mr-2" />
           Get Location from Browser
         </Button>
-        <form onSubmit={handleManualSubmit} className="flex gap-2 w-full flex-1 relative">
+        <form onSubmit={handleManualSubmit} className="flex flex-col sm:flex-row gap-2 w-full flex-1 relative">
           <div className="w-full flex-1 relative flex items-center">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4-4m0 0A7 7 0 104 4a7 7 0 0013 13z" /></svg>
@@ -212,6 +212,7 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
             className="w-full bg-teal-600 hover:bg-teal-700 mt-4" 
             onClick={async () => {
               try {
+                console.log('onLocationSet called with:', location);
                 await onLocationSet(location);
               } catch (error) {
                 console.error('Error setting location:', error);

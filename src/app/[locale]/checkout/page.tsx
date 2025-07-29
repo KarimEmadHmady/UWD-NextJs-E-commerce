@@ -68,7 +68,8 @@ export default function CheckoutPage() {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const { notify } = useNotifications();
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
-  const { addresses: backendAddresses, loading: addressesLoading } = useUserAddresses(token);
+  // استخرج refetch من useUserAddresses
+  const { addresses: backendAddresses, loading: addressesLoading, refetch } = useUserAddresses(token);
 
   // إعداد بيانات العميل الافتراضية من بيانات اليوزر
   const defaultCustomerInfo = user ? {
@@ -315,6 +316,7 @@ export default function CheckoutPage() {
   const uniqueAdresses = normalizedAdresses.filter((addr, idx, arr) =>
     idx === arr.findIndex(a => (a.id && a.id === addr.id) || (a.address_1 && a.address_1 === addr.address_1))
   );
+  // تأكد من وجود تعريف واحد فقط للمتغير allAddresses (الذي يعتمد على backendAddresses و addresses فقط)
   const allAddresses = [
     ...(backendAddresses || []),
     ...addresses.map(addr => ({
@@ -385,11 +387,11 @@ export default function CheckoutPage() {
           <AddressSelector
             addresses={allAddresses}
             selectedId={selectedAddress?.id || ''}
-            onAddAddress={(addr) => {
-              addAddress({
-                ...addr,
-                userId: user?.id || 'guest',
-              });
+            onAddAddress={async (addr) => {
+              // أضف العنوان في الباك إند فقط (إذا كان هناك API)، ثم اعمل refetch
+              if (typeof refetch === 'function') {
+                await refetch();
+              }
             }}
             onSelect={(addr) => {
               setLocation({

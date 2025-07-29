@@ -21,6 +21,9 @@ interface Address {
   longitude?: number;
   address_1?: string;
   label?: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
 }
 
 interface AddressSelectorProps {
@@ -31,6 +34,15 @@ interface AddressSelectorProps {
   user?: any;
   token?: string;
   selectedId?: string;
+}
+
+// Helper to parse city and state from address string
+function parseCityStateFromAddress(address: string) {
+  const parts = address.split(',').map(s => s.trim());
+  return {
+    region: parts[2] || '', // بعد ثاني فاصلة
+    city: parts[3] || '', // بعد ثالث فاصلة
+  };
 }
 
 export default function AddressSelector({ addresses, onAddAddress, onSelect, defaultAddressId, user, token, selectedId }: AddressSelectorProps) {
@@ -44,6 +56,11 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
   const [error, setError] = useState('');
   const [locationCheckMsg, setLocationCheckMsg] = useState('');
   const { checkLocation, locationCheckLoading } = useAuth();
+
+  // State for new address fields
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
 
   // عند اختيار موقع جديد من الماب
   const handleLocationSet = async (loc: any) => {
@@ -66,22 +83,24 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
   };
 
   const handleSave = async () => {
-    if (!newLocation || !label || !phone) return;
+    if (!newLocation || !label || !phone || !firstName || !lastName || !email) return;
     setSaving(true);
-    setError('');
+    setError("");
     try {
       if (!token || !user) throw new Error('You must be logged in to add an address');
+      // استخراج city و state من العنوان
+      const { city, region } = parseCityStateFromAddress(newLocation.address);
       // إعداد البيانات حسب الـ schema
       const payload: AddressPayload = {
         label,
-        first_name: user.name || user.username || '',
-        last_name: '',
-        email: user.email || '',
+        first_name: firstName,
+        last_name: lastName,
+        email,
         phone,
         address_1: newLocation.address,
         address_2: '',
-        city: newLocation.city || '',
-        state: newLocation.region || '',
+        city,
+        region,
         country: 'EG',
         lat: newLocation.latitude,
         long: newLocation.longitude,
@@ -90,11 +109,11 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
       // backend يعيد العنوان الجديد
       const newAddr: Address = {
         id: apiRes.id?.toString() || Date.now().toString(),
-        name: payload.first_name,
+        name: `${firstName} ${lastName}`.trim(),
         phone: payload.phone,
         street: payload.address_1,
         city: payload.city,
-        region: payload.state,
+        region: payload.region, // بدلاً من payload.state
         country: payload.country,
         notes: '',
         latitude: payload.lat,
@@ -102,6 +121,9 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
         address_1: payload.address_1,
         label: payload.label,
         isDefault: addresses.length === 0,
+        email: payload.email,
+        first_name: payload.first_name,
+        last_name: payload.last_name,
       };
       onAddAddress(newAddr);
       setShowAdd(false);
@@ -109,6 +131,9 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
       setPhone('');
       setNewLocation(null);
       setSaving(false);
+      setFirstName('');
+      setLastName('');
+      setEmail('');
       onSelect(newAddr);
     } catch (e: any) {
       setError(e.message || 'Failed to add address');
@@ -147,7 +172,9 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
             {/* بيانات العنوان + الراديو */}
             <div className="flex flex-row justify-between items-center">
               <div className="flex flex-col gap-0.5 flex-1">
-                <div className="text-black font-semibold text-base leading-tight">{addr.name}</div>
+                <div className="text-black font-semibold text-base leading-tight">
+                  {addr.name || `${addr.first_name || ''} ${addr.last_name || ''}`.trim() || '-'}
+                </div>
                 <div className="text-black text-sm leading-tight">{addr.address_1}</div>
                 <div className="text-black text-xs leading-tight">{addr.city} - {addr.region} {addr.country && `- ${addr.country}`}</div>
               </div>
@@ -169,12 +196,12 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
       {showAdd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* overlay */}
-          <div className="absolute inset-0 bg-black/40" onClick={() => { setShowAdd(false); setLabel(''); setNewLocation(null); setError(''); setLocationCheckMsg(''); setPhone(''); }} />
+          <div className="absolute inset-0 bg-black/40" onClick={() => { setShowAdd(false); setLabel(''); setNewLocation(null); setError(''); setLocationCheckMsg(''); setPhone(''); setFirstName(''); setLastName(''); setEmail(''); }} />
           {/* modal */}
           <div className="relative bg-white rounded-xl p-6 shadow-lg md:max-w-[60%] w-full z-50">
             <button
               className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-xl"
-              onClick={() => { setShowAdd(false); setLabel(''); setNewLocation(null); setError(''); setLocationCheckMsg(''); setPhone(''); }}
+              onClick={() => { setShowAdd(false); setLabel(''); setNewLocation(null); setError(''); setLocationCheckMsg(''); setPhone(''); setFirstName(''); setLastName(''); setEmail(''); }}
               aria-label="Close"
             >
               ×
@@ -190,12 +217,26 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
                 <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone number" className="text-black" />
               </div>
             </div>
+            <div className="flex gap-2 mb-2 items-center">
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-1 text-black">First Name</label>
+                <Input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="First Name" className="text-black" />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-1 text-black">Last Name</label>
+                <Input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Last Name" className="text-black" />
+              </div>
+            </div>
+            <div className="mb-2">
+              <label className="block text-sm font-medium mb-1 text-black">Email</label>
+              <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" className="text-black" />
+            </div>
             <LocationStep onLocationSet={handleLocationSet} initialLocation={undefined} isChecking={locationCheckLoading} />
             {locationCheckMsg && <div className={`mt-2 text-sm ${locationCheckMsg.includes('✔️') ? 'text-green-600' : 'text-red-600'}`}>{locationCheckMsg}</div>}
             {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
             <div className="flex gap-2 mt-3">
-              <Button onClick={handleSave} disabled={!label || !newLocation || !phone || saving} className="bg-teal-600 text-white">Save Address</Button>
-              <Button variant="outline" onClick={() => { setShowAdd(false); setLabel(''); setNewLocation(null); setError(''); setLocationCheckMsg(''); setPhone(''); }}>Cancel</Button>
+              <Button onClick={handleSave} disabled={!label || !newLocation || !phone || !firstName || !lastName || !email || saving} className="bg-teal-600 text-white">Save Address</Button>
+              <Button variant="outline" onClick={() => { setShowAdd(false); setLabel(''); setNewLocation(null); setError(''); setLocationCheckMsg(''); setPhone(''); setFirstName(''); setLastName(''); setEmail(''); }}>Cancel</Button>
             </div>
           </div>
         </div>

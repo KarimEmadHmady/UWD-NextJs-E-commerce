@@ -14,18 +14,17 @@ import { selectUser } from '@/redux/features/user/userSelectors';
 import { useWishlist } from '@/hooks/useWishlist';
 import RevealOnScroll from "@/components/common/RevealOnScroll"
 import LocationStep from '@/components/checkout/location-step';
-import LocationStepCheckout from '@/components/checkout/location-step-checkout';
-import ManualMap from '@/components/checkout/ManualMap';
+
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import useOrders from '@/hooks/useOrders';
 import { useNotifications } from '@/hooks/useNotifications';
 import type { Product } from '@/types/product';
-import AddressSelector from '@/components/checkout/address-selector';
 import { useUserAddresses } from '@/hooks/useUserAddresses';
 import { Input } from "@/components/common/input/input";
 import { useAuth } from '@/hooks/useAuth';
+import { addAddressService } from '@/services/addressService';
 
 /**
  * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
@@ -36,71 +35,12 @@ export default function AccountPage() {
   const { start, stop } = useGlobalLoading();
   const { addresses, defaultAddress, add, update, remove, setDefault } = useAddress();
   const userRedux = useSelector(selectUser);
-  const [showAddressForm, setShowAddressForm] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [addressForm, setAddressForm] = useState({
     name: '', phone: '', street: '', city: '', region: '', country: '', notes: '', location: null as null | { address: string, latitude: number, longitude: number }, label: ''
   });
-  const handleAddressFormChange = (e: any) => setAddressForm({ ...addressForm, [e.target.name]: e.target.value });
-  const [editAddressId, setEditAddressId] = useState<string | null>(null);
-  const handleEditAddress = (addr: any) => {
-    setAddressForm({
-      name: addr.name || '',
-      phone: addr.phone || '',
-      street: addr.street || '',
-      city: addr.city || '',
-      region: addr.region || '',
-      country: addr.country || '',
-      notes: addr.notes || '',
-      location: addr.latitude && addr.longitude && addr.address ? {
-        address: addr.address,
-        latitude: addr.latitude,
-        longitude: addr.longitude
-      } : null,
-      label: addr.label || '',
-    });
-    setEditAddressId(addr.id);
-    setShowAddressForm(true);
-  };
-  const handleAddOrEditAddress = () => {
-    if (!addressForm.location) {
-      notify('error', 'Please select your location!');
-      return;
-    }
-    if (editAddressId) {
-      // تعديل عنوان موجود
-      update({
-        id: String(editAddressId),
-        userId: String(userRedux?.id || 'guest'),
-        ...addressForm,
-        address: addressForm.location.address,
-        latitude: addressForm.location.latitude,
-        longitude: addressForm.location.longitude,
-        isDefault: false,
-      });
-      setEditAddressId(null);
-    } else {
-      // إضافة عنوان جديد
-      add({
-        id: Date.now().toString(),
-        userId: userRedux?.id?.toString() || 'guest',
-        name: addressForm.name || '',
-        phone: addressForm.phone || '',
-        street: addressForm.street || addressForm.location?.address || '',
-        city: addressForm.city || '',
-        region: addressForm.region || '',
-        country: addressForm.country || '',
-        notes: addressForm.notes || '',
-        isDefault: allAddresses.length === 0,
-        address: addressForm.location?.address || '',
-        latitude: addressForm.location?.latitude,
-        longitude: addressForm.location?.longitude,
-        label: addressForm.label || '',
-      });
-    }
-    setShowAddressForm(false);
-    setAddressForm({ name: '', phone: '', street: '', city: '', region: '', country: '', notes: '', location: null, label: '' });
-  };
+
+
   const handleLocationSet = (loc: any) => {
     setAddressForm((prev) => ({ ...prev, location: loc }));
     setShowLocationModal(false);
@@ -166,19 +106,9 @@ export default function AccountPage() {
   };
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
-  const { addresses: backendAddresses, loading: addressesLoading } = useUserAddresses(token);
+  const { addresses: backendAddresses, loading: addressesLoading, refetch } = useUserAddresses(token);
 
-  const allAddresses = [
-    ...(backendAddresses || []),
-    ...addresses.map(addr => ({
-      ...addr,
-      address_1: addr.address || addr.street || '',
-      label: (addr as any).label || 'Address',
-      country: addr.country || '',
-      latitude: typeof addr.latitude === 'number' ? addr.latitude : 0,
-      longitude: typeof addr.longitude === 'number' ? addr.longitude : 0,
-    })),
-  ];
+  const allAddresses = backendAddresses || [];
 
   const { checkLocation, locationCheckLoading } = useAuth();
   const [locationCheckMsg, setLocationCheckMsg] = useState('');
@@ -188,6 +118,19 @@ export default function AccountPage() {
     const firstDefault = allAddresses.find(a => a.isDefault)?.id;
     return firstDefault || allAddresses[0]?.id || '';
   });
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+
+  // Helper to parse city and state from address string
+  function parseCityStateFromAddress(address: string) {
+    const parts = address.split(',').map(s => s.trim());
+    return {
+      region: parts[2] || '', // بعد ثاني فاصلة
+      city: parts[3] || '', // بعد ثالث فاصلة
+    };
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -538,7 +481,7 @@ export default function AccountPage() {
                   <h2 className="text-xl font-bold mb-4 text-gray-900">Add New Address</h2>
                   <LocationStep
                     onLocationSet={async (loc) => {
-                      setLocationCheckMsg('');
+                      setLocationCheckMsg("");
                       setNewLocation(null);
                       if (!loc) return;
                       const result = await checkLocation({
@@ -571,34 +514,70 @@ export default function AccountPage() {
                       value={addressForm.phone || ''}
                       onChange={e => setAddressForm({ ...addressForm, phone: e.target.value })}
                     />
+                    <Input
+                      name="firstName"
+                      placeholder="First Name"
+                      value={firstName}
+                      onChange={e => setFirstName(e.target.value)}
+                    />
+                    <Input
+                      name="lastName"
+                      placeholder="Last Name"
+                      value={lastName}
+                      onChange={e => setLastName(e.target.value)}
+                    />
+                    <Input
+                      name="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                    />
                   </div>
                   <Button
                     className="mt-4 w-full bg-teal-600 text-white"
-                    onClick={() => {
+                    onClick={async () => {
                       if (!newLocation) {
                         notify('error', 'Please select a valid location within our service area!');
                         return;
                       }
-                      add({
-                        id: Date.now().toString(),
-                        userId: userRedux?.id?.toString() || 'guest',
-                        name: addressForm.name || '',
-                        phone: addressForm.phone || '',
-                        street: addressForm.street || newLocation.address || '',
-                        city: addressForm.city || '',
-                        region: addressForm.region || '',
-                        country: addressForm.country || '',
-                        notes: addressForm.notes || '',
-                        isDefault: allAddresses.length === 0,
-                        address: newLocation.address || '',
-                        latitude: newLocation.latitude,
-                        longitude: newLocation.longitude,
-                        label: addressForm.label || '',
-                      });
-                      setShowLocationModal(false);
-                      setAddressForm({ name: '', phone: '', street: '', city: '', region: '', country: '', notes: '', location: null, label: '' });
-                      setLocationCheckMsg('');
-                      setNewLocation(null);
+                      if (!firstName || !lastName || !email || !addressForm.label || !addressForm.phone) {
+                        notify('error', 'Please fill all required fields!');
+                        return;
+                      }
+                      const { city, region } = parseCityStateFromAddress(newLocation.address);
+                      const payload = {
+                        label: addressForm.label,
+                        first_name: firstName,
+                        last_name: lastName,
+                        email,
+                        phone: addressForm.phone,
+                        address_1: newLocation.address,
+                        address_2: '',
+                        city,
+                        region,
+                        country: 'EG',
+                        lat: newLocation.latitude,
+                        long: newLocation.longitude,
+                      };
+                      try {
+                        if (!token) {
+                          notify('error', 'You must be logged in to add an address!');
+                          return;
+                        }
+                        const apiRes = await addAddressService(payload, token);
+                        if (typeof refetch === 'function') {
+                          await refetch();
+                        }
+                        setShowLocationModal(false);
+                        setAddressForm({ name: '', phone: '', street: '', city: '', region: '', country: '', notes: '', location: null, label: '' });
+                        setLocationCheckMsg('');
+                        setNewLocation(null);
+                        setFirstName('');
+                        setLastName('');
+                        setEmail('');
+                      } catch (e: any) {
+                        notify('error', e.message || 'Failed to save address!');
+                      }
                     }}
                     disabled={locationCheckLoading}
                   >

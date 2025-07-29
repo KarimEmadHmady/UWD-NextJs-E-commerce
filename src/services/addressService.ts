@@ -7,13 +7,17 @@ export interface AddressPayload {
   address_1: string;
   address_2?: string;
   city: string;
-  state: string;
+  region: string; // <-- بدلاً من state
   country: string;
   lat: number;
   long: number;
 }
 
-export async function addAddressService(address: AddressPayload, token: string) {
+export interface AddAddressResponse {
+  id: string | number;
+}
+
+export async function addAddressService(address: AddressPayload, token: string): Promise<AddAddressResponse> {
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
   const response = await fetch(`${API_BASE}/create/address`, {
     method: 'POST',
@@ -45,4 +49,22 @@ export async function fetchUserAddresses(token: string) {
   }
   // Return only the array of addresses
   return Array.isArray(data.data) ? data.data : [];
+}
+
+export async function updateAddressService(address: AddressPayload & { id: string }, token: string) {
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+  const response = await fetch(`${API_BASE}/user/address/update/${address.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(address),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to update address');
+  }
+  return response.json();
 } 
+

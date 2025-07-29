@@ -14,6 +14,7 @@ import {
 } from '@/redux/features/address/addressSlice';
 import { Address } from '@/redux/features/address/addressSlice';
 import { useEffect } from 'react';
+import { addAddressService, updateAddressService } from '@/services/addressService';
 
 /**
  * Custom hook for managing user addresses state and actions.
@@ -47,8 +48,24 @@ export const useAddress = () => {
     localStorage.setItem('addresses', JSON.stringify(addresses));
   }, [addresses]);
 
-  const add = (address: Address) => dispatch(addAddress(address));
-  const update = (address: Address) => dispatch(updateAddress(address));
+  /**
+   * إضافة عنوان جديد عبر API إذا توفر توكن، وإلا local
+   */
+  const add = async (address: Address, token?: string) => {
+    if (token) {
+      await addAddressService(address as any, token);
+    }
+    dispatch(addAddress(address));
+  };
+  /**
+   * تحديث عنوان عبر API إذا توفر توكن، وإلا local
+   */
+  const update = async (address: Address, token?: string) => {
+    if (token) {
+      await updateAddressService(address as any, token);
+    }
+    dispatch(updateAddress(address));
+  };
   const remove = (id: string) => dispatch(deleteAddress(id));
   const setDefault = (id: string) => dispatch(setDefaultAddress(id));
   const setAll = (addresses: Address[]) => dispatch(setAddresses(addresses));
