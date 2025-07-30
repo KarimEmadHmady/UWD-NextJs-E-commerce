@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/common/card/card';
 import { Button } from '@/components/common/Button/Button';
 import LocationStep from './location-step';
 import { Input } from '../common/input/input';

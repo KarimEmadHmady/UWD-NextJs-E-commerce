@@ -401,6 +401,13 @@ export default function Navigation() {
                 </Link>
               )}
             </li>
+            {isAuthenticated && (
+              <li>
+                <Link href="/account" className="p-1 text-lg text-black transition-colors duration-250 hover:text-teal-600 transition-transform duration-200 hover:scale-110">
+                  <User className="w-5 h-5" />
+                </Link>
+              </li>
+            )}
             <li>
               <Link href="/contact" className="p-1 text-lg text-black transition-colors duration-250 hover:text-teal-600 transition-transform duration-200 hover:scale-110">
                 <MapPin className="w-5 h-5" />
