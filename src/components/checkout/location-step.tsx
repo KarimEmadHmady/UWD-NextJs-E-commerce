@@ -6,6 +6,7 @@ import { Button } from "../common/Button/Button";
 import { Input } from "../common/input/input";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
+import OutOfCoverageModal from '../common/ui/OutOfCoverageModal';
 
 interface LocationData {
   latitude: number;
@@ -17,11 +18,13 @@ interface LocationStepProps {
   onLocationSet: (location: LocationData) => Promise<void>;
   initialLocation?: LocationData | null;
   isChecking?: boolean;
+  forceOutOfCoverageModal?: boolean;
+  onCloseOutOfCoverageModal?: () => void;
 }
 
 const MapWithMarker = dynamic(() => import("./ManualMap"), { ssr: false });
 
-export default function LocationStep({ onLocationSet, initialLocation, isChecking = false }: LocationStepProps) {
+export default function LocationStep({ onLocationSet, initialLocation, isChecking = false, forceOutOfCoverageModal = false, onCloseOutOfCoverageModal }: LocationStepProps) {
   // Default coordinates for Egypt
   const defaultCoords = { latitude: 30.0444, longitude: 31.2357, address: "Cairo, Egypt" };
   const [location, setLocation] = useState<LocationData>(initialLocation || defaultCoords);
@@ -30,6 +33,7 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [suggestLoading, setSuggestLoading] = useState(false);
+  const [showOutOfCoverageModal, setShowOutOfCoverageModal] = useState(false);
   // Debounce search suggestions
   useEffect(() => {
     if (manualAddress.length < 3) {
@@ -56,6 +60,13 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
   useEffect(() => {
     if (initialLocation) setLocation(initialLocation);
   }, [initialLocation]);
+
+  // في الأماكن التي يظهر فيها الخطأ "outside our service area" أو ما شابه
+  useEffect(() => {
+    if (error && (error.includes('outside our service area') || error.includes('Out of coverage'))) {
+      setShowOutOfCoverageModal(true);
+    }
+  }, [error]);
 
   // Get location from browser
   const handleGetLocation = () => {
@@ -131,6 +142,9 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
     // onLocationSet(loc); // This line is removed as per the edit hint
   };
 
+  // إذا تم تمرير forceOutOfCoverageModal من الأعلى، أظهر البوب أب مباشرة
+  const showModal = forceOutOfCoverageModal || showOutOfCoverageModal;
+
   return (
     <div className=" mx-auto space-y-6">
       <div className="text-center mb-5">
@@ -189,7 +203,11 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
           </Button>
         </form>
       </div>
-      {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+      {showModal && (
+        <OutOfCoverageModal onClose={onCloseOutOfCoverageModal || (() => setShowOutOfCoverageModal(false))} />
+      )}
+      {/* احذف أو عطل إظهار رسالة الخطأ النصية العادية إذا كان showModal ظاهرًا */}
+      {!showModal && error && <p className="text-red-500 text-sm mb-2">{error}</p>}
       {/* Map always shows */}
       <div className="mb-2 w-full h-[215px] rounded overflow-hidden">
         <MapWithMarker

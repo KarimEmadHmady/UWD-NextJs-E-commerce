@@ -115,11 +115,11 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
         </div>
 
         {/* Quick Actions */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 ">
           <Button
             variant="secondary"
             size="icon"
-            className="w-8 h-8 sm:w-10  sm:h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg"
+            className="w-8 h-8 sm:w-10  sm:h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg cursor-pointer"
             onClick={handleWishlist}
           >
             <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isInWishlist ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
@@ -128,7 +128,7 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
           <Button
             variant="secondary"
             size="icon"
-            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg"
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg cursor-pointer"
           >
             <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
           </Button>
@@ -151,7 +151,7 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
         {product.inStock && (
           <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 hidden sm:block opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
             <Button
-              className="w-full bg-white/90 hover:bg-white text-black shadow-lg backdrop-blur-sm text-xs sm:text-base py-2 sm:py-3"
+              className="w-full bg-white/90 hover:bg-white text-black shadow-lg backdrop-blur-sm text-xs sm:text-base py-2 sm:py-3 cursor-pointer"
               onClick={handleAddToCart}
               disabled={isAdding}
             >

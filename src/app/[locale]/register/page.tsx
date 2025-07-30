@@ -33,6 +33,7 @@ export default function RegisterPage() {
   const [states, setStates] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(true); // Shows immediately
   const [location, setLocation] = useState<LocationData | null>(null);
+  const [showOutOfCoverageModal, setShowOutOfCoverageModal] = useState(false);
   const searchParams = useSearchParams();
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
   const locale = pathname.split("/")[1] || "en";
@@ -56,9 +57,16 @@ export default function RegisterPage() {
 
   // Monitor Redux state changes
   useEffect(() => {
-    console.log('locationCheckError changed:', locationCheckError);
     if (locationCheckError) {
-      console.log('Showing location error:', locationCheckError);
+      if (
+        locationCheckError.toLowerCase().includes('outside our service area') ||
+        locationCheckError.toLowerCase().includes('out of coverage')
+      ) {
+        setShowOutOfCoverageModal(true);
+        // تجاهل الإشعار، سيظهر البوب أب فقط
+        clearLocationError();
+        return;
+      }
       notify('error', locationCheckError);
       clearLocationError();
     }
@@ -106,14 +114,17 @@ export default function RegisterPage() {
       if (result.meta.requestStatus === 'fulfilled') {
         setLocation(loc);
         setShowLocationModal(false);
+        setShowOutOfCoverageModal(false);
       } else {
         // The error will be handled by the useEffect that monitors locationCheckError
         setShowLocationModal(true);
+        setShowOutOfCoverageModal(true);
         setLocation(null);
       }
     } catch (error) {
       console.error('Location check error:', error);
       setShowLocationModal(true);
+      setShowOutOfCoverageModal(true);
       setLocation(null);
     }
   };
@@ -199,6 +210,8 @@ export default function RegisterPage() {
                 onLocationSet={handleLocationSet} 
                 initialLocation={location || undefined} 
                 isChecking={locationCheckLoading}
+                forceOutOfCoverageModal={showOutOfCoverageModal}
+                onCloseOutOfCoverageModal={() => setShowOutOfCoverageModal(false)}
               />
             </motion.div>
           </motion.div>

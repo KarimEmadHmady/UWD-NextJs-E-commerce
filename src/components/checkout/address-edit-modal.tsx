@@ -6,14 +6,17 @@ import { updateAddressService } from '@/services/addressService';
 import { X, Search } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Label } from "../common/label/label";
+import OutOfCoverageModal from "../common/ui/OutOfCoverageModal";
 
 const MapWithMarker = dynamic(() => import("./ManualMap"), { ssr: false });
 
-export default function AddressEditModal({ address, onClose, onSave, token }: {
+export default function AddressEditModal({ address, onClose, onSave, token, forceOutOfCoverageModal = false, onCloseOutOfCoverageModal }: {
   address: any,
   onClose: () => void,
   onSave?: (updated: any) => void,
-  token: string
+  token: string,
+  forceOutOfCoverageModal?: boolean,
+  onCloseOutOfCoverageModal?: () => void,
 }) {
   const { checkLocation, locationCheckLoading } = useAuth();
   const defaultCoords = { latitude: 30.0444, longitude: 31.2357, address: "Cairo, Egypt" };
@@ -48,6 +51,7 @@ export default function AddressEditModal({ address, onClose, onSave, token }: {
   const [locationCheckMsg, setLocationCheckMsg] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [showOutOfCoverageModal, setShowOutOfCoverageModal] = useState(false);
 
   // احفظ العنوان الأصلي عند فتح المودال
   const originalAddress = initialLoc.address;
@@ -102,6 +106,53 @@ export default function AddressEditModal({ address, onClose, onSave, token }: {
     setSuggestions([]);
     setMapLoc(loc => ({ ...loc, latitude: parseFloat(s.lat), longitude: parseFloat(s.lon), address: s.display_name }));
     setForm(f => ({ ...f, latitude: parseFloat(s.lat), longitude: parseFloat(s.lon), address_1: s.display_name }));
+  };
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by this browser");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        let address = `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          if (data && data.display_name) {
+            address = data.display_name;
+          }
+        } catch {}
+        setMapLoc({ latitude, longitude, address });
+        setForm(f => ({ ...f, latitude, longitude, address_1: address }));
+        setManualAddress(address);
+      },
+      (error) => {
+        setError("Failed to get location from browser");
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
+      },
+    );
+  };
+
+  const handleConfirmLocation = async () => {
+    setError('');
+    setShowOutOfCoverageModal(false);
+    const result = await checkLocation({
+      latitude: mapLoc.latitude,
+      longitude: mapLoc.longitude,
+      address: mapLoc.address,
+    });
+    if (result.meta?.requestStatus === 'fulfilled') {
+      setLocationCheckMsg('✔️ This address is within our service area.');
+    } else {
+      setLocationCheckMsg('❌ This address is outside our service area.');
+      setShowOutOfCoverageModal(true);
+    }
   };
 
   const handleSave = async () => {
@@ -212,16 +263,25 @@ export default function AddressEditModal({ address, onClose, onSave, token }: {
             </ul>
           )}
         </div>
+        <div className="mb-2 flex items-center gap-2">
+          <Button type="button" className="bg-teal-500 text-white px-3 py-1 rounded text-xs" onClick={handleGetLocation}>
+            Get My Location
+          </Button>
+        </div>
         <div className="mb-2">
           <MapWithMarker lat={mapLoc.latitude} lng={mapLoc.longitude} onChange={handleMapChange} />
           <div className="mt-1 text-xs text-gray-700">Lat: {mapLoc.latitude?.toFixed(5)}, Lng: {mapLoc.longitude?.toFixed(5)}</div>
         </div>
         {locationCheckMsg && <div className={`mb-2 text-xs ${locationCheckMsg.startsWith('✔️') ? 'text-green-600' : 'text-red-600'}`}>{locationCheckMsg}</div>}
         {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
+
         <Button className="w-full bg-teal-600 text-white py-2 text-sm" onClick={handleSave} loading={saving} disabled={locationCheckMsg.startsWith('❌') || locationCheckLoading}>
           Save Changes
         </Button>
       </div>
+      {(showOutOfCoverageModal || forceOutOfCoverageModal) && (
+        <OutOfCoverageModal onClose={onCloseOutOfCoverageModal || (() => setShowOutOfCoverageModal(false))} />
+      )}
     </div>
   );
 } 

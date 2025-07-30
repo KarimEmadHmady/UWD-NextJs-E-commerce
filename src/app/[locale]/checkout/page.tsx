@@ -73,6 +73,7 @@ export default function CheckoutPage() {
   // استخرج refetch من useUserAddresses
   const { addresses: backendAddresses, loading: addressesLoading, refetch } = useUserAddresses(token);
   const [editAddress, setEditAddress] = useState<any>(null);
+  const [showOutOfCoverageModal, setShowOutOfCoverageModal] = useState(false);
 
   // إعداد بيانات العميل الافتراضية من بيانات اليوزر
   const defaultCustomerInfo = user ? {
@@ -87,6 +88,15 @@ export default function CheckoutPage() {
   // Monitor location check errors
   useEffect(() => {
     if (locationCheckError) {
+      if (
+        locationCheckError.toLowerCase().includes('outside our service area') ||
+        locationCheckError.toLowerCase().includes('out of coverage')
+      ) {
+        setShowOutOfCoverageModal(true);
+        // تجاهل الإشعار، سيظهر البوب أب فقط
+        clearLocationError();
+        return;
+      }
       notify('error', locationCheckError);
       clearLocationError();
     }
@@ -131,7 +141,7 @@ export default function CheckoutPage() {
   }
 
   const steps = [
-    { number: 1, title: "Authentication", icon: null, completed: isAuthenticated },
+    { number: 1, title: "Login", icon: null, completed: isAuthenticated },
     { number: 2, title: "Location", icon: MapPin, completed: !!location },
     { number: 3, title: "Customer Info & Shipping", icon: Truck, completed: !!customerInfo && !!shippingMethod },
     { number: 4, title: "Payment", icon: CreditCard, completed: !!paymentMethod },
@@ -412,6 +422,8 @@ export default function CheckoutPage() {
                 <Edit className="w-4 h-4" />
               </Button>
             )}
+            forceOutOfCoverageModal={showOutOfCoverageModal}
+            onCloseOutOfCoverageModal={() => setShowOutOfCoverageModal(false)}
           />
           {editAddress && (
             <AddressEditModal
@@ -419,6 +431,8 @@ export default function CheckoutPage() {
               token={token}
               onClose={() => setEditAddress(null)}
               onSave={refetch}
+              forceOutOfCoverageModal={showOutOfCoverageModal}
+              onCloseOutOfCoverageModal={() => setShowOutOfCoverageModal(false)}
             />
           )}
           <div className="mt-6 flex justify-end">

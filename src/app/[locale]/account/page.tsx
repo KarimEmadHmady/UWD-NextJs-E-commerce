@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { User, Package, Heart, Settings, MapPin, CreditCard, Bell, Shield, LogOut,  Home, ChevronRight, Phone } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/avatar/avatar"
@@ -10,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/common/ta
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import { useAddress } from '@/hooks/useAddress';
 import { useSelector } from 'react-redux';
-import { selectUser } from '@/redux/features/user/userSelectors';
+import { selectUser } from '@/redux/features/auth/authSelectors';
 import { useWishlist } from '@/hooks/useWishlist';
 import RevealOnScroll from "@/components/common/RevealOnScroll"
 import LocationStep from '@/components/checkout/location-step';
@@ -27,35 +28,58 @@ import { addAddressService } from '@/services/addressService';
 import AddressEditModal from '@/components/checkout/address-edit-modal';
 import { Edit } from 'lucide-react';
 import { Label } from "@/components/common/label/label";
+import OutOfCoverageModal from '@/components/common/ui/OutOfCoverageModal';
 
 /**
  * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
  * Handles address management, tab switching, and user info display.
  */
 export default function AccountPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview")
   const { start, stop } = useGlobalLoading();
   const { addresses, defaultAddress, add, update, remove, setDefault } = useAddress();
   const userRedux = useSelector(selectUser);
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showOutOfCoverageModal, setShowOutOfCoverageModal] = useState(false);
   const [addressForm, setAddressForm] = useState({
     name: '', phone: '', street: '', city: '', region: '', country: '', notes: '', location: null as null | { address: string, latitude: number, longitude: number }, label: ''
   });
 
 
-  const handleLocationSet = (loc: any) => {
-    setAddressForm((prev) => ({ ...prev, location: loc }));
-    setShowLocationModal(false);
+  const handleLocationSet = async (loc: any) => {
+    setLocationCheckMsg("");
+    setNewLocation(null);
+    if (!loc) return;
+    
+    const result = await checkLocation({
+      latitude: loc.latitude,
+      longitude: loc.longitude,
+      address: loc.address,
+    });
+    
+    if (result.meta?.requestStatus === 'fulfilled') {
+      setLocationCheckMsg('✔️ This address is within our service area.');
+      setNewLocation(loc);
+      setAddressForm((prev) => ({ ...prev, location: loc }));
+    } else {
+      setLocationCheckMsg('❌ This address is outside our service area.');
+      setNewLocation(null);
+      setAddressForm((prev) => ({ ...prev, location: null }));
+      setShowOutOfCoverageModal(true);
+    }
   };
 
-  const user = {
-    name: "Karim Emad",
-    email: "karim.emad@gmail.com",
-    avatar: "/placeholder.svg?height=100&width=100",
-    joinDate: "May 2025",
-    totalOrders: 7,
-    totalSpent: 3150,
-  }
+  // استخدام بيانات المستخدم الحقيقي من Redux
+  const user = userRedux || {
+    name: "Guest User",
+    username: "Guest User",
+    email: "guest@example.com",
+    phone_number: "",
+  };
+  
+  // إضافة avatar افتراضي
+  const userAvatar = "/placeholder.svg?height=100&width=100";
 
   const { orders } = useOrders();
   const [showOrderDetails, setShowOrderDetails] = useState(false);
@@ -112,9 +136,15 @@ export default function AccountPage() {
 
   const allAddresses = backendAddresses || [];
 
-  const { checkLocation, locationCheckLoading } = useAuth();
+  const { checkLocation, locationCheckLoading, logout } = useAuth();
   const [locationCheckMsg, setLocationCheckMsg] = useState('');
   const [newLocation, setNewLocation] = useState<any>(null);
+
+  // دالة تسجيل الخروج
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   const [defaultAddressId, setDefaultAddressId] = useState(() => {
     const firstDefault = allAddresses.find(a => a.isDefault)?.id;
@@ -156,18 +186,20 @@ export default function AccountPage() {
         <div className="mb-8">
           <div className="flex items-center gap-6 mb-6">
             <Avatar className="w-20 h-20">
-              <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+              <AvatarImage src={userAvatar} alt={user.name || user.username || "User"} />
               <AvatarFallback className="text-xl">
-                {user.name
+                {(user.name || user.username || "User")
                   .split(" ")
-                  .map((n) => n[0])
+                  .map((n: string) => n[0])
                   .join("")}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{user.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{user.name || user.username}</h1>
               <p className="text-gray-600">{user.email}</p>
-              <p className="text-sm text-gray-500">Member since {user.joinDate}</p>
+              {user.phone_number && (
+                <p className="text-sm text-gray-500">{user.phone_number}</p>
+              )}
             </div>
           </div>
 
@@ -474,9 +506,9 @@ export default function AccountPage() {
               </CardContent>
             </Card>
             {/* Modal for adding new address */}
-            {showLocationModal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                <div className="bg-white rounded-lg shadow-lg sm:w-[70%] w-[95%] p-6 relative">
+                          {showLocationModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                  <div className="bg-white rounded-lg shadow-lg sm:w-[70%] w-[95%] h-[100%] overflow-y-auto p-6 relative">
                   <button
                     className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
                     onClick={() => setShowLocationModal(false)}
@@ -503,8 +535,11 @@ export default function AccountPage() {
                         setLocationCheckMsg('❌ This address is outside our service area.');
                         setNewLocation(null);
                         setAddressForm((prev) => ({ ...prev, location: null }));
+                        setShowOutOfCoverageModal(true);
                       }
                     }}
+                    forceOutOfCoverageModal={showOutOfCoverageModal}
+                    onCloseOutOfCoverageModal={() => setShowOutOfCoverageModal(false)}
                   />
                   {locationCheckMsg && <div className={`mt-2 text-sm ${locationCheckMsg.startsWith('✔️') ? 'text-green-600' : 'text-red-600'}`}>{locationCheckMsg}</div>}
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
@@ -623,6 +658,8 @@ export default function AccountPage() {
                 token={token}
                 onClose={() => setEditAddress(null)}
                 onSave={refetch}
+                forceOutOfCoverageModal={showOutOfCoverageModal}
+                onCloseOutOfCoverageModal={() => setShowOutOfCoverageModal(false)}
               />
             )}
           </TabsContent>
@@ -634,21 +671,18 @@ export default function AccountPage() {
                   <CardTitle>Account Settings</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
-                    <User className="w-4 h-4 mr-3" />
-                    Edit Profile
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
-                    <Bell className="w-4 h-4 mr-3" />
-                    Notification Preferences
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start bg-transparent cursor-pointer"
+                    onClick={() => router.push('/terms-conditions')}
+                  >
                     <Shield className="w-4 h-4 mr-3" />
-                    Privacy & Security
+                    Terms & Conditions
                   </Button>
                   <Button
                     variant="outline"
                     className="w-full justify-start text-red-600 hover:text-red-700 bg-transparent cursor-pointer"
+                    onClick={handleLogout}
                   >
                     <LogOut className="w-4 h-4 mr-3" />
                     Sign Out
@@ -659,6 +693,12 @@ export default function AccountPage() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Out of Coverage Modal */}
+      {showOutOfCoverageModal && (
+        <OutOfCoverageModal onClose={() => setShowOutOfCoverageModal(false)} />
+      )}
+      
       </RevealOnScroll>
     </div>
   )

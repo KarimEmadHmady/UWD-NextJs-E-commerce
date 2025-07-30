@@ -35,6 +35,8 @@ interface AddressSelectorProps {
   token?: string;
   selectedId?: string;
   renderAddressActions?: (address: Address) => React.ReactNode;
+  forceOutOfCoverageModal?: boolean;
+  onCloseOutOfCoverageModal?: () => void;
 }
 
 // Helper to parse city and state from address string
@@ -46,7 +48,7 @@ function parseCityStateFromAddress(address: string) {
   };
 }
 
-export default function AddressSelector({ addresses, onAddAddress, onSelect, defaultAddressId, user, token, selectedId, renderAddressActions }: AddressSelectorProps) {
+export default function AddressSelector({ addresses, onAddAddress, onSelect, defaultAddressId, user, token, selectedId, renderAddressActions, forceOutOfCoverageModal = false, onCloseOutOfCoverageModal }: AddressSelectorProps) {
   const [showAdd, setShowAdd] = useState(false);
   // Remove internal selectedId state, use prop instead
   // const [selectedId, setSelectedId] = useState(defaultAddressId || addresses[0]?.id || '');
@@ -237,7 +239,7 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
               <label className="block text-sm font-medium mb-1 text-black">Email</label>
               <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" className="text-black" />
             </div>
-            <LocationStep onLocationSet={handleLocationSet} initialLocation={undefined} isChecking={locationCheckLoading} />
+            <LocationStep onLocationSet={handleLocationSet} initialLocation={undefined} isChecking={locationCheckLoading} forceOutOfCoverageModal={forceOutOfCoverageModal} onCloseOutOfCoverageModal={onCloseOutOfCoverageModal} />
             {locationCheckMsg && <div className={`mt-2 text-sm ${locationCheckMsg.includes('✔️') ? 'text-green-600' : 'text-red-600'}`}>{locationCheckMsg}</div>}
             {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
             <div className="flex gap-2 mt-3">
