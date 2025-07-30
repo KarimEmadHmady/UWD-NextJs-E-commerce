@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/common/card/card";
 import { Input } from "../common/input/input";
+import { PhoneInput } from "../common/input/phone-input";
 import { Button } from "../common/Button/Button";
 
 interface CustomerInfoStepProps {
@@ -31,13 +32,17 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
     setForm({ ...form, [e.target.id]: e.target.value });
   };
 
+  const handlePhoneChange = (value: string) => {
+    setForm({ ...form, phone: value });
+  };
+
   const handleSubmit = () => {
     if (!form.name.trim()) {
       setFormError('Name is required');
       return;
     }
-    if (!/^\d{10,15}$/.test(form.phone)) {
-      setFormError('Phone must be 10-15 digits');
+    if (!form.phone || form.phone.length !== 11 || !form.phone.startsWith('01')) {
+      setFormError('Phone must be 11 digits starting with 01');
       return;
     }
     if (!form.street.trim() || !form.city.trim() || !form.region.trim()) {
@@ -65,7 +70,12 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
         <CardContent>
           <div className="space-y-3">
             <Input id="name" placeholder="Full Name" value={form.name} onChange={handleFormChange} required />
-            <Input id="phone" placeholder="Phone (10-15 digits)" value={form.phone} onChange={handleFormChange} required />
+            <PhoneInput
+              value={form.phone}
+              onChange={handlePhoneChange}
+              placeholder="Phone Number"
+              required
+            />
             <Input id="street" placeholder="Street" value={form.street} onChange={handleFormChange} required />
             <Input id="city" placeholder="City" value={form.city} onChange={handleFormChange} required />
             <Input id="region" placeholder="Region" value={form.region} onChange={handleFormChange} required />

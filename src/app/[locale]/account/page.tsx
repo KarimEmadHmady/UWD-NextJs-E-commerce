@@ -23,6 +23,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import type { Product } from '@/types/product';
 import { useUserAddresses } from '@/hooks/useUserAddresses';
 import { Input } from "@/components/common/input/input";
+import { PhoneInput } from "@/components/common/input/phone-input";
 import { useAuth } from '@/hooks/useAuth';
 import { addAddressService } from '@/services/addressService';
 import AddressEditModal from '@/components/checkout/address-edit-modal';
@@ -554,11 +555,11 @@ export default function AccountPage() {
                     </div>
                     <div>
                       <Label className="text-xs mb-1">Phone</Label>
-                      <Input
-                        name="phone"
-                        placeholder="Phone Number"
+                      <PhoneInput
                         value={addressForm.phone || ''}
-                        onChange={e => setAddressForm({ ...addressForm, phone: e.target.value })}
+                        onChange={(value) => setAddressForm({ ...addressForm, phone: value })}
+                        placeholder="Phone Number"
+                        required
                       />
                     </div>
                     <div>

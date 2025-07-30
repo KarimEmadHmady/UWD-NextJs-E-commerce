@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { User, Mail, Lock, CheckCircle, LogIn } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
 import { Input } from "@/components/common/input/input"
+import { PhoneInput } from "@/components/common/input/phone-input"
 import { Label } from "@/components/common/label/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/common/card/card"
 import LocationStep from '@/components/checkout/location-step';
@@ -290,14 +291,11 @@ export default function RegisterPage() {
               <div className="space-y-2">
                 <Label htmlFor="phone_number">Phone Number</Label>
                 <div className="relative">
-                  <Input
-                    id="phone_number"
-                    type="text"
-                    placeholder="01xxxxxxxxx"
+                  <PhoneInput
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    onChange={setPhoneNumber}
+                    placeholder="Phone Number"
                     required
-                    className="pl-10"
                   />
                 </div>
               </div>

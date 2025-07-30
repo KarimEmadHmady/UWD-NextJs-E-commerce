@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/common/ca
 import { Button } from '@/components/common/Button/Button';
 import LocationStep from './location-step';
 import { Input } from '../common/input/input';
+import { PhoneInput } from '../common/input/phone-input';
 import { addAddressService, AddressPayload } from '@/services/addressService';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -222,7 +223,12 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
               </div>
               <div className="flex-1">
                 <label className="block text-sm font-medium mb-1 text-black">Phone</label>
-                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone number" className="text-black" />
+                <PhoneInput
+                  value={phone}
+                  onChange={setPhone}
+                  placeholder="Phone number"
+                  required
+                />
               </div>
             </div>
             <div className="flex gap-2 mb-2 items-center">

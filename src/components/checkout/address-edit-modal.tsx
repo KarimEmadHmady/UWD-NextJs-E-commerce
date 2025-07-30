@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../common/Button/Button";
 import { Input } from "../common/input/input";
+import { PhoneInput } from "../common/input/phone-input";
 import dynamic from "next/dynamic";
 import { updateAddressService } from '@/services/addressService';
 import { X, Search } from 'lucide-react';
@@ -220,7 +221,12 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
           </div>
           <div>
             <Label className="text-xs mb-1">Phone</Label>
-            <Input placeholder="Phone" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
+            <PhoneInput
+              value={form.phone}
+              onChange={(value) => setForm(f => ({ ...f, phone: value }))}
+              placeholder="Phone"
+              required
+            />
           </div>
           <div>
             <Label className="text-xs mb-1">Email</Label>
