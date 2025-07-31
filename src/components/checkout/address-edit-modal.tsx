@@ -83,6 +83,7 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
   useEffect(() => {
     if (!mapLoc.latitude || !mapLoc.longitude) return;
     setLocationCheckMsg('');
+    setShowOutOfCoverageModal(false);
     (async () => {
       const result = await checkLocation({
         latitude: mapLoc.latitude,
@@ -93,6 +94,7 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
         setLocationCheckMsg('✔️ This address is within our service area.');
       } else {
         setLocationCheckMsg('❌ This address is outside our service area.');
+        setShowOutOfCoverageModal(true);
       }
     })();
   }, [mapLoc.latitude, mapLoc.longitude, mapLoc.address]);
@@ -286,8 +288,14 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
         </Button>
       </div>
       {(showOutOfCoverageModal || forceOutOfCoverageModal) && (
-        <OutOfCoverageModal onClose={onCloseOutOfCoverageModal || (() => setShowOutOfCoverageModal(false))} />
-      )}
+          <OutOfCoverageModal onClose={() => {
+              setShowOutOfCoverageModal(false);
+              if (onCloseOutOfCoverageModal) {
+                onCloseOutOfCoverageModal();
+              }
+            }}/>     
+       )}
     </div>
   );
 } 
+
