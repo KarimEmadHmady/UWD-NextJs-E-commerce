@@ -17,10 +17,10 @@ import { useFilter } from '@/hooks/useFilter';
 import { setCategories, setQuantities, setSizes, setBrands, clearFilters } from '@/redux/features/filter/filterSlice';
 import { useDispatch } from 'react-redux';
 import RevealOnScroll from '@/components/common/RevealOnScroll';
-import { categories } from '@/components/product/category-data';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAllProducts } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useCategories';
 import Skeleton from '@/components/common/Skeleton';
 
 /**
@@ -39,6 +39,9 @@ export default function ShopPage() {
   // Use API data instead of static data
   const { data: apiProducts, isLoading, error } = useAllProducts();
   const products = apiProducts ? apiProducts.map(convertApiProductToUI) : [];
+  
+  // Use API data for categories
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
   
   const dispatch = useDispatch();
   const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands, priceRange } = useFilter();
@@ -85,7 +88,7 @@ export default function ShopPage() {
   const productsToShow = filteredProducts.slice(0, visibleCount);
 
   // Loading skeleton
-  if (isLoading) {
+  if (isLoading || categoriesLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="bg-white border-b border-gray-200">
@@ -123,13 +126,13 @@ export default function ShopPage() {
   }
 
   // Error state
-  if (error) {
+  if (error || categoriesError) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Products</h2>
-            <p className="text-gray-600">Failed to load products. Please try again later.</p>
+            <p className="text-gray-600">Failed to load products or categories. Please try again later.</p>
           </div>
         </div>
       </div>
@@ -202,10 +205,18 @@ export default function ShopPage() {
                 {categories.map((cat) => (
                   <Link
                     key={cat.id}
-                    href={`/shop/${cat.name.replace(/\s+/g, '-').toLowerCase()}`}
+                    href={`/shop/${cat.slug}`}
                     className="block border rounded-lg p-2 text-center hover:shadow-md transition hover:scale-[1.05]"
                   >
-                    <img src={cat.image} alt={cat.name} className="w-full h-20 object-cover rounded mb-2" />
+                    {cat.image ? (
+                      <img src={cat.image} alt={cat.name} className="w-full h-20 object-cover rounded mb-2" />
+                    ) : (
+                      <div className="w-full h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded mb-2 flex items-center justify-center">
+                        <span className="text-gray-500 text-lg font-bold">
+                          {cat.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
                     <span className="font-semibold text-black">{cat.name}</span>
                   </Link>
                 ))}

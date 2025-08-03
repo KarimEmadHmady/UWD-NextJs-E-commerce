@@ -9,8 +9,9 @@ import { Star, X, Filter } from "lucide-react"
 import { useDispatch } from 'react-redux';
 import { useFilter } from '../../hooks/useFilter';
 import { setCategories, setSizes, setQuantities, setPriceRange, clearFilters } from '../../redux/features/filter/filterSlice';
-import { categories } from '@/components/product/category-data';
-import { products } from '@/components/product/product-data';
+import { useCategories } from '@/hooks/useCategories';
+import { useAllProducts } from '@/hooks/useProducts';
+import { convertApiProductToUI } from '@/components/product/product-data';
 
 interface FilterSidebarProps {
   isOpen: boolean
@@ -21,16 +22,24 @@ interface FilterSidebarProps {
 export default function FilterSidebar({ isOpen, onClose, hideCategories = false }: FilterSidebarProps) {
   const dispatch = useDispatch();
   const { selectedCategories, selectedSizes, selectedQuantities, priceRange } = useFilter();
+  
+  // Use API data instead of static data
+  const { data: apiProducts, isLoading: productsLoading } = useAllProducts();
+  const products = apiProducts ? apiProducts.map(convertApiProductToUI) : [];
+  
+  // Use API data for categories
+  const { categories, loading: categoriesLoading } = useCategories();
+  
   // احسب عدد المنتجات لكل كاتيجوري ديناميكياً
   const categoriesWithCount = categories.map(cat => ({
     ...cat,
-    count: products.filter(p => p.category === cat.name).length,
+    count: products.filter(p => p.categories && p.categories.includes(cat.name)).length,
   }));
 
   // فلتر السعر من المنتجات
   const prices = products.map(p => p.price);
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
+  const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+  const maxPrice = prices.length > 0 ? Math.max(...prices) : 1000;
 
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [inStockOnly, setInStockOnly] = useState(false)
@@ -127,23 +136,37 @@ export default function FilterSidebar({ isOpen, onClose, hideCategories = false 
           {!hideCategories && (
             <div className="space-y-4">
               <h3 className="font-medium text-gray-900">Categories</h3>
-              <div className="space-y-3">
-                {categoriesWithCount.map((category) => (
-                  <div key={category.id} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Checkbox
-                        id={category.name}
-                        checked={selectedCategories.includes(category.name)}
-                        onCheckedChange={() => toggleCategory(category.name)}
-                      />
-                      <label htmlFor={category.name} className="text-sm text-gray-700 cursor-pointer">
-                        {category.name}
-                      </label>
+              {categoriesLoading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+                      </div>
+                      <div className="w-8 h-4 bg-gray-200 rounded animate-pulse"></div>
                     </div>
-                    <span className="text-xs text-gray-500">({category.count})</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {categoriesWithCount.map((category) => (
+                    <div key={category.id} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Checkbox
+                          id={category.name}
+                          checked={selectedCategories.includes(category.name)}
+                          onCheckedChange={() => toggleCategory(category.name)}
+                        />
+                        <label htmlFor={category.name} className="text-sm text-gray-700 cursor-pointer">
+                          {category.name}
+                        </label>
+                      </div>
+                      <span className="text-xs text-gray-500">({category.count})</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

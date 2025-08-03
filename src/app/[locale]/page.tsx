@@ -13,6 +13,7 @@ import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import { WobbleCardDemo } from '@/components/common/ui/WobbleCardDemo';
 import { useAllProducts } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useCategories';
 import Skeleton from '@/components/common/Skeleton';
 
 /**
@@ -25,6 +26,9 @@ export default function HomePage() {
   // Use API data instead of static data
   const { data: apiProducts, isLoading, error } = useAllProducts();
   const products = apiProducts ? apiProducts.map(convertApiProductToUI) : [];
+  
+  // Use API data for categories
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
   
   const viewMode = 'grid'; // or make it dynamic if needed
   const router = useRouter();
@@ -87,7 +91,7 @@ export default function HomePage() {
         </section>
       </RevealOnScroll>
       <RevealOnScroll delay={0.1}>
-        <CategorySection />
+        <CategorySection categories={categories} loading={categoriesLoading} error={categoriesError} />
       </RevealOnScroll>
         <div
               style={{

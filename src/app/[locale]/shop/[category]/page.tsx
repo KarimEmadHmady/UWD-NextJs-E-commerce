@@ -1,8 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { products as productsData } from '@/components/product/product-data';
-import { categories } from '@/components/product/category-data';
 import ProductListItem from '@/components/shop/product-list-item';
 import ShopProductCard from '@/components/product/ShopProductCard/ShopProductCard';
 import FilterSidebar from '@/components/shop/filter-sidebar';
@@ -13,28 +11,37 @@ import { notFound } from 'next/navigation';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 import { Home } from 'lucide-react';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useCategoryBySlug } from '@/hooks/useCategories';
+import { convertApiProductToUI } from '@/components/product/product-data';
+import Skeleton from '@/components/common/Skeleton';
 
 const normalize = (str: string) => str.replace(/\s+/g, '-').toLowerCase();
 
-export default async function CategoryPage(props: { params: Promise<{ category: string; locale: string }> }) {
-  const { category } = await props.params;
-
-  const catObj = categories.find((cat) => normalize(cat.name) === normalize(category));
-  if (!catObj) return notFound();
-
-  // Filter products by category - updated to use categories array
-  const products = productsData.filter((p) => 
-    p.categories && p.categories.some(cat => normalize(cat) === normalize(category))
-  );
-
-  // Filter logic (reuse shop logic)
+export default function CategoryPage(props: { params: Promise<{ category: string; locale: string }> }) {
+  const [category, setCategory] = useState<string>('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
   const [visibleCount, setVisibleCount] = useState(9);
+  
   const { selectedQuantities, selectedSizes, selectedBrands, priceRange } = useFilter();
+  
+  // Get category data
+  const { categoryData, loading: categoryLoading, error: categoryError } = useCategoryBySlug(category);
 
-  let filteredProducts = products.filter((item) => {
+  useEffect(() => {
+    const getParams = async () => {
+      const { category: catParam } = await props.params;
+      setCategory(catParam);
+    };
+    getParams();
+  }, [props.params]);
+
+  // Get products from category data
+  const products = categoryData?.products ? categoryData.products.map(convertApiProductToUI) : [];
+
+  // Apply additional filters
+  let finalFilteredProducts = products.filter((item) => {
     const matchesPrice = priceRange && priceRange.length === 2 ? (item.price >= priceRange[0] && item.price <= priceRange[1]) : true;
     const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
     const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
@@ -43,7 +50,7 @@ export default async function CategoryPage(props: { params: Promise<{ category: 
   });
 
   // Apply sorting
-  filteredProducts = [...filteredProducts].sort((a, b) => {
+  finalFilteredProducts = [...finalFilteredProducts].sort((a, b) => {
     switch (sortBy) {
       case "price-low":
         return a.price - b.price;
@@ -60,9 +67,66 @@ export default async function CategoryPage(props: { params: Promise<{ category: 
     }
   });
 
-  const hasMore = visibleCount < filteredProducts.length;
+  const hasMore = visibleCount < finalFilteredProducts.length;
   const loadMore = () => setVisibleCount((prev) => prev + 9);
-  const productsToShow = filteredProducts.slice(0, visibleCount);
+  const productsToShow = finalFilteredProducts.slice(0, visibleCount);
+
+  // Loading skeleton
+  if (categoryLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <Skeleton className="h-6 w-48" />
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="text-center mb-8">
+            <Skeleton className="h-8 w-64 mx-auto mb-4" />
+            <Skeleton className="h-4 w-96 mx-auto" />
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex">
+            <div className="w-64 p-4">
+              <Skeleton className="w-full h-96" />
+            </div>
+            <div className="flex-1 p-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                {Array.from({ length: 9 }).map((_, index) => (
+                  <div key={index} className="bg-white rounded-lg shadow-md p-4">
+                    <Skeleton className="w-full h-48 mb-4" />
+                    <Skeleton className="w-3/4 h-4 mb-2" />
+                    <Skeleton className="w-1/2 h-4 mb-2" />
+                    <Skeleton className="w-1/3 h-4" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (categoryError) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Category</h2>
+            <p className="text-gray-600">Failed to load category. Please try again later.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Category not found
+  if (!categoryData) {
+    return notFound();
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -74,7 +138,7 @@ export default async function CategoryPage(props: { params: Promise<{ category: 
               items={[
                 { label: 'Home', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
                 { label: 'Sweets', href: '/shop' },
-                { label: catObj.name }
+                { label: categoryData.category }
               ]}
             />
           </div>
@@ -86,10 +150,10 @@ export default async function CategoryPage(props: { params: Promise<{ category: 
           <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="text-center mb-8">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {catObj.name}
+                {categoryData.category}
               </h1>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                {catObj.description}
+                {categoryData.total} products available
               </p>
             </div>
           </div>
@@ -108,7 +172,7 @@ export default async function CategoryPage(props: { params: Promise<{ category: 
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
                 onFilterToggle={() => setIsFilterOpen(true)}
-                totalProducts={filteredProducts.length}
+                totalProducts={finalFilteredProducts.length}
                 sortBy={sortBy}
                 setSortBy={setSortBy}
               />

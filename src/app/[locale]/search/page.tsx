@@ -17,22 +17,32 @@ import { useEffect } from 'react';
 import { products } from '@/components/product/product-data';
 import { Slider } from '@/components/common/slider/slider';
 import ShopProductCard from '@/components/product/ShopProductCard/ShopProductCard';
-import { categories } from '@/components/product/category-data';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useCategories } from '@/hooks/useCategories';
+import { useAllProducts } from '@/hooks/useProducts';
+import { convertApiProductToUI } from '@/components/product/product-data';
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState(products);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands } = useFilter();
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  
+  // Use API data instead of static data
+  const { data: apiProducts, isLoading: productsLoading, error: productsError } = useAllProducts();
+  const products = apiProducts ? apiProducts.map(convertApiProductToUI) : [];
+  
+  // Use API data for categories
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
+  
   const prices = products.map(p => p.price);
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
+  const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+  const maxPrice = prices.length > 0 ? Math.max(...prices) : 1000;
   const [priceRange, setPriceRange] = useState<[number, number]>([minPrice, maxPrice]);
+  const [searchResults, setSearchResults] = useState(products);
   // const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +58,6 @@ export default function SearchPage() {
     setSearchQuery("");
     setSearchResults(products);
   };
-
 
   const categoriesWithCount = categories.map(cat => ({
     ...cat,
@@ -116,12 +125,40 @@ export default function SearchPage() {
       return matchesQuery && matchesCategory && matchesQuantity && matchesSize && matchesPrice;
     });
     setSearchResults(filtered);
-  }, [searchQuery, selectedCategories, selectedQuantities, selectedSizes, priceRange]);
+  }, [searchQuery, selectedCategories, selectedQuantities, selectedSizes, priceRange, products]);
 
   const [visibleCount, setVisibleCount] = useState(9);
   const hasMore = visibleCount < searchResults.length;
   const loadMore = () => setVisibleCount((prev) => prev + 9);
   const productsToShow = searchResults.slice(0, visibleCount);
+
+  // Loading state
+  if (productsLoading || categoriesLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading search results...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (productsError || categoriesError) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Data</h2>
+            <p className="text-gray-600">Failed to load products or categories. Please try again later.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
