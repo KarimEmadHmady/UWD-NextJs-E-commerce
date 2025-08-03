@@ -71,14 +71,14 @@ export default function WishlistPage() {
     const product = {
       id: item.id,
       name: item.name,
-      price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
-      description: item.name, // No description in mock, use name
-      images: [item.image || "/placeholder.svg"],
-      category: item.categories && item.categories.length > 0 ? item.categories[0] : 'General',
-      rating: 5, // Default rating
-      stock: item.stock_quantity || 10,
-      brand: "Brand", // Default brand
-      tags: item.categories || ['General'],
+      price: item.price,
+      description: item.description,
+      images: item.images,
+      category: item.category,
+      rating: item.rating,
+      stock: item.stock,
+      brand: item.brand,
+      tags: item.tags,
     }
     addItem(product, 1)
     handleRemoveItem(id)
@@ -117,11 +117,11 @@ export default function WishlistPage() {
                 key={item.id}
                 id={item.id}
                 name={item.name}
-                price={typeof item.price === 'string' ? parseFloat(item.price) : item.price}
+                price={item.price}
                 originalPrice={undefined}
-                image={item.image || "/placeholder.svg"}
-                category={item.categories && item.categories.length > 0 ? item.categories[0] : 'General'}
-                inStock={(item.stock_quantity || 0) > 0}
+                image={item.images[0] || "/placeholder.svg"}
+                category={item.category}
+                inStock={item.stock > 0}
                 onRemove={handleRemoveItem}
                 onAddToCart={handleAddToCart}
               />

@@ -1,5 +1,5 @@
 import type { CartItem } from '@/types/cart'
-import type { Product as ApiProduct } from '@/types/product'
+import type { Product as ApiProduct, CartProduct } from '@/types/product'
 
 export interface Product extends Omit<ApiProduct, 'price' | 'regular_price' | 'sale_price' | 'stock_quantity' | 'stock_status'> {
   price: number;
@@ -46,6 +46,20 @@ export const convertToCartProduct = (product: Product): CartItem => ({
   brand: 'Brand', // Default brand
   tags: product.categories,
   rating: product.rating
+});
+
+// Convert API product to CartProduct for wishlist
+export const convertProductToCartProduct = (product: ApiProduct): CartProduct => ({
+  id: product.id,
+  name: product.name,
+  description: product.description,
+  price: parseFloat(product.price),
+  images: [product.image, ...product.gallery],
+  category: product.categories[0] || 'General',
+  rating: 4.5, // Default rating
+  stock: product.stock_quantity || 0,
+  brand: 'Brand', // Default brand
+  tags: product.categories,
 });
 
 // Legacy products array for backward compatibility

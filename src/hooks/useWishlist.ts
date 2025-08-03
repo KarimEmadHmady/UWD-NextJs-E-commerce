@@ -9,7 +9,8 @@ import {
   selectWishlistItems,
   selectWishlistCount,
 } from '@/redux/features/wishlist/wishlistSelectors';
-import type { CartProduct } from '@/types/product';
+import type { CartProduct, Product } from '@/types/product';
+import { convertProductToCartProduct } from '@/components/product/product-data';
 
 /**
  * Custom hook for managing the wishlist state and actions.
@@ -28,8 +29,16 @@ export const useWishlist = () => {
         try {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) {
-            parsed.forEach((item: CartProduct) => {
-              dispatch(addToWishlist(item));
+            parsed.forEach((item: Product | CartProduct) => {
+              // Check if item is Product type (from API) and convert to CartProduct
+              if ('slug' in item && 'regular_price' in item) {
+                // This is a Product type, convert to CartProduct
+                const cartProduct = convertProductToCartProduct(item as Product);
+                dispatch(addToWishlist(cartProduct));
+              } else {
+                // This is already a CartProduct type
+                dispatch(addToWishlist(item as CartProduct));
+              }
             });
           }
         } catch {}
