@@ -1,7 +1,7 @@
 "use client"
 // src/app/[locale]/page.tsx
 import CategorySection from '@/components/category/category-section';
-import { products as productsData } from '@/components/product/product-data';
+import { convertApiProductToUI } from '@/components/product/product-data';
 import ShopProductCard from '@/components/product/ShopProductCard/ShopProductCard';
 import ProductListItem from '@/components/shop/product-list-item';
 import { useTranslations } from 'next-intl';
@@ -12,6 +12,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import { WobbleCardDemo } from '@/components/common/ui/WobbleCardDemo';
+import { useAllProducts } from '@/hooks/useProducts';
+import Skeleton from '@/components/common/Skeleton';
 
 /**
  * HomePage component - Main landing page for the e-commerce site.
@@ -19,7 +21,11 @@ import { WobbleCardDemo } from '@/components/common/ui/WobbleCardDemo';
  */
 export default function HomePage() {
   const t = useTranslations('Home');
-  const products = productsData;
+  
+  // Use API data instead of static data
+  const { data: apiProducts, isLoading, error } = useAllProducts();
+  const products = apiProducts ? apiProducts.map(convertApiProductToUI) : [];
+  
   const viewMode = 'grid'; // or make it dynamic if needed
   const router = useRouter();
 
@@ -41,24 +47,38 @@ export default function HomePage() {
     return arr.slice(0, 8);
   }, [products]);
 
+  // Loading skeleton for products section
+  const ProductSkeleton = () => (
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div key={index} className="bg-white rounded-lg shadow-md p-4">
+          <Skeleton className="w-full h-48 mb-4" />
+          <Skeleton className="w-3/4 h-4 mb-2" />
+          <Skeleton className="w-1/2 h-4 mb-2" />
+          <Skeleton className="w-1/3 h-4" />
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <>
       {/* hero */}
       <RevealOnScroll alwaysAnimate>
         <section className="relative py-10 overflow-hidden bg-black sm:py-16 lg:py-24 xl:py-32 h-[48vh] sm:h-[70vh] m-6 rounded-[30px] flex items-center justify-center sm:block">
           <div className="absolute inset-0 ">
-              <img className="object-cover w-full h-full md:object-left md:scale-150 md:origin-top-left" src="https://images.unsplash.com/photo-1540332788463-be4cdbc4be88?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Delicious Sweets" />
+              <img className="object-cover w-full h-full md:object-left md:scale-150 md:origin-top-left" src="https://images.unsplash.com/photo-1540332788463-be4cdbc4be88?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Delicious Products" />
           </div>
           <div className="absolute inset-0 hidden bg-gradient-to-r md:block from-black to-transparent"></div>
           <div className="absolute inset-0 block bg-black/60 md:hidden"></div>
           <div className="relative px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl  sm:mt-0 flex flex-col items-center justify-center h-full sm:block sm:h-auto">
               <div className="text-center md:w-2/3 lg:w-1/2 xl:w-1/3 md:text-left flex flex-col items-center justify-center h-full sm:block sm:h-auto">
-                  <h2 className="text-2xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl">Discover the Sweetest Treats</h2>
-                  <p className="mt-4 text-base text-gray-200">Indulge in our delicious cakes, pastries, oriental sweets, and more. Freshly baked, delivered fast, and made with love!</p>
+                  <h2 className="text-2xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl">Discover Amazing Products</h2>
+                  <p className="mt-4 text-base text-gray-200">Explore our collection of premium products. High quality, great prices, and fast delivery!</p>
                   <form action="#" method="POST" className="mt-8 lg:mt-12">
                       <div className="flex flex-col items-center sm:flex-row ">
                           <button type="button" onClick={() => router.push('/shop')} className="cursor-pointer inline-flex items-center justify-center  w-[200px] px-4 py-4 mt-4 font-semibold text-white transition-all duration-200 bg-teal-600 border border-transparent rounded-md sm:mt-0  sm:w-auto hover:bg-teal-700 focus:bg-teal-700">
-                          Shop Sweets
+                          Shop Now
                           </button>
                       </div>
                   </form>
@@ -82,109 +102,121 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <RevealOnScroll delay={0.2}>
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Sweets</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore our latest collection of cakes, cookies, oriental sweets, and more. Perfect for every occasion!
+              Explore our latest collection of premium products. Perfect for every need!
             </p>
           </div>
           </RevealOnScroll>
           <RevealOnScroll delay={0.5}>
           <div className="p-4">
-            {/* Mobile: Swiper Sliders */}
-            <div className="block sm:hidden space-y-6">
-              <Swiper
-                modules={[Autoplay]}
-                spaceBetween={16}
-                slidesPerView={2}
-                loop={shuffledProducts1.length > 2}
-                autoplay={{ delay: 2500, disableOnInteraction: false }}
-                style={{ paddingBottom: 0 }}
-              >
-                {shuffledProducts1.map((product) => {
-                  const localProduct = {
-                    ...product,
-                    image: product.image,
-                    reviews: product.reviews,
-                    inStock: product.inStock,
-                    isNew: product.isNew,
-                    isSale: product.isSale,
-                    discount: product.discount,
-                  };
-                  return (
-                    <SwiperSlide key={product.id} className="bg-white rounded-2xl">
-                      {viewMode === "grid" ? (
-                        <ShopProductCard product={localProduct} />
-                      ) : (
-                        <ProductListItem product={localProduct} />
-                      )}
-                    </SwiperSlide>
-                  );
-                })}
-              </Swiper>
-              <Swiper
-                modules={[Autoplay]}
-                spaceBetween={16}
-                slidesPerView={2}
-                loop={shuffledProducts2.length > 2}
-                autoplay={{ delay: 4000, disableOnInteraction: false }}
-                style={{ paddingBottom: 0 }}
-              >
-                {shuffledProducts2.map((product) => {
-                  const localProduct = {
-                    ...product,
-                    image: product.image,
-                    reviews: product.reviews,
-                    inStock: product.inStock,
-                    isNew: product.isNew,
-                    isSale: product.isSale,
-                    discount: product.discount,
-                  };
-                  return (
-                    <SwiperSlide key={product.id} className="bg-white rounded-2xl">
-                      {viewMode === "grid" ? (
-                        <ShopProductCard product={localProduct} />
-                      ) : (
-                        <ProductListItem product={localProduct} />
-                      )}
-                    </SwiperSlide>
-                  );
-                })}
-              </Swiper>
-            </div>
-            {/* Desktop: Grid/List */}
-            <div className="hidden sm:block">
-              {viewMode === "grid" ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-                  {shuffledProducts1.map((product) => {
-                    const localProduct = {
-                      ...product,
-                      image: product.image,
-                      reviews: product.reviews,
-                      inStock: product.inStock,
-                      isNew: product.isNew,
-                      isSale: product.isSale,
-                      discount: product.discount,
-                    };
-                    return <ShopProductCard key={product.id} product={localProduct} />;
-                  })}
+            {/* Show loading skeleton if data is loading */}
+            {isLoading ? (
+              <ProductSkeleton />
+            ) : error ? (
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-red-600 mb-2">Error Loading Products</h3>
+                <p className="text-gray-600">Failed to load products. Please try again later.</p>
+              </div>
+            ) : (
+              <>
+                {/* Mobile: Swiper Sliders */}
+                <div className="block sm:hidden space-y-6">
+                  <Swiper
+                    modules={[Autoplay]}
+                    spaceBetween={16}
+                    slidesPerView={2}
+                    loop={shuffledProducts1.length > 2}
+                    autoplay={{ delay: 2500, disableOnInteraction: false }}
+                    style={{ paddingBottom: 0 }}
+                  >
+                    {shuffledProducts1.map((product) => {
+                      const localProduct = {
+                        ...product,
+                        image: product.image,
+                        reviews: product.reviews,
+                        inStock: product.inStock,
+                        isNew: product.isNew,
+                        isSale: product.isSale,
+                        discount: product.discount,
+                      };
+                      return (
+                        <SwiperSlide key={product.id} className="bg-white rounded-2xl">
+                          {viewMode === "grid" ? (
+                            <ShopProductCard product={localProduct} />
+                          ) : (
+                            <ProductListItem product={localProduct} />
+                          )}
+                        </SwiperSlide>
+                      );
+                    })}
+                  </Swiper>
+                  <Swiper
+                    modules={[Autoplay]}
+                    spaceBetween={16}
+                    slidesPerView={2}
+                    loop={shuffledProducts2.length > 2}
+                    autoplay={{ delay: 4000, disableOnInteraction: false }}
+                    style={{ paddingBottom: 0 }}
+                  >
+                    {shuffledProducts2.map((product) => {
+                      const localProduct = {
+                        ...product,
+                        image: product.image,
+                        reviews: product.reviews,
+                        inStock: product.inStock,
+                        isNew: product.isNew,
+                        isSale: product.isSale,
+                        discount: product.discount,
+                      };
+                      return (
+                        <SwiperSlide key={product.id} className="bg-white rounded-2xl">
+                          {viewMode === "grid" ? (
+                            <ShopProductCard product={localProduct} />
+                          ) : (
+                            <ProductListItem product={localProduct} />
+                          )}
+                        </SwiperSlide>
+                      );
+                    })}
+                  </Swiper>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  {shuffledProducts1.map((product) => {
-                    const localProduct = {
-                      ...product,
-                      image: product.image,
-                      reviews: product.reviews,
-                      inStock: product.inStock,
-                      isNew: product.isNew,
-                      isSale: product.isSale,
-                      discount: product.discount,
-                    };
-                    return <ProductListItem key={product.id} product={localProduct} />;
-                  })}
+                {/* Desktop: Grid/List */}
+                <div className="hidden sm:block">
+                  {viewMode === "grid" ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+                      {shuffledProducts1.map((product) => {
+                        const localProduct = {
+                          ...product,
+                          image: product.image,
+                          reviews: product.reviews,
+                          inStock: product.inStock,
+                          isNew: product.isNew,
+                          isSale: product.isSale,
+                          discount: product.discount,
+                        };
+                        return <ShopProductCard key={product.id} product={localProduct} />;
+                      })}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {shuffledProducts1.map((product) => {
+                        const localProduct = {
+                          ...product,
+                          image: product.image,
+                          reviews: product.reviews,
+                          inStock: product.inStock,
+                          isNew: product.isNew,
+                          isSale: product.isSale,
+                          discount: product.discount,
+                        };
+                        return <ProductListItem key={product.id} product={localProduct} />;
+                      })}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </div>
           </RevealOnScroll>
         </div>

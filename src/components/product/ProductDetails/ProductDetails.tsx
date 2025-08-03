@@ -15,7 +15,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import type { Product } from "../product-data"
 import { convertToCartProduct } from "../product-data"
 import { useWishlist } from "@/hooks/useWishlist"
-import { Product as GlobalProduct } from "@/types/product"
+import { CartProduct } from "@/types/product"
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import Skeleton from '@/components/common/Skeleton';
 
@@ -42,14 +42,15 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const shareUrl = `https://your-domain.com/product/${product.id}`
   const shareTitle = product.name
 
-  // Product images (use placeholder for sweets)
+  // Product images - only show existing images
   const productImages = [
     product.image || "/placeholder.svg",
-    "/placeholder.svg",
-    "/placeholder.svg",
-    "/placeholder.svg"
-  ]
-  const thumbnails = productImages
+    ...product.gallery
+  ].filter(img => img && img !== "/placeholder.svg" && img.trim() !== "");
+  
+  // If no images, use placeholder
+  const finalImages = productImages.length > 0 ? productImages : ["/placeholder.svg"];
+  const thumbnails = finalImages;
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity >= 1 && newQuantity <= (product.inStock ? 10 : 0)) {
@@ -75,17 +76,17 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const handleAddToCart = async () => {
     setIsAddingToCart(true)
     try {
-      const commonProduct = {
+      const commonProduct: CartProduct = {
         id: product.id,
         name: product.name,
         price: product.price,
         description: product.description,
-        images: [product.image],
-        category: product.category,
+        images: [product.image, ...product.gallery],
+        category: product.categories[0] || 'General',
         rating: product.rating,
         stock: product.inStock ? 10 : 0,
-        brand: '',
-        tags: [product.category]
+        brand: 'Brand',
+        tags: product.categories
       }
       addItem(commonProduct, quantity)
       notify('success', `${quantity} ${quantity === 1 ? 'item' : 'items'} added to cart`)
@@ -97,17 +98,17 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
   const isInWishlist = wishlistItems.some((item) => item.id === product.id)
   const handleWishlist = () => {
-    const wishlistProduct: GlobalProduct = {
+    const wishlistProduct: CartProduct = {
       id: product.id,
       name: product.name,
       price: product.price,
       description: product.description,
-      images: [product.image],
-      category: product.category,
+      images: [product.image, ...product.gallery],
+      category: product.categories[0] || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
-      brand: '',
-      tags: [product.category],
+      brand: 'Brand',
+      tags: product.categories,
     }
     if (isInWishlist) {
       removeWishlist(product.id)
@@ -135,7 +136,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
               )}
               <Image
-                src={productImages[selectedImage] || "/placeholder.svg"}
+                src={finalImages[selectedImage] || "/placeholder.svg"}
                 alt={product.name}
                 fill
                 className="object-cover w-full h-full"
@@ -156,7 +157,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 zoomInMultiplier: 2,
               }}
               slides={[
-                { src: productImages[selectedImage] || "/placeholder.svg" }
+                { src: finalImages[selectedImage] || "/placeholder.svg" }
               ]}
             />
             {/* Thumbnails */}
@@ -189,10 +190,10 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
             {/* Price */}
             <div className="flex items-center gap-4">
-              <span className="text-4xl font-bold text-black">EGP {product.price.toFixed(2)}</span>
+                              <span className="text-4xl font-bold text-black">E.L {product.price.toFixed(2)}</span>
               {product.originalPrice && (
                 <span className="text-2xl text-gray-400 line-through">
-                  EGP {product.originalPrice.toFixed(2)}
+                  E.L {product.originalPrice.toFixed(2)}
                 </span>
               )}
               {product.inStock ? (
@@ -369,7 +370,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">Category</p>
-                  <p className="font-medium">{product.category}</p>
+                  <p className="font-medium">{product.categories[0] || 'General'}</p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">Size</p>

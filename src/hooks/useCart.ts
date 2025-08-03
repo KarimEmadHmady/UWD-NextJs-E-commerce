@@ -18,7 +18,7 @@ import {
   selectCartItemsCount,
 } from '@/redux/features/cart/cartSelectors';
 import type { CartItem } from '@/types/cart';
-import type { Product } from '@/types/product';
+import type { CartProduct } from '@/types/product';
 import { getCartItemsApi } from '@/services/cartService';
 import { useQuery } from '@tanstack/react-query';
 
@@ -67,7 +67,7 @@ export const useCart = () => {
     localStorage.setItem('cart_items', JSON.stringify(items));
   }, [items]);
 
-  const addItem = useCallback((product: Product, quantity = 1) => {
+  const addItem = useCallback((product: CartProduct, quantity = 1) => {
     const cartItem: CartItem = {
       id: product.id,
       name: product.name,

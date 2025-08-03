@@ -67,18 +67,18 @@ export default function WishlistPage() {
   const handleAddToCart = (id: number) => {
     const item = wishlistItems.find((item) => item.id === id)
     if (!item) return
-    // Map wishlist item to Product type
+    // Map wishlist item to CartProduct type
     const product = {
       id: item.id,
       name: item.name,
-      price: item.price,
+      price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
       description: item.name, // No description in mock, use name
-      images: item.images,
-      category: item.category,
+      images: [item.image || "/placeholder.svg"],
+      category: item.categories && item.categories.length > 0 ? item.categories[0] : 'General',
       rating: 5, // Default rating
-      stock: item.stock,
-      brand: "Apple", // Default brand
-      tags: [item.category],
+      stock: item.stock_quantity || 10,
+      brand: "Brand", // Default brand
+      tags: item.categories || ['General'],
     }
     addItem(product, 1)
     handleRemoveItem(id)
@@ -117,11 +117,11 @@ export default function WishlistPage() {
                 key={item.id}
                 id={item.id}
                 name={item.name}
-                price={item.price}
+                price={typeof item.price === 'string' ? parseFloat(item.price) : item.price}
                 originalPrice={undefined}
-                image={item.images && item.images.length > 0 ? item.images[0] : "/placeholder.svg"}
-                category={item.category}
-                inStock={item.stock > 0}
+                image={item.image || "/placeholder.svg"}
+                category={item.categories && item.categories.length > 0 ? item.categories[0] : 'General'}
+                inStock={(item.stock_quantity || 0) > 0}
                 onRemove={handleRemoveItem}
                 onAddToCart={handleAddToCart}
               />

@@ -128,7 +128,7 @@ export default function CategorySection() {
                   {/* Category Info */}
                   <div className="text-center">
                     <h3 className="text-xs font-medium text-gray-900 truncate max-w-[70px]">{category.name}</h3>
-                    <p className="text-xs text-gray-500">{products.filter(p => p.category === category.name).length} items</p>
+                    <p className="text-xs text-gray-500">{products.filter(p => p.categories && p.categories.includes(category.name)).length} items</p>
                   </div>
                 </div>
               </div>

@@ -8,7 +8,7 @@ import { Badge } from "../common/Badge/Badge"
 import { useWishlist } from "@/hooks/useWishlist"
 import { useNotifications } from '@/hooks/useNotifications';
 import { useCart } from '@/hooks/useCart';
-import { Product as GlobalProduct } from "@/types/product"
+import { CartProduct } from "@/types/product"
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Product } from '../product/product-data';
 
@@ -25,17 +25,17 @@ export default function ProductListItem({ product }: ProductListItemProps) {
   const [isImgLoading, setIsImgLoading] = useState(true);
 
   const handleWishlist = () => {
-    const wishlistProduct: GlobalProduct = {
+    const wishlistProduct: CartProduct = {
       id: product.id,
       name: product.name,
       price: product.price,
       description: product.description,
-      images: [product.image],
-      category: product.category,
+      images: [product.image, ...product.gallery],
+      category: product.categories[0] || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
-      brand: "Apple",
-      tags: [product.category],
+      brand: "Brand",
+      tags: product.categories,
     }
     if (isWishlisted) {
       removeWishlist(product.id)
@@ -47,27 +47,24 @@ export default function ProductListItem({ product }: ProductListItemProps) {
   }
 
   const handleAddToCart = () => {
-    const cartProduct = {
+    const cartProduct: CartProduct = {
       id: product.id,
       name: product.name,
       price: product.price,
       description: product.description,
-      images: [product.image],
-      category: product.category,
+      images: [product.image, ...product.gallery],
+      category: product.categories[0] || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
-      brand: 'Apple',
-      tags: [product.category]
+      brand: 'Brand',
+      tags: product.categories
     };
     addItem(cartProduct, 1);
     notify('success', 'Added to cart!');
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price)
+    return `E.L ${price.toFixed(2)}`
   }
 
   const renderStars = (rating: number) => {
@@ -174,7 +171,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start mb-2">
             <div>
-              <p className="text-sm text-gray-500 mb-1">{product.category}</p>
+                              <p className="text-sm text-gray-500 mb-1">{product.categories[0] || 'General'}</p>
               <h3 className="font-semibold text-gray-900 text-lg mb-2 line-clamp-2">{product.name}</h3>
             </div>
 

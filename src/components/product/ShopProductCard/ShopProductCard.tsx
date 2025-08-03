@@ -11,7 +11,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import type { Product } from "../product-data"
 import { convertToCartProduct } from "../product-data"
 import { useWishlist } from "@/hooks/useWishlist"
-import { Product as GlobalProduct } from "@/types/product"
+import { CartProduct } from "@/types/product"
 
 interface ShopProductCardProps {
   product: Product
@@ -23,20 +23,21 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
   const { items: wishlistItems, addItem: addWishlist, removeItem: removeWishlist } = useWishlist()
   const isInWishlist = wishlistItems.some((item) => item.id === product.id)
   const { notify } = useNotifications();
+  
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    const wishlistProduct: GlobalProduct = {
+    const wishlistProduct: CartProduct = {
       id: product.id,
       name: product.name,
       price: product.price,
       description: product.description,
-      images: [product.image],
-      category: product.category,
+      images: [product.image, ...product.gallery],
+      category: product.categories[0] || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
-      brand: "Apple",
-      tags: [product.category],
+      brand: "Brand",
+      tags: product.categories,
     }
     if (isInWishlist) {
       removeWishlist(product.id)
@@ -53,17 +54,17 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
     setIsAdding(true)
     
     try {
-      const commonProduct = {
+      const commonProduct: CartProduct = {
         id: product.id,
         name: product.name,
         price: product.price,
         description: product.description,
-        images: [product.image],
-        category: product.category,
+        images: [product.image, ...product.gallery],
+        category: product.categories[0] || 'General',
         rating: product.rating,
         stock: product.inStock ? 10 : 0,
-        brand: 'Apple',
-        tags: [product.category]
+        brand: 'Brand',
+        tags: product.categories
       }
       addItem(commonProduct, 1)
       notify('success', 'Added to cart successfully!')
@@ -169,7 +170,7 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
       {/* Product Info */}
       <div className="p-4">
         <div className="mb-2">
-          <p className="text-xs sm:text-sm text-gray-500">{product.category}</p>
+          <p className="text-xs sm:text-sm text-gray-500">{product.categories[0] || 'General'}</p>
           <h3 className="font-semibold text-gray-900 group-hover:text-teal-600 transition-colors duration-300 text-[10px] sm:text-sm mt-[5px] ">
             {product.name}
           </h3>

@@ -8,7 +8,7 @@ import ProductListItem from "@/components/shop/product-list-item"
 import ShopProductCard from "@/components/product/ShopProductCard/ShopProductCard"
 import { Button } from "@/components/common/Button/Button"
 import { Input } from "@/components/common/input/input"
-import { products as productsData } from "@/components/product/product-data"
+import { convertApiProductToUI } from "@/components/product/product-data"
 import { Toaster } from "sonner"
 import Link from "next/link"
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
@@ -20,6 +20,8 @@ import RevealOnScroll from '@/components/common/RevealOnScroll';
 import { categories } from '@/components/product/category-data';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useAllProducts } from '@/hooks/useProducts';
+import Skeleton from '@/components/common/Skeleton';
 
 /**
  * ShopPage component - Displays all products with filtering, search, sorting, and grid/list view.
@@ -33,13 +35,17 @@ export default function ShopPage() {
   const [wishlist, setWishlist] = useState<number[]>([])
   const [sortBy, setSortBy] = useState("featured");
   const { start, stop } = useGlobalLoading();
-  const products = productsData;
+  
+  // Use API data instead of static data
+  const { data: apiProducts, isLoading, error } = useAllProducts();
+  const products = apiProducts ? apiProducts.map(convertApiProductToUI) : [];
+  
   const dispatch = useDispatch();
   const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands, priceRange } = useFilter();
 
   let filteredProducts = products.filter((item) => {
     const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
-    const matchesCategory = selectedCategories.length > 0 ? selectedCategories.includes(item.category) : true;
+    const matchesCategory = selectedCategories.length > 0 ? selectedCategories.some(cat => item.categories.includes(cat)) : true;
     const matchesPrice = priceRange && priceRange.length === 2 ? (item.price >= priceRange[0] && item.price <= priceRange[1]) : true;
     const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
     const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
@@ -78,6 +84,58 @@ export default function ShopPage() {
   const loadMore = () => setVisibleCount((prev) => prev + 9);
   const productsToShow = filteredProducts.slice(0, visibleCount);
 
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <Breadcrumbs
+              items={[
+                { label: 'Home', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
+                { label: 'Products', href: '/shop', },
+                { label: 'All Products' }
+              ]}
+            />
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-1">
+              <Skeleton className="w-full h-96" />
+            </div>
+            <div className="lg:col-span-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 9 }).map((_, index) => (
+                  <div key={index} className="bg-white rounded-lg shadow-md p-4">
+                    <Skeleton className="w-full h-48 mb-4" />
+                    <Skeleton className="w-3/4 h-4 mb-2" />
+                    <Skeleton className="w-1/2 h-4 mb-2" />
+                    <Skeleton className="w-1/3 h-4" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Products</h2>
+            <p className="text-gray-600">Failed to load products. Please try again later.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <RevealOnScroll alwaysAnimate>
@@ -87,8 +145,8 @@ export default function ShopPage() {
             <Breadcrumbs
               items={[
                 { label: 'Home', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
-                { label: 'Sweets', href: '/shop', },
-                { label: 'All Sweets' }
+                { label: 'Products', href: '/shop', },
+                { label: 'All Products' }
               ]}
             />
           </div>

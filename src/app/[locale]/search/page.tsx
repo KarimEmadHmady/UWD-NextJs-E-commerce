@@ -52,7 +52,7 @@ export default function SearchPage() {
 
   const categoriesWithCount = categories.map(cat => ({
     ...cat,
-    count: products.filter(p => p.category === cat.name).length,
+    count: products.filter(p => p.categories && p.categories.includes(cat.name)).length,
   }));
   const filters = {
     categories: categoriesWithCount,
@@ -109,7 +109,7 @@ export default function SearchPage() {
   useEffect(() => {
     let filtered = products.filter((item) => {
       const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
-      const matchesCategory = selectedCategories.length > 0 ? selectedCategories.includes(item.category) : true;
+      const matchesCategory = selectedCategories.length > 0 ? selectedCategories.some(cat => item.categories && item.categories.includes(cat)) : true;
       const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
       const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
       const matchesPrice = priceRange && priceRange.length === 2 ? (item.price >= priceRange[0] && item.price <= priceRange[1]) : true;

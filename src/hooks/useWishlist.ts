@@ -9,7 +9,7 @@ import {
   selectWishlistItems,
   selectWishlistCount,
 } from '@/redux/features/wishlist/wishlistSelectors';
-import type { Product } from '@/types/product';
+import type { CartProduct } from '@/types/product';
 
 /**
  * Custom hook for managing the wishlist state and actions.
@@ -28,7 +28,7 @@ export const useWishlist = () => {
         try {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) {
-            parsed.forEach((item: Product) => {
+            parsed.forEach((item: CartProduct) => {
               dispatch(addToWishlist(item));
             });
           }
@@ -43,7 +43,7 @@ export const useWishlist = () => {
     localStorage.setItem('wishlist_items', JSON.stringify(items));
   }, [items]);
 
-  const addItem = useCallback((product: Product) => {
+  const addItem = useCallback((product: CartProduct) => {
     dispatch(addToWishlist(product));
   }, [dispatch]);
 

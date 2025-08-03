@@ -22,8 +22,10 @@ export default async function CategoryPage(props: { params: Promise<{ category: 
   const catObj = categories.find((cat) => normalize(cat.name) === normalize(category));
   if (!catObj) return notFound();
 
-  // Filter products by category
-  const products = productsData.filter((p) => normalize(p.category) === normalize(category));
+  // Filter products by category - updated to use categories array
+  const products = productsData.filter((p) => 
+    p.categories && p.categories.some(cat => normalize(cat) === normalize(category))
+  );
 
   // Filter logic (reuse shop logic)
   const [isFilterOpen, setIsFilterOpen] = useState(false);

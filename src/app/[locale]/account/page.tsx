@@ -20,7 +20,7 @@ import { X } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import useOrders from '@/hooks/useOrders';
 import { useNotifications } from '@/hooks/useNotifications';
-import type { Product } from '@/types/product';
+import type { CartProduct } from '@/types/product';
 import { useUserAddresses } from '@/hooks/useUserAddresses';
 import { Input } from "@/components/common/input/input";
 import { PhoneInput } from "@/components/common/input/phone-input";
@@ -409,8 +409,8 @@ export default function AccountPage() {
                     <div className="text-gray-500 text-center col-span-3">Your wishlist is empty.</div>
                   ) : (
                     wishlistItems.map((item: any) => {
-                      // تحويل ItemType إلى Product
-                      const product: Product = {
+                      // تحويل ItemType إلى CartProduct
+                      const product: CartProduct = {
                         id: Number(item.id),
                         name: item.name,
                         description: '', 
