@@ -45,7 +45,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   // Product images - only show existing images
   const productImages = [
     product.image || "/placeholder.svg",
-    ...product.gallery
+    ...(product.gallery || [])
   ].filter(img => img && img !== "/placeholder.svg" && img.trim() !== "");
   
   // If no images, use placeholder
@@ -81,15 +81,15 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         name: product.name,
         price: product.price,
         description: product.description,
-        images: [product.image, ...product.gallery],
-        category: product.categories[0] || 'General',
+        images: [product.image || '', ...(product.gallery || [])],
+        category: product.categories?.[0] || 'General',
         rating: product.rating,
         stock: product.inStock ? 10 : 0,
         brand: 'Brand',
-        tags: product.categories
+        tags: product.categories || []
       }
       addItem(commonProduct, quantity)
-      notify('success', `${quantity} ${quantity === 1 ? 'item' : 'items'} added to cart`)
+      // Notification is handled by useCart hook
     } catch (error) {
       notify('error', 'Failed to add to cart')
     }
@@ -103,12 +103,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       name: product.name,
       price: product.price,
       description: product.description,
-      images: [product.image, ...product.gallery],
-      category: product.categories[0] || 'General',
+      images: [product.image || '', ...(product.gallery || [])],
+      category: product.categories?.[0] || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
       brand: 'Brand',
-      tags: product.categories,
+      tags: product.categories || [],
     }
     if (isInWishlist) {
       removeWishlist(product.id)
@@ -370,7 +370,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">Category</p>
-                  <p className="font-medium">{product.categories[0] || 'General'}</p>
+                  <p className="font-medium">{product.categories?.[0] || 'General'}</p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">Size</p>

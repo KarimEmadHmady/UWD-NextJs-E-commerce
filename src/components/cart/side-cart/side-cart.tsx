@@ -7,7 +7,6 @@ import { Button } from "@/components/common/Button/Button"
 import CartItemComponent from "../CartItem/cart-item"
 import CartSummary from "../CartSummary/cart-summary"
 import { useCart } from "@/hooks/useCart"
-import { useNotifications } from '@/hooks/useNotifications';
 
 interface SideCartProps {
   isOpen: boolean
@@ -23,37 +22,38 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
     tax, 
     total,
     updateItemQuantity,
-    removeItem
+    removeItem,
+    fetchCartFromServer
   } = useCart()
-
-  const { notify } = useNotifications();
 
   // منع التمرير على الجسم عند فتح السلة الجانبية
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden"
+      // جلب البيانات من السيرفر عند فتح السلة
+      fetchCartFromServer()
     } else {
       document.body.style.overflow = "unset"
     }
     return () => {
       document.body.style.overflow = "unset"
     }
-  }, [isOpen])
+  }, [isOpen, fetchCartFromServer])
 
-  const handleUpdateQuantity = (id: number, quantity: number) => {
-    updateItemQuantity(id, quantity)
-    notify('success', 'Cart updated successfully')
+  const handleUpdateQuantity = (key: string, quantity: number) => {
+    updateItemQuantity(key, quantity)
   }
 
-  const handleRemoveItem = (id: number) => {
-    removeItem(id)
-    notify('success', 'Item removed from cart')
+  const handleRemoveItem = (key: string) => {
+    removeItem(key)
   }
 
   const moveToWishlist = (id: number) => {
     // هنا سنضيف منطق قائمة الرغبات لاحقاً
-    handleRemoveItem(id)
-    notify('success', 'Item moved to wishlist')
+    const item = items.find(item => item.id === id)
+    if (item?.key) {
+      handleRemoveItem(item.key)
+    }
   }
 
   const handleCheckout = () => {
@@ -78,7 +78,7 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Shopping Cart ({items.length})</h2>
+          <h2 className="text-xl font-bold text-gray-900">Shopping Cart ({items.reduce((total, item) => total + item.quantity, 0)})</h2>
           <Button variant="ghost" size="icon" onClick={onClose} className="cursor-pointer">
             <X className="w-5 h-5 cursor-pointer" />
           </Button>
@@ -104,7 +104,7 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
           ) : (
             items.map((item) => (
               <CartItemComponent
-                key={item.id}
+                key={item.key || item.id}
                 item={item}
                 onUpdateQuantity={handleUpdateQuantity}
                 onRemove={handleRemoveItem}

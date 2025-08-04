@@ -1,6 +1,7 @@
 // src/types/cart.d.ts 
 export interface CartItem {
   id: number;
+  key?: string; // Server cart item key
   name: string;
   price: number;
   quantity: number;

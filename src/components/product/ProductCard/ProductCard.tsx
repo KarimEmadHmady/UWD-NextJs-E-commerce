@@ -12,10 +12,10 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { addItem } = useCart();
+  const { addItem, addToCartMutation } = useCart();
   const [isAdding, setIsAdding] = useState(false);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     setIsAdding(true);
     
     const cartProduct: CartProduct = {
@@ -23,28 +23,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       name: product.name,
       price: product.price,
       description: product.description,
-      images: [product.image, ...product.gallery],
-      category: product.categories[0] || 'General',
+      images: [product.image || '', ...(product.gallery || [])],
+      category: product.categories?.[0] || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
       brand: 'Brand',
-      tags: product.categories,
+      tags: product.categories || [],
     };
     
-    addItem(cartProduct, 1);
-
-    // Show success state briefly
-    setTimeout(() => {
+    try {
+      await addItem(cartProduct, 1);
+      // Success state will be handled by the mutation
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+    } finally {
       setIsAdding(false);
-    }, 1000);
+    }
   };
+
+  const isLoading = addToCartMutation.isPending || isAdding;
 
   return (
     <div className="group relative bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
       {/* Product Image */}
       <Link href={`/product/${product.id}`} className="block relative aspect-square">
         <Image
-          src={product.image}
+          src={product.image || '/placeholder.svg'}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -78,16 +82,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         <Button
           onClick={handleAddToCart}
-          disabled={!product.inStock || isAdding}
+          disabled={!product.inStock || isLoading}
           className={`w-full transition-all duration-300 ${
-            isAdding ? 'bg-green-500 text-white' : ''
+            isLoading ? 'bg-green-500 text-white' : ''
           }`}
           variant={!product.inStock ? "ghost" : "default"}
         >
           {!product.inStock
             ? "Out of Stock"
-            : isAdding
-              ? "Added! ✓"
+            : isLoading
+              ? "Adding..."
               : "Add to Cart"
           }
         </Button>

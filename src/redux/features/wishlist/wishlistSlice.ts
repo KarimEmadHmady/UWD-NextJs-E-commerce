@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { CartProduct } from '@/types/product';
+import type { WishlistItem } from '@/types';
 
 interface WishlistState {
-  items: CartProduct[];
+  items: WishlistItem[];
 }
 
 const initialState: WishlistState = {
@@ -17,7 +17,7 @@ const wishlistSlice = createSlice({
   name: 'wishlist',
   initialState,
   reducers: {
-    addToWishlist: (state, action: PayloadAction<CartProduct>) => {
+    addToWishlist: (state, action: PayloadAction<WishlistItem>) => {
       if (!state.items.find(item => item.id === action.payload.id)) {
         state.items.push(action.payload);
       }

@@ -8,13 +8,11 @@ export async function getCategories(): Promise<CategoriesResponse> {
 
 export async function getCategoryById(id: number): Promise<CategoryProductsResponse> {
   const url = `${process.env.NEXT_PUBLIC_API_URL}/products/category/${id}`;
-  console.log('API URL for category:', url);
   return apiFetch(url, {});
 }
 
 export async function getCategoryBySlug(slug: string): Promise<CategoryProductsResponse> {
   const url = `${process.env.NEXT_PUBLIC_API_URL}/products/category/${slug}`;
-  console.log('API URL for category by slug:', url);
   return apiFetch(url, {});
 }
 

@@ -32,12 +32,12 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
       name: product.name,
       price: product.price,
       description: product.description,
-      images: [product.image, ...product.gallery],
-      category: product.categories[0] || 'General',
+      images: [product.image || '', ...(product.gallery || [])],
+      category: product.categories?.[0] || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
       brand: "Brand",
-      tags: product.categories,
+      tags: product.categories || [],
     }
     if (isInWishlist) {
       removeWishlist(product.id)
@@ -59,15 +59,15 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
         name: product.name,
         price: product.price,
         description: product.description,
-        images: [product.image, ...product.gallery],
-        category: product.categories[0] || 'General',
+        images: [product.image || '', ...(product.gallery || [])],
+        category: product.categories?.[0] || 'General',
         rating: product.rating,
         stock: product.inStock ? 10 : 0,
         brand: 'Brand',
-        tags: product.categories
+        tags: product.categories || []
       }
       addItem(commonProduct, 1)
-      notify('success', 'Added to cart successfully!')
+      // Notification is handled by useCart hook
     } catch (error) {
       notify('error', 'Failed to add to cart')
     }
@@ -170,7 +170,7 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
       {/* Product Info */}
       <div className="p-4">
         <div className="mb-2">
-          <p className="text-xs sm:text-sm text-gray-500">{product.categories[0] || 'General'}</p>
+          <p className="text-xs sm:text-sm text-gray-500">{product.categories?.[0] || 'General'}</p>
           <h3 className="font-semibold text-gray-900 group-hover:text-teal-600 transition-colors duration-300 text-[10px] sm:text-sm mt-[5px] ">
             {product.name}
           </h3>

@@ -8,6 +8,7 @@ import { Button } from "@/components/common/Button/Button"
 import { useCart } from "@/hooks/useCart"
 import type { Product } from "@/types/product"
 import RevealOnScroll from "@/components/common/RevealOnScroll"
+import React from "react"
 
 /**
  * CartPage component - Displays the user's shopping cart with items, summary, and checkout option.
@@ -15,11 +16,60 @@ import RevealOnScroll from "@/components/common/RevealOnScroll"
  */
 export default function CartPage() {
   const router = useRouter()
-  const { items, subtotal, shipping, tax, total, updateItemQuantity, removeItem } = useCart()
+  const { 
+    items, 
+    subtotal, 
+    shipping, 
+    tax, 
+    total, 
+    updateItemQuantity, 
+    removeItem,
+    isLoading,
+    error,
+    serverCartCount,
+    serverCartTotal,
+    fetchCartFromServer
+  } = useCart()
 
   const moveToWishlist = (id: number) => {
     // Handle move to wishlist logic - will be implemented later
-    removeItem(id)
+    // Note: We need the key for removal, so we'll need to find the item first
+    const item = items.find(item => item.id === id)
+    if (item?.key) {
+      removeItem(item.key)
+    }
+  }
+
+  // Fetch cart data from server on component mount
+  React.useEffect(() => {
+    fetchCartFromServer()
+  }, [fetchCartFromServer])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading cart...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          <div className="text-center">
+            <div className="text-red-500 mb-4">Error loading cart</div>
+            <p className="text-gray-600 mb-8">{error}</p>
+            <Button onClick={fetchCartFromServer} className="bg-teal-600 hover:bg-teal-700">
+              Retry
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (items.length === 0) {
@@ -53,7 +103,7 @@ export default function CartPage() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-            <p className="text-gray-600">{items.length} items in your cart</p>
+            <p className="text-gray-600">{items.reduce((total, item) => total + item.quantity, 0)} items in your cart</p>
           </div>
         </div>
 
@@ -62,7 +112,7 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-4 mx-3">
             {items.map((item) => (
               <CartItemComponent
-                key={item.id}
+                key={item.key || item.id}
                 item={{
                   ...item,
                 }}

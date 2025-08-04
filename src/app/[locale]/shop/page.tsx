@@ -48,7 +48,7 @@ export default function ShopPage() {
 
   let filteredProducts = products.filter((item) => {
     const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
-    const matchesCategory = selectedCategories.length > 0 ? selectedCategories.some(cat => item.categories.includes(cat)) : true;
+    const matchesCategory = selectedCategories.length > 0 ? selectedCategories.some(cat => item.categories?.includes(cat)) : true;
     const matchesPrice = priceRange && priceRange.length === 2 ? (item.price >= priceRange[0] && item.price <= priceRange[1]) : true;
     const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
     const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;

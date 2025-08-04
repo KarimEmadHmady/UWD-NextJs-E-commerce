@@ -10,8 +10,8 @@ import type { CartItem as CartItemType } from '@/types/cart'
 
 interface CartItemProps {
   item: CartItemType;
-  onUpdateQuantity: (id: number, quantity: number) => void;
-  onRemove: (id: number) => void;
+  onUpdateQuantity: (key: string, quantity: number) => void;
+  onRemove: (key: string) => void;
   onMoveToWishlist: (id: number) => void;
 }
 
@@ -20,10 +20,17 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
 
   const handleQuantityChange = async (newQuantity: number) => {
     if (newQuantity < 1) return
+    if (!item.key) return // Need key for server operations
+    
     setIsUpdating(true)
     await new Promise((resolve) => setTimeout(resolve, 300)) // Simulate API call
-    onUpdateQuantity(item.id, newQuantity)
+    onUpdateQuantity(item.key, newQuantity)
     setIsUpdating(false)
+  }
+
+  const handleRemove = () => {
+    if (!item.key) return // Need key for server operations
+    onRemove(item.key)
   }
 
   const formatPrice = (price: number) => {
@@ -55,7 +62,7 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onRemove(item.id)}
+            onClick={handleRemove}
             className="text-gray-400 hover:text-red-500 cursor-pointer"
           >
             <Trash2 className="w-4 h-4 cursor-pointer" />

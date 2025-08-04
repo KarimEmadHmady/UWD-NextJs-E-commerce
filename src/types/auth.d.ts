@@ -1,16 +1,30 @@
 // src/types/auth.d.ts
+import type { User } from './user';
 
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  phone_number?: string;
-  city?: string;
-  states?: string;
-  lat?: number;
-  long?: number;
-  address?: string;
-  avatar?: string;
-  role?: 'user' | 'admin';
-  adresses?: any; 
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
 }
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  user?: User;
+  token?: string;
+}
+
+export type { User } from './user';

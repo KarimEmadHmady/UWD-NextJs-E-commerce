@@ -29,21 +29,7 @@ import { useUserAddresses } from '@/hooks/useUserAddresses';
 import AddressEditModal from '@/components/checkout/address-edit-modal';
 import { Edit } from 'lucide-react';
 
-interface LocationData {
-  latitude: number
-  longitude: number
-  address: string
-  city: string
-  country: string
-}
-
-interface ShippingOption {
-  id: string
-  name: string
-  description: string
-  price: number
-  estimatedDays: string
-}
+import type { LocationData, ShippingOption } from '@/types';
 
 /**
  * CheckoutPage component - Manages the multi-step checkout process including location, shipping, payment, and review.
@@ -161,8 +147,7 @@ export default function CheckoutPage() {
       // Check location using Redux
       const result = await checkLocation(loc);
       
-      // Debug: Log the result
-      console.log('Location check result:', result);
+     
       
       if (result.meta.requestStatus === 'fulfilled') {
         setLocation(loc);
@@ -329,31 +314,30 @@ export default function CheckoutPage() {
   const uniqueAdresses = normalizedAdresses.filter((addr, idx, arr) =>
     idx === arr.findIndex(a => (a.id && a.id === addr.id) || (a.address_1 && a.address_1 === addr.address_1))
   );
-  // تأكد من وجود تعريف واحد فقط للمتغير allAddresses (الذي يعتمد على backendAddresses و addresses فقط)
-  const allAddresses = [
-    ...(backendAddresses || []),
-    ...addresses.map(addr => ({
-      ...addr,
-      address_1: addr.address || addr.street || '',
-      label: (addr as any).label || 'Address',
-      country: addr.country || '',
-      latitude: typeof addr.latitude === 'number' ? addr.latitude : 0,
-      longitude: typeof addr.longitude === 'number' ? addr.longitude : 0,
-    })),
-  ];
-  const mappedAddresses = allAddresses.filter((addr, idx, arr) =>
-    idx === arr.findIndex(a =>
-      (a.id && a.id === addr.id) ||
-      (a.address_1 && a.address_1 === addr.address_1) ||
-      (a.latitude === addr.latitude && a.longitude === addr.longitude)
-    )
-  );
-  // إذا لم يوجد أي عنوان isDefault، اجعل أول عنوان هو الافتراضي
+  const allAddresses = backendAddresses || [];
+  
+  const mappedAddresses = allAddresses.filter((addr, idx, arr) => {
+    if (addr.id) {
+      return idx === arr.findIndex(a => a.id === addr.id);
+    }
+    
+    if (addr.latitude && addr.longitude) {
+      return idx === arr.findIndex(a => 
+        a.latitude === addr.latitude && 
+        a.longitude === addr.longitude
+      );
+    }
+    
+    if (addr.address_1) {
+      return idx === arr.findIndex(a => a.address_1 === addr.address_1);
+    }
+    
+    return true;
+  });
   const hasDefault = mappedAddresses.some(addr => addr.isDefault);
   if (!hasDefault && mappedAddresses.length > 0) {
     mappedAddresses[0].isDefault = true;
   }
-  // عند الدخول للخطوة الثانية، حدد تلقائيًا العنوان الافتراضي أو أول عنوان
   useEffect(() => {
     if (currentStep === 2 && mappedAddresses.length > 0 && !selectedAddress) {
       const def = mappedAddresses.find(a => a.isDefault) || mappedAddresses[0];
@@ -533,13 +517,12 @@ export default function CheckoutPage() {
                     <ul className="text-sm text-gray-700 space-y-1">
                       <li><b>Name:</b> {customerInfo.name}</li>
                       <li><b>Phone:</b> {customerInfo.phone}</li>
-                      <li><b>Address:</b> {customerInfo.address}</li>
                       <li><b>City:</b> {customerInfo.city}</li>
                     </ul>
                   )}
                   {location && (
                     <ul className="text-sm text-gray-700 space-y-1 mt-2">
-                      <li><b>Location:</b> {location.address}</li>
+                      <li><b>Address:</b> {location.address}</li>
                     </ul>
                   )}
                   <ul className="text-sm text-gray-700 space-y-1 mt-2">

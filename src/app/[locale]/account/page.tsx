@@ -20,7 +20,7 @@ import { X } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import useOrders from '@/hooks/useOrders';
 import { useNotifications } from '@/hooks/useNotifications';
-import type { CartProduct } from '@/types/product';
+import type { CartProduct, WishlistItem, Order, Address } from '@/types';
 import { useUserAddresses } from '@/hooks/useUserAddresses';
 import { Input } from "@/components/common/input/input";
 import { PhoneInput } from "@/components/common/input/phone-input";
@@ -84,7 +84,7 @@ export default function AccountPage() {
 
   const { orders } = useOrders();
   const [showOrderDetails, setShowOrderDetails] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const { items: wishlistItems, removeItem: removeWishlistItem } = useWishlist();
   const { addItem: addCartItem, toggle: toggleCart } = useCart();
@@ -108,38 +108,18 @@ export default function AccountPage() {
   }
 
   const totalOrders = orders.length;
-  const totalSpent = orders.reduce((sum: number, o: OrderType) => sum + (o.total || 0), 0);
+  const totalSpent = orders.reduce((sum: number, o: any) => sum + (o.total || 0), 0);
 
-  // Types for orders and items
-
-  type WishlistItemType = {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    image?: string;
-    images?: string[];
-  };
-
-  type OrderType = {
-    id: string;
-    createdAt: string;
-    items: WishlistItemType[];
-    total: number;
-    status: string;
-    paymentMethod?: string;
-    shippingMethod?: string;
-    address?: string;
-  };
+    // Using types from organized types folder
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
   const { addresses: backendAddresses, loading: addressesLoading, refetch } = useUserAddresses(token);
 
-  const allAddresses = backendAddresses || [];
+  const allAddresses: Address[] = backendAddresses || [];
 
   const { checkLocation, locationCheckLoading, logout } = useAuth();
   const [locationCheckMsg, setLocationCheckMsg] = useState('');
-  const [newLocation, setNewLocation] = useState<any>(null);
+  const [newLocation, setNewLocation] = useState<{ address: string; latitude: number; longitude: number } | null>(null);
 
   // دالة تسجيل الخروج
   const handleLogout = () => {
@@ -156,7 +136,7 @@ export default function AccountPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
 
-  const [editAddress, setEditAddress] = useState<any>(null);
+  const [editAddress, setEditAddress] = useState<Address | null>(null);
 
   // Helper to parse city and state from address string
   function parseCityStateFromAddress(address: string) {
@@ -269,14 +249,14 @@ export default function AccountPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {orders.slice(0, 3).map((order: OrderType) => (
+                    {orders.slice(0, 3).map((order: any) => (
                       <div
                         key={order.id}
                         className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                       >
                         <div>
                           <p className="font-semibold text-gray-900">{order.id}</p>
-                          <p className="text-sm text-gray-600">{new Date(order.createdAt).toLocaleDateString()}</p>
+                          <p className="text-sm text-gray-600">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
                           <p className="text-sm text-gray-600">{order.items.length} items</p>
                         </div>
                         <div className="text-right">
@@ -324,7 +304,7 @@ export default function AccountPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {orders.map((order: OrderType) => (
+                  {orders.map((order: any) => (
                     <div
                       key={order.id}
                       className="flex flex-col md:flex-row items-center justify-between p-6 border border-gray-200 rounded-lg"
@@ -335,7 +315,7 @@ export default function AccountPage() {
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900">{order.id}</p>
-                          <p className="text-sm text-gray-600">{new Date(order.createdAt).toLocaleDateString()}</p>
+                          <p className="text-sm text-gray-600">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
                           <p className="text-sm text-gray-600">
                             {order.items.length} items • EGP {order.total.toFixed(2)}
                           </p>
@@ -377,7 +357,7 @@ export default function AccountPage() {
                       <X className="w-6 h-6" />
                     </button>
                     <h2 className="text-2xl text-black font-bold mb-2">Order #{selectedOrder.id}</h2>
-                    <div className="mb-2 text-sm text-gray-600">Date: {new Date(selectedOrder.createdAt).toLocaleString()}</div>
+                    <div className="mb-2 text-sm text-gray-600">Date: {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString() : 'N/A'}</div>
                     <div className="mb-2 text-sm text-gray-600">Status: <Badge className={getStatusColor(selectedOrder.status)}>{selectedOrder.status}</Badge></div>
                     <div className="mb-2 text-sm text-gray-600">Payment: {selectedOrder.paymentMethod}</div>
                     <div className="mb-2 text-sm text-gray-600">Shipping: {selectedOrder.shippingMethod}</div>
@@ -385,7 +365,7 @@ export default function AccountPage() {
                     <div className="mb-4 text-sm text-gray-600">Total: <b>EGP {selectedOrder.total.toFixed(2)}</b></div>
                     <div className="mb-2 text-black font-semibold">Products:</div>
                     <ul className="mb-2 text-black space-y-2">
-                      {selectedOrder.items.map((item: WishlistItemType) => (
+                      {selectedOrder.items.map((item: any) => (
                         <li key={item.id} className="flex justify-between text-sm border-b pb-1">
                           <span>{item.name} x{item.quantity}</span>
                           <span>EGP {(item.price * (item.quantity || 1)).toFixed(2)}</span>
@@ -425,7 +405,7 @@ export default function AccountPage() {
                       return (
                         <div key={item.id} className="border border-gray-200 rounded-lg p-4">
                           <img
-                            src={item.images?.[0] || "/placeholder.svg"}
+                            src={item.image || "/placeholder.svg"}
                             alt={item.name}
                             className="w-40 h-40 mx-auto object-cover bg-gray-50 rounded-xl border mb-4"
                           />

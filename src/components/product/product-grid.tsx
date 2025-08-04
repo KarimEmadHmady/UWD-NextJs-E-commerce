@@ -37,12 +37,12 @@ export default function ProductGrid() {
       name: product.name,
       price: product.price,
       description: product.description,
-      images: [product.image, ...product.gallery],
-      category: product.categories[0] || 'General',
+      images: [product.image || '', ...(product.gallery || [])],
+      category: product.categories?.[0] || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
       brand: "Brand",
-      tags: product.categories,
+      tags: product.categories || [],
     }
     if (isInWishlist(product.id)) {
       removeWishlist(product.id)
@@ -62,15 +62,15 @@ export default function ProductGrid() {
       name: product.name,
       price: product.price,
       description: product.description,
-      images: [product.image, ...product.gallery],
-      category: product.categories[0] || 'General',
-      rating: product.rating,
-      stock: product.inStock ? 10 : 0,
-      brand: 'Brand',
-      tags: product.categories
+              images: [product.image || '', ...(product.gallery || [])],
+        category: product.categories?.[0] || 'General',
+        rating: product.rating,
+        stock: product.inStock ? 10 : 0,
+        brand: 'Brand',
+        tags: product.categories || []
     }
     addItem(commonProduct, 1)
-    notify('success', 'Added to cart successfully!')
+    // Notification is handled by useCart hook
   }
 
   const formatPrice = (price: number) => {

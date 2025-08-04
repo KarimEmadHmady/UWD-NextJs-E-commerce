@@ -72,17 +72,17 @@ export default function WishlistPage() {
       id: item.id,
       name: item.name,
       price: item.price,
-      description: item.description,
-      images: item.images,
+      description: item.name, // Use name as description
+      images: [item.image], // Use single image
       category: item.category,
-      rating: item.rating,
-      stock: item.stock,
-      brand: item.brand,
-      tags: item.tags,
+      rating: 0, // Default rating
+      stock: item.inStock ? 1 : 0, // Convert inStock to stock
+      brand: '', // Default brand
+      tags: [], // Default tags
     }
     addItem(product, 1)
     handleRemoveItem(id)
-    notify('success', 'Product added to cart!')
+    // Notification is handled by useCart hook
     toggle() // Open side cart
   }
 
@@ -119,9 +119,9 @@ export default function WishlistPage() {
                 name={item.name}
                 price={item.price}
                 originalPrice={undefined}
-                image={item.images[0] || "/placeholder.svg"}
+                image={item.image || "/placeholder.svg"}
                 category={item.category}
-                inStock={item.stock > 0}
+                inStock={item.inStock}
                 onRemove={handleRemoveItem}
                 onAddToCart={handleAddToCart}
               />

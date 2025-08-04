@@ -58,8 +58,11 @@ export default function Navigation() {
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const menuRef = useRef<HTMLUListElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const { items } = useCart();
+  const { items, serverCartCount } = useCart();
+  // نستخدم العدد من الـ items بدلاً من الـ serverCartCount لأن الـ backend خاطئ
   const cartCount = items.reduce((total, item) => total + item.quantity, 0);
+  
+  // Debug cart count
   const { items: wishlistItems } = useWishlist();
   const wishlistCount = wishlistItems.length;
   const { user, isAuthenticated, logout, userLocation } = useAuth()

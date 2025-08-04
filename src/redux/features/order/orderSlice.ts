@@ -1,16 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export interface Order {
-  id: string;
-  userId: string;
-  items: any[];
-  total: number;
-  shippingMethod: string;
-  paymentMethod: string;
-  address: string;
-  status: string;
-  createdAt: string;
-}
+import type { Order } from '@/types';
 
 interface OrderState {
   orders: Order[];

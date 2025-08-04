@@ -74,9 +74,7 @@ export default function RegisterPage() {
   }, [locationCheckError, notify, clearLocationError]);
 
   useEffect(() => {
-    console.log('registrationError changed:', registrationError);
     if (registrationError) {
-      console.log('Showing registration error:', registrationError);
       notify('error', registrationError);
       clearRegistrationError();
     }
@@ -109,8 +107,6 @@ export default function RegisterPage() {
       // Check location using Redux
       const result = await checkLocation(loc);
       
-      // Debug: Log the result
-      console.log('Location check result:', result);
       
       if (result.meta.requestStatus === 'fulfilled') {
         setLocation(loc);
@@ -146,8 +142,7 @@ export default function RegisterPage() {
       // Check location again before registration
       const locationResult = await checkLocation(location);
       
-      // Debug: Log the location result
-      console.log('Location check in submit:', locationResult);
+  
       
       if (locationResult.meta.requestStatus !== 'fulfilled') {
         // The error will be handled by the useEffect that monitors locationCheckError
@@ -169,8 +164,6 @@ export default function RegisterPage() {
         address_1: location.address // أضف هذا
       });
       
-      // Debug: Log the registration result
-      console.log('Registration result:', registrationResult);
       
       // The success/error will be handled by the useEffect hooks
       

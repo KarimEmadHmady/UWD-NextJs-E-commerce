@@ -3,17 +3,21 @@ export interface Product {
   id: number;
   name: string;
   slug: string;
-  price: string;
-  regular_price: string;
-  sale_price: string;
-  stock_status: string;
-  stock_quantity: number | null;
-  short_description: string;
+  price: string | number;
+  regular_price?: string;
+  sale_price?: string;
+  stock_status?: string;
+  stock_quantity?: number | null;
+  short_description?: string;
   description: string;
-  categories: string[];
-  image: string;
-  gallery: string[];
-  permalink: string;
+  categories?: string[];
+  image?: string;
+  gallery?: string[];
+  permalink?: string;
+  rating?: number;
+  brand?: string;
+  tags?: string[];
+  stock?: number;
 }
 
 export interface ProductsResponse {

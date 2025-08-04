@@ -35,12 +35,6 @@ export const checkLocation = async (location: LocationData): Promise<LocationChe
 
     const data = await response.json();
     
-    // Debug: Log API response
-    console.log('Location Check API Response:', {
-      status: response.status,
-      ok: response.ok,
-      data: data
-    });
 
     if (response.ok) {
       return {
@@ -101,12 +95,7 @@ export const registerUser = async (userData: {
 
     const data = await response.json();
     
-    // Debug: Log API response
-    console.log('Registration API Response:', {
-      status: response.status,
-      ok: response.ok,
-      data: data
-    });
+
 
     if (response.ok) {
       return {
@@ -158,11 +147,7 @@ export const loginUser = async (loginData: {
     });
 
     const data = await response.json();
-    console.log('Login API Response:', {
-      status: response.status,
-      ok: response.ok,
-      data: data
-    });
+
 
     if (response.ok) {
       return {

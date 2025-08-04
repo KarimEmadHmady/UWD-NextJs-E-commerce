@@ -30,11 +30,7 @@ export default function ProductPage({ params }: { params: Promise<ParamsType> })
 
   const { data: apiProduct, isLoading, error } = useProduct(productId || 0);
 
-  console.log('Product ID:', productId);
-  console.log('Product ID type:', typeof productId);
-  console.log('API Product:', apiProduct);
-  console.log('Is Loading:', isLoading);
-  console.log('Error:', error);
+
 
   if (!resolvedParams || !productId || isLoading) {
     return (

@@ -7,12 +7,10 @@ export const checkLocationAsync = createAsyncThunk(
   async (location: LocationData, { rejectWithValue }) => {
     try {
       const response = await checkLocation(location);
-      console.log('Redux checkLocation response:', response);
       
       if (response.success) {
         return response;
       } else {
-        console.log('Redux checkLocation rejected with:', response.message);
         return rejectWithValue(response.message);
       }
     } catch (error) {
@@ -37,16 +35,13 @@ export const registerUserAsync = createAsyncThunk(
   }, { rejectWithValue }) => {
     try {
       const response = await registerUser(userData);
-      console.log('Redux registerUser response:', response);
       
       if (response.success) {
         return response;
       } else {
-        console.log('Redux registerUser rejected with:', response.message);
         return rejectWithValue(response.message);
       }
     } catch (error) {
-      console.error('Redux registerUser error:', error);
       return rejectWithValue('An error occurred during registration');
     }
   }

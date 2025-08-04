@@ -14,8 +14,8 @@ export interface Product extends Omit<ApiProduct, 'price' | 'regular_price' | 's
 
 // Convert API product to UI product
 export const convertApiProductToUI = (apiProduct: ApiProduct): Product => {
-  const price = parseFloat(apiProduct.price);
-  const regularPrice = parseFloat(apiProduct.regular_price);
+  const price = parseFloat(String(apiProduct.price));
+  const regularPrice = parseFloat(apiProduct.regular_price || '0');
   const salePrice = apiProduct.sale_price ? parseFloat(apiProduct.sale_price) : null;
   
   const isSale = !!salePrice && salePrice < regularPrice;
@@ -39,12 +39,12 @@ export const convertToCartProduct = (product: Product): CartItem => ({
   name: product.name,
   price: product.price,
   description: product.description,
-  images: [product.image, ...product.gallery],
-  category: product.categories[0] || 'General',
+  images: [product.image || '', ...(product.gallery || [])],
+  category: product.categories?.[0] || 'General',
   quantity: 1,
   stock: product.inStock ? 10 : 0,
   brand: 'Brand', // Default brand
-  tags: product.categories,
+  tags: product.categories || [],
   rating: product.rating
 });
 
@@ -53,13 +53,13 @@ export const convertProductToCartProduct = (product: ApiProduct): CartProduct =>
   id: product.id,
   name: product.name,
   description: product.description,
-  price: parseFloat(product.price),
-  images: [product.image, ...product.gallery],
-  category: product.categories[0] || 'General',
+  price: parseFloat(String(product.price)),
+  images: [product.image || '', ...(product.gallery || [])],
+  category: product.categories?.[0] || 'General',
   rating: 4.5, // Default rating
   stock: product.stock_quantity || 0,
   brand: 'Brand', // Default brand
-  tags: product.categories,
+  tags: product.categories || [],
 });
 
 // Legacy products array for backward compatibility

@@ -36,7 +36,7 @@ type OrderType = {
 export default function OrderConfirmationPage() {
   const router = useRouter()
   const { orders } = useOrders();
-  const latestOrder: OrderType | null = orders && orders.length > 0 ? orders[0] : null;
+  const latestOrder: any = orders && orders.length > 0 ? orders[0] : null;
 
   if (!latestOrder) {
     return (

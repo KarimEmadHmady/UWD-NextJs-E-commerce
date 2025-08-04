@@ -2,15 +2,18 @@
 import type { CartItem } from './cart';
 
 export interface Order {
-  id: number;
-  userId: number;
+  id: number | string;
+  userId?: number | string;
   items: CartItem[];
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  shippingAddress: string;
+  shippingAddress?: string;
+  address?: string;
   subtotal: number;
   shipping: number;
   tax: number;
   total: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
+  paymentMethod?: string;
+  shippingMethod?: string;
 } 

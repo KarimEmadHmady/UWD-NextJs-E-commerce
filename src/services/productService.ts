@@ -8,7 +8,6 @@ export async function getProducts(): Promise<ProductsResponse> {
 
 export async function getProductById(id: number): Promise<Product> {
   const url = `${process.env.NEXT_PUBLIC_API_URL}/product/${id}`;
-  console.log('API URL for product:', url);
   return apiFetch(url, {});
 }
 

@@ -230,7 +230,6 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
             className="w-full bg-teal-600 hover:bg-teal-700 mt-4" 
             onClick={async () => {
               try {
-                console.log('onLocationSet called with:', location);
                 await onLocationSet(location);
               } catch (error) {
                 console.error('Error setting location:', error);

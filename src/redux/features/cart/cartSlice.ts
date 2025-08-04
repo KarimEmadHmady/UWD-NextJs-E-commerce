@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { CartItem } from '@/types/cart';
+import type { CartItem } from '@/types';
 
 interface CartState {
   items: CartItem[];
@@ -8,6 +8,10 @@ interface CartState {
   shipping: number;
   tax: number;
   total: number;
+  isLoading: boolean;
+  error: string | null;
+  serverCartCount: number;
+  serverCartTotal: string;
 }
 
 const initialState: CartState = {
@@ -17,6 +21,10 @@ const initialState: CartState = {
   shipping: 0,
   tax: 0,
   total: 0,
+  isLoading: false,
+  error: null,
+  serverCartCount: 0,
+  serverCartTotal: '0',
 };
 
 /**
@@ -72,9 +80,37 @@ const cartSlice = createSlice({
     toggleCart: (state) => {
       state.isOpen = !state.isOpen;
     },
+    // New actions for server integration
+    setCartLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
+    setCartError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
+    },
+    setServerCartData: (state, action: PayloadAction<{ count: number; total: string }>) => {
+      state.serverCartCount = action.payload.count;
+      state.serverCartTotal = action.payload.total;
+    },
+    syncCartFromServer: (state, action: PayloadAction<CartItem[]>) => {
+      state.items = action.payload;
+      state.subtotal = state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+      state.tax = state.subtotal * 0.14;
+      state.shipping = 0;
+      state.total = state.subtotal + state.tax + state.shipping;
+    },
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart, toggleCart } = cartSlice.actions;
+export const { 
+  addToCart, 
+  removeFromCart, 
+  updateQuantity, 
+  clearCart, 
+  toggleCart,
+  setCartLoading,
+  setCartError,
+  setServerCartData,
+  syncCartFromServer
+} = cartSlice.actions;
 
 export default cartSlice.reducer;
