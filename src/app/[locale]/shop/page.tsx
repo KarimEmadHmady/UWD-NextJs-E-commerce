@@ -40,13 +40,18 @@ export default function ShopPage() {
   const { data: apiProducts, isLoading, error } = useAllProducts();
   const products = apiProducts ? apiProducts.map(convertApiProductToUI) : [];
   
+  // Filter out products without price
+  const productsWithPrice = products.filter(product => 
+    product.price && String(product.price).trim() !== '' && product.price !== 0
+  );
+  
   // Use API data for categories
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
   
   const dispatch = useDispatch();
   const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands, priceRange } = useFilter();
 
-  let filteredProducts = products.filter((item) => {
+  let filteredProducts = productsWithPrice.filter((item) => {
     const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
     const matchesCategory = selectedCategories.length > 0 ? selectedCategories.some(cat => item.categories?.includes(cat)) : true;
     const matchesPrice = priceRange && priceRange.length === 2 ? (item.price >= priceRange[0] && item.price <= priceRange[1]) : true;

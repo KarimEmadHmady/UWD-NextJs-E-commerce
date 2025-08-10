@@ -27,6 +27,11 @@ export default function HomePage() {
   const { data: apiProducts, isLoading, error } = useAllProducts();
   const products = apiProducts ? apiProducts.map(convertApiProductToUI) : [];
   
+  // Filter out products without price
+  const productsWithPrice = products.filter(product => 
+    product.price && String(product.price).trim() !== '' && product.price !== 0
+  );
+  
   // Use API data for categories
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
   
@@ -35,21 +40,21 @@ export default function HomePage() {
 
   // Create two different shuffled sets for the two sliders
   const shuffledProducts1 = useMemo(() => {
-    const arr = [...products];
+    const arr = [...productsWithPrice];
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr.slice(0, 8);
-  }, [products]);
+  }, [productsWithPrice]);
   const shuffledProducts2 = useMemo(() => {
-    const arr = [...products];
+    const arr = [...productsWithPrice];
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr.slice(0, 8);
-  }, [products]);
+  }, [productsWithPrice]);
 
   // Loading skeleton for products section
   const ProductSkeleton = () => (

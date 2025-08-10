@@ -39,9 +39,14 @@ export default function CategoryPage(props: { params: Promise<{ category: string
 
   // Get products from category data
   const products = categoryData?.products ? categoryData.products.map(convertApiProductToUI) : [];
+  
+  // Filter out products without price
+  const productsWithPrice = products.filter(product => 
+    product.price && String(product.price).trim() !== '' && product.price !== 0
+  );
 
   // Apply additional filters
-  let finalFilteredProducts = products.filter((item) => {
+  let finalFilteredProducts = productsWithPrice.filter((item) => {
     const matchesPrice = priceRange && priceRange.length === 2 ? (item.price >= priceRange[0] && item.price <= priceRange[1]) : true;
     const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
     const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;

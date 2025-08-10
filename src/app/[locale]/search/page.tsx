@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 import { Search, X, Star, SlidersHorizontal } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
@@ -8,19 +8,16 @@ import { Input } from "@/components/common/input/input"
 import { Card, CardContent } from "@/components/common/card/card"
 import { Badge } from "@/components/common/Badge/Badge"
 import { Checkbox } from "@/components/common/checkbox/checkbox"
-// import { useSearch } from '@/hooks/useSearch';
 import { useFilter } from '@/hooks/useFilter';
 import { setCategories, setQuantities, setSizes, setBrands, clearFilters } from '@/redux/features/filter/filterSlice';
 import { useDispatch } from 'react-redux';
-// import { setSearchQuery, fetchSearchSuccess } from '@/redux/features/search/searchSlice';
 import { useEffect } from 'react';
-import { products } from '@/components/product/product-data';
 import { Slider } from '@/components/common/slider/slider';
 import ShopProductCard from '@/components/product/ShopProductCard/ShopProductCard';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useCategories } from '@/hooks/useCategories';
 import { useAllProducts } from '@/hooks/useProducts';
-import { convertApiProductToUI } from '@/components/product/product-data';
+import { convertApiProductToUI, products as staticProducts } from '@/components/product/product-data';
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
@@ -31,43 +28,75 @@ export default function SearchPage() {
   const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands } = useFilter();
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   
-  // Use API data instead of static data
+  // Use API data instead of static data - same as shop page
   const { data: apiProducts, isLoading: productsLoading, error: productsError } = useAllProducts();
   const products = apiProducts ? apiProducts.map(convertApiProductToUI) : [];
+  
+  // Filter out products without price
+  const productsWithPrice = products.filter(product => 
+    product.price && String(product.price).trim() !== '' && product.price !== 0
+  );
   
   // Use API data for categories
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
   
-  const prices = products.map(p => p.price);
-  const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-  const maxPrice = prices.length > 0 ? Math.max(...prices) : 1000;
-  const [priceRange, setPriceRange] = useState<[number, number]>([minPrice, maxPrice]);
-  const [searchResults, setSearchResults] = useState(products);
-  // const [selectedFilters, setSelectedFilters] = useState<string[]>([])
+  const prices = useMemo(() => {
+    const validPrices = productsWithPrice
+      .map(p => typeof p.price === 'number' ? p.price : parseFloat(String(p.price || 0)))
+      .filter(price => !isNaN(price) && isFinite(price));
+    return validPrices;
+  }, [productsWithPrice]);
+  
+  const minPrice = useMemo(() => prices.length > 0 ? Math.min(...prices) : 0, [prices]);
+  const maxPrice = useMemo(() => prices.length > 0 ? Math.max(...prices) : 1000, [prices]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  
+  // Update price range when min/max prices change
+  useEffect(() => {
+    if (!isNaN(minPrice) && !isNaN(maxPrice) && isFinite(minPrice) && isFinite(maxPrice)) {
+      setPriceRange([minPrice, maxPrice]);
+    }
+  }, [minPrice, maxPrice]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    const filtered = value
-      ? products.filter((item) => item.name.toLowerCase().includes(value.toLowerCase()))
-      : products;
-    setSearchResults(filtered);
-  };
+  const categoriesWithCount = useMemo(() => {
+    return categories.map(cat => ({
+      ...cat,
+      count: productsWithPrice.filter(p => p.categories && p.categories.includes(cat.name)).length,
+    }));
+  }, [categories, productsWithPrice]);
 
-  const handleClearSearch = () => {
-    setSearchQuery("");
-    setSearchResults(products);
-  };
-
-  const categoriesWithCount = categories.map(cat => ({
-    ...cat,
-    count: products.filter(p => p.categories && p.categories.includes(cat.name)).length,
-  }));
-  const filters = {
+  const filters = useMemo(() => ({
     categories: categoriesWithCount,
     quantities: ["1 piece", "6 pieces", "12 pieces", "500g", "1kg"],
     sizes: ["Small", "Medium", "Large"],
-  }
+  }), [categoriesWithCount]);
+
+  const searchResults = useMemo(() => {
+    const filtered = productsWithPrice.filter((item) => {
+      const itemPrice = typeof item.price === 'number' ? item.price : parseFloat(String(item.price || 0));
+      
+      const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
+      const matchesCategory = selectedCategories.length > 0 ? selectedCategories.some(cat => item.categories && item.categories.includes(cat)) : true;
+      const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
+      const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
+      const matchesPrice = priceRange && priceRange.length === 2 && !isNaN(priceRange[0]) && !isNaN(priceRange[1]) 
+        ? (itemPrice >= priceRange[0] && itemPrice <= priceRange[1]) 
+        : true;
+      
+      return matchesQuery && matchesCategory && matchesQuantity && matchesSize && matchesPrice;
+    });
+    
+    return filtered;
+  }, [productsWithPrice, searchQuery, selectedCategories, selectedQuantities, selectedSizes, priceRange]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+  }, []);
+
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery("");
+  }, []);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -85,52 +114,49 @@ export default function SearchPage() {
     ))
   }
 
-  const handleCategoryToggle = (category: string) => {
+  const handleCategoryToggle = useCallback((category: string) => {
     let updated = selectedCategories.includes(category)
       ? selectedCategories.filter((c) => c !== category)
       : [...selectedCategories, category];
     dispatch(setCategories(updated));
-  };
-  const handleQuantityToggle = (quantity: string) => {
+  }, [selectedCategories, dispatch]);
+
+  const handleQuantityToggle = useCallback((quantity: string) => {
     let updated = selectedQuantities.includes(quantity)
       ? selectedQuantities.filter((q) => q !== quantity)
       : [...selectedQuantities, quantity];
     dispatch(setQuantities(updated));
-  };
-  const handleSizeToggle = (size: string) => {
+  }, [selectedQuantities, dispatch]);
+
+  const handleSizeToggle = useCallback((size: string) => {
     let updated = selectedSizes.includes(size)
       ? selectedSizes.filter((s) => s !== size)
       : [...selectedSizes, size];
     dispatch(setSizes(updated));
-  };
-  const handleBrandToggle = (brand: string) => {
+  }, [selectedSizes, dispatch]);
+
+  const handleBrandToggle = useCallback((brand: string) => {
     let updated = selectedBrands.includes(brand)
       ? selectedBrands.filter((b) => b !== brand)
       : [...selectedBrands, brand];
     dispatch(setBrands(updated));
-  };
-  const clearAllFilters = () => {
+  }, [selectedBrands, dispatch]);
+
+  const clearAllFilters = useCallback(() => {
     dispatch(clearFilters());
-  };
+  }, [dispatch]);
 
   const activeFiltersCount = selectedCategories.length + selectedQuantities.length + selectedSizes.length + selectedBrands.length;
 
-  useEffect(() => {
-    let filtered = products.filter((item) => {
-      const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
-      const matchesCategory = selectedCategories.length > 0 ? selectedCategories.some(cat => item.categories && item.categories.includes(cat)) : true;
-      const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
-      const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
-      const matchesPrice = priceRange && priceRange.length === 2 ? (item.price >= priceRange[0] && item.price <= priceRange[1]) : true;
-      return matchesQuery && matchesCategory && matchesQuantity && matchesSize && matchesPrice;
-    });
-    setSearchResults(filtered);
-  }, [searchQuery, selectedCategories, selectedQuantities, selectedSizes, priceRange, products]);
-
-  const [visibleCount, setVisibleCount] = useState(9);
+  const [visibleCount, setVisibleCount] = useState(productsWithPrice.length);
   const hasMore = visibleCount < searchResults.length;
-  const loadMore = () => setVisibleCount((prev) => prev + 9);
+  const loadMore = useCallback(() => setVisibleCount((prev) => prev + 9), []);
   const productsToShow = searchResults.slice(0, visibleCount);
+
+  // Reset visible count when search results change
+  useEffect(() => {
+    setVisibleCount(searchResults.length);
+  }, [searchResults.length]);
 
   // Loading state
   if (productsLoading || categoriesLoading) {
@@ -193,7 +219,7 @@ export default function SearchPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                {searchQuery ? `Search results for "${searchQuery}"` : "All Sweets"}
+                {searchQuery ? `Search results for "${searchQuery}"` : "All Products"}
               </h1>
               <p className="text-gray-600">{searchResults.length} items available</p>
             </div>
@@ -342,12 +368,20 @@ export default function SearchPage() {
               hasMore={hasMore}
               loader={<div className="text-center py-4 text-gray-600">Loading...</div>}
               endMessage={<div className="text-center py-4 text-gray-400">No more products</div>}
-              scrollableTarget={null}
             >
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-                {productsToShow.map((product) => (
-                  <ShopProductCard key={product.id} product={product} />
-                ))}
+                {productsToShow.map((product) => {
+                  const localProduct = {
+                    ...product,
+                    image: product.image,
+                    reviews: product.reviews,
+                    inStock: product.inStock,
+                    isNew: product.isNew,
+                    isSale: product.isSale,
+                    discount: product.discount,
+                  };
+                  return <ShopProductCard key={product.id} product={localProduct} />;
+                })}
               </div>
             </InfiniteScroll>
 
@@ -355,9 +389,9 @@ export default function SearchPage() {
             {searchResults.length === 0 && (
               <div className="text-center py-16">
                 <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">No matching sweets found</h2>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-2">No matching products found</h2>
                 <p className="text-gray-600 mb-6">
-                  Try changing your search or filters to find the sweets you want
+                  Try changing your search or filters to find the products you want
                 </p>
                 <Button onClick={clearAllFilters} variant="outline" className="bg-transparent">
                   Clear all filters

@@ -71,7 +71,6 @@ export default function AccountPage() {
     }
   };
 
-  // استخدام بيانات المستخدم الحقيقي من Redux
   const user = userRedux || {
     name: "Guest User",
     username: "Guest User",
@@ -79,7 +78,6 @@ export default function AccountPage() {
     phone_number: "",
   };
   
-  // إضافة avatar افتراضي
   const userAvatar = "/placeholder.svg?height=100&width=100";
 
   const { orders } = useOrders();
@@ -121,7 +119,6 @@ export default function AccountPage() {
   const [locationCheckMsg, setLocationCheckMsg] = useState('');
   const [newLocation, setNewLocation] = useState<{ address: string; latitude: number; longitude: number } | null>(null);
 
-  // دالة تسجيل الخروج
   const handleLogout = () => {
     logout();
     router.push('/login');
@@ -142,8 +139,8 @@ export default function AccountPage() {
   function parseCityStateFromAddress(address: string) {
     const parts = address.split(',').map(s => s.trim());
     return {
-      region: parts[2] || '', // بعد ثاني فاصلة
-      city: parts[3] || '', // بعد ثالث فاصلة
+      region: parts[2] || '', // After second comma
+      city: parts[3] || '', // After third comma
     };
   }
 
@@ -332,7 +329,7 @@ export default function AccountPage() {
                 </div>
               </CardContent>
             </Card>
-            {/* بوب أب تفاصيل الأوردر */}
+            {/* Order Details Modal */}
             <AnimatePresence>
               {showOrderDetails && selectedOrder && (
                 <motion.div
@@ -389,7 +386,7 @@ export default function AccountPage() {
                     <div className="text-gray-500 text-center col-span-3">Your wishlist is empty.</div>
                   ) : (
                     wishlistItems.map((item: any) => {
-                      // تحويل ItemType إلى CartProduct
+                      // Convert ItemType to CartProduct
                       const product: CartProduct = {
                         id: Number(item.id),
                         name: item.name,
@@ -632,7 +629,7 @@ export default function AccountPage() {
                 </div>
               </div>
             )}
-            {/* مودال التعديل */}
+            {/* Edit Modal */}
             {editAddress && (
               <AddressEditModal
                 address={editAddress}
