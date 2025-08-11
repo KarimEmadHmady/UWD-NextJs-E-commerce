@@ -33,11 +33,11 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
       price: product.price,
       description: product.description,
       images: [product.image || '', ...(product.gallery || [])],
-      category: product.categories?.[0] || 'General',
+      category: product.categories?.[0].name || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
       brand: "Brand",
-      tags: product.categories || [],
+      tags: product.categories?.map((category) => category.name) || [],
     }
     if (isInWishlist) {
       removeWishlist(product.id)
@@ -60,11 +60,11 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
         price: product.price,
         description: product.description,
         images: [product.image || '', ...(product.gallery || [])],
-        category: product.categories?.[0] || 'General',
+        category: product.categories?.[0].name || 'General',
         rating: product.rating,
         stock: product.inStock ? 10 : 0,
         brand: 'Brand',
-        tags: product.categories || []
+        tags: product.categories?.map((category) => category.name) || [],
       }
       addItem(commonProduct, 1)
       // Notification is handled by useCart hook
@@ -170,7 +170,7 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
       {/* Product Info */}
       <div className="p-4">
         <div className="mb-2">
-          <p className="text-xs sm:text-sm text-gray-500">{product.categories?.[0] || 'General'}</p>
+          <p className="text-xs sm:text-sm text-gray-500">  {product.categories?.[0]?.name || 'General'}</p>
           <h3 className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors duration-300 text-[10px] sm:text-sm mt-[5px] ">
             {product.name}
           </h3>
