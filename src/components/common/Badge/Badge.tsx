@@ -6,7 +6,7 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variants = {
-  default: "bg-teal-100 text-teal-800 border border-teal-200",
+  default: "bg-red-100 text-red-800 border border-red-200",
   secondary: "bg-red-100 text-[9px] sm:text-sm md:text-base text-red-800 border border-red-200",
   destructive: "bg-green-100 text-green-800 border border-green-200",
 };

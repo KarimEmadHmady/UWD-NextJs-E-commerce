@@ -56,8 +56,8 @@ export default function ContactPage() {
       icon: MapPin,
       title: "Visit Our Sweets Shop",
       details: ["15 Dessert Avenue", "Sweet City", "Egypt"],
-      color: "text-teal-600",
-      bgColor: "bg-teal-100",
+      color: "text-red-600",
+      bgColor: "bg-red-100",
     },
     {
       icon: Phone,
@@ -201,7 +201,7 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button type="submit" disabled={isSubmitting} className="w-full bg-teal-600 hover:bg-teal-700 py-3">
+                  <Button type="submit" disabled={isSubmitting} className="w-full bg-red-600 hover:bg-red-700 py-3">
                     {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -250,11 +250,11 @@ export default function ContactPage() {
             </div>
 
             {/* FAQ Link */}
-            <Card className="bg-teal-50 border-teal-200">
+            <Card className="bg-red-50 border-red-200">
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-teal-900 mb-2">Frequently Asked Sweets Questions</h3>
-                <p className="text-teal-700 text-sm mb-4">Find quick answers to common sweets questions in our FAQ section.</p>
-                <Button variant="outline" className="bg-transparent border-teal-300 text-teal-700 hover:bg-teal-100">
+                <h3 className="font-semibold text-red-900 mb-2">Frequently Asked Sweets Questions</h3>
+                <p className="text-red-700 text-sm mb-4">Find quick answers to common sweets questions in our FAQ section.</p>
+                <Button variant="outline" className="bg-transparent border-red-300 text-red-700 hover:bg-red-100">
                   View FAQ
                 </Button>
               </CardContent>
@@ -278,7 +278,7 @@ export default function ContactPage() {
                   <h4 className="font-semibold mb-2 text-gray-900">Our Branches</h4>
                   {branches.map((branch, idx) => (
                     <div key={idx} className="mb-4 pb-2 border-b last:border-b-0">
-                      <b className="text-teal-700">{branch.name}</b><br />
+                      <b className="text-red-700">{branch.name}</b><br />
                       <span className="text-sm text-gray-600">{branch.address}</span>
                     </div>
                   ))}

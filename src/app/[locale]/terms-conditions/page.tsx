@@ -9,10 +9,10 @@ export default function TermsConditionsPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <main className="flex-1">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-teal-600 to-teal-400 text-white">
+        <div className="bg-gradient-to-r from-red-600 to-red-400 text-white">
           <div className="max-w-7xl mx-auto px-4 py-16 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Terms & Conditions</h1>
-            <p className="text-xl text-teal-100 max-w-2xl mx-auto">
+            <p className="text-xl text-red-100 max-w-2xl mx-auto">
               Please read these terms carefully before using our services.
             </p>
           </div>
@@ -105,7 +105,7 @@ export default function TermsConditionsPage() {
                 <li>By email: legal@email.com</li>
                 <li>
                   By visiting this page on our website:{" "}
-                  <Link href="/contact" className="text-teal-600 hover:underline">
+                  <Link href="/contact" className="text-red-600 hover:underline">
                     Contact Us
                   </Link>
                 </li>

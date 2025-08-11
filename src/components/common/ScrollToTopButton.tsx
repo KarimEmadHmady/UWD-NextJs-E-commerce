@@ -20,12 +20,43 @@ export default function ScrollToTopButton() {
   return (
     <button
       onClick={handleScrollToTop}
-      className={`fixed bottom-5 right-5 cursor-pointer z-50 bg-teal-600 text-white rounded-full shadow-lg p-2 transition-all duration-300 hover:bg-teal-700 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-teal-300 ${show ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}
+      className={`fixed bottom-5 right-5 cursor-pointer z-50 rounded-full transition-all duration-300 hover:scale-110 border-none outline-none focus:ring-2 ${show ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}
       aria-label="Scroll to top"
+      style={{
+        backgroundImage: `url('/Red-Star.png')`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        width: '48px',
+        height: '48px',
+        border: 'none',
+        backgroundColor: 'transparent',
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px'
+      }}
     >
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-        <path d="M12 19V5M12 5l-7 7M12 5l7 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      {/* سهم لأعلى فوق الصورة */}
+      <div 
+        className="absolute inset-0 flex items-center justify-center"
+        style={{ zIndex: 1 }}
+      >
+        <svg 
+          width="18" 
+          height="18" 
+          fill="none" 
+          viewBox="0 -5 25 25"
+          className="text-white drop-shadow-lg"
+        >
+          <path 
+            d="M12 19V5M12 5l-7 7M12 5l7 7" 
+            stroke="currentColor" 
+            strokeWidth="2.2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+          />
+        </svg>
+      </div>
     </button>
   )
 }

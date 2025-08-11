@@ -89,7 +89,7 @@ export default function Categore() {
         </div>
       </div>
             {/* Product List Section: Categories Grid */}
-      <div className="bg-white dark:text-gray-100">
+      <div className="">
         <div className="container mx-auto px-4 py-16 lg:px-8 lg:py-32 xl:max-w-7xl">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             {categories.map((cat, idx) => (
@@ -115,7 +115,7 @@ export default function Categore() {
                 )}
                 <div className="absolute inset-0 bg-black/25 transition ease-out group-hover:bg-black/0" />
                 <div className="absolute inset-0 flex items-center justify-center p-4">
-                  <div className="rounded-3xl bg-white/95 px-4 py-3 text-sm font-semibold tracking-wide uppercase transition ease-out group-hover:bg-teal-600 group-hover:text-white dark:border-gray-800 dark:bg-gray-900/90">
+                  <div className="rounded-3xl bg-white/95 px-4 py-3 text-sm font-semibold tracking-wide uppercase transition ease-out group-hover:bg-red-600 group-hover:text-white dark:border-gray-800 dark:bg-gray-900/90">
                     {cat.name}
                   </div>
                 </div>

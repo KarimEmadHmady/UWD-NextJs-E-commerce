@@ -6,6 +6,7 @@ import { ArrowLeft, MapPin, Truck, CreditCard, CheckCircle, ShoppingCart } from 
 import LocationStep from "@/components/checkout/location-step"
 import ShippingStep from "@/components/checkout/shipping-step"
 import { Button } from "@/components/common/Button/Button"
+import CustomButton from "@/components/common/Button/CustomButton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Input } from "@/components/common/input/input"
 import { Label } from "@/components/common/label/label"
@@ -106,7 +107,8 @@ export default function CheckoutPage() {
     shippingMethod === 'Pickup in Store' ||
     shippingMethod === 'Payment in store' ||
     shippingMethod === 'Pickup' ||
-    shippingMethod === 'Pickup in Store'
+    shippingMethod === 'Pickup in Store' ||
+    shippingMethod === 'Dine in'
   ) shippingCost = 0;
   else if (
     shippingMethod === 'overnight' ||
@@ -364,11 +366,11 @@ export default function CheckoutPage() {
       if (!user) {
         return (
           <div className="flex flex-col items-center justify-center min-h-[300px]">
-            <h2 className="text-2xl font-bold mb-4">Please Login or Register</h2>
+            <h2 className="text-2xl text-red-500 font-bold mb-4">Please Login or Register</h2>
             <p className="mb-6 text-gray-600">You must be logged in to continue checkout.</p>
             <div className="flex gap-4">
-              <button onClick={() => router.push(`/${locale}/login?from=checkout`)} className="bg-teal-600 text-white px-6 py-2 rounded">Login</button>
-              <button onClick={() => router.push(`/${locale}/register?from=checkout`)} className="bg-gray-200 text-gray-900 px-6 py-2 rounded">Register</button>
+              <button onClick={() => router.push(`/${locale}/login?from=checkout`)} className="bg-red-600 text-white px-6 py-2 rounded cursor-pointer">Login</button>
+              <button onClick={() => router.push(`/${locale}/register?from=checkout`)} className="bg-gray-200 text-gray-900 px-6 py-2 rounded cursor-pointer">Register</button>
             </div>
           </div>
         );
@@ -420,18 +422,17 @@ export default function CheckoutPage() {
             />
           )}
           <div className="mt-6 flex justify-end">
-            <Button
-              className="bg-teal-600 text-white px-8 py-2 rounded-lg font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            <CustomButton
               onClick={() => {
                 if (!selectedAddress) return;
                 setCustomerInfo(null);
                 setCurrentStep(3);
               }}
-              disabled={!selectedAddress}
-              title={!selectedAddress ? 'Please select an address to continue' : ''}
+              className="px-8 py-2 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed pb-[20px]"
+              type="button"
             >
               Continue
-            </Button>
+            </CustomButton>
           </div>
         </>;
       case 3:
@@ -461,7 +462,7 @@ export default function CheckoutPage() {
           <div className="max-w-2xl mx-auto space-y-6">
              <RevealOnScroll alwaysAnimate>
             <div className="text-center mb-8">
-              <CreditCard className="w-16 h-16 text-teal-600 mx-auto mb-4" />
+              <CreditCard className="w-16 h-16 text-red-600 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Information</h2>
               <p className="text-gray-600">Enter your payment details to complete the order</p>
             </div>
@@ -471,9 +472,9 @@ export default function CheckoutPage() {
               </CardHeader>
               <CardContent className="space-y-4 text-gray-900">
                 <div className="flex flex-col gap-4">
-                  <Button onClick={() => handlePaymentSelect('card')} className={`w-full ${paymentMethod === 'card' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'}`}>Pay by Card</Button>
-                  <Button onClick={() => handlePaymentSelect('cash')} className={`w-full ${paymentMethod === 'cash' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'}`}>Cash on Delivery</Button>
-                  <Button onClick={() => handlePaymentSelect('Payment in store')} className={`w-full ${paymentMethod === 'Payment in store' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'}`}>Payment in store</Button>
+                  <Button onClick={() => handlePaymentSelect('card')} className={`w-full ${paymentMethod === 'card' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>Pay by Card</Button>
+                  <Button onClick={() => handlePaymentSelect('cash')} className={`w-full ${paymentMethod === 'cash' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>Cash on Delivery</Button>
+                  <Button onClick={() => handlePaymentSelect('Payment in store')} className={`w-full ${paymentMethod === 'Payment in store' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>Payment in store</Button>
                 </div>
                 {paymentMethod === 'card' && (
                   <div className="mt-6 space-y-4">
@@ -483,11 +484,11 @@ export default function CheckoutPage() {
                       <Input id="cvv" placeholder="CVV" value={cardDetails.cvv} onChange={handleCardInput} maxLength={3} />
                     </div>
                     {cardError && <div className="text-red-500 text-sm">{cardError}</div>}
-                    <Button onClick={handleCardContinue} className="w-full bg-teal-600 hover:bg-teal-700 text-white mt-2">Continue to Review</Button>
+                    <Button onClick={handleCardContinue} className="w-full bg-red-600 hover:bg-red-700 text-white mt-2">Continue to Review</Button>
                   </div>
                 )}
                 {paymentMethod !== 'card' && (
-                  <Button onClick={() => setCurrentStep(5)} className="w-full bg-teal-600 hover:bg-teal-700 text-white mt-4">Continue to Review</Button>
+                  <Button onClick={() => setCurrentStep(5)} className="w-full bg-red-600 hover:bg-red-700 text-white mt-[100px]">Continue to Review</Button>
                 )}
                 <Button variant="outline" onClick={() => setCurrentStep(2)} className="w-full mt-2">Back</Button>
               </CardContent>
@@ -561,13 +562,8 @@ export default function CheckoutPage() {
                     ))}
                   </ul>
                 </div>
-                <Button
-                  onClick={() => handleReview({})}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white mt-4"
-                >
-                  Place Order
-                </Button>
-                <Button variant="outline" onClick={() => setCurrentStep(4)} className="w-full mt-2">Back</Button>
+                <CustomButton onClick={() => handleReview({})} className="w-full mt-4 pb-[20px]">Place Order</CustomButton>
+                <CustomButton onClick={() => setCurrentStep(4)} className="w-full mt-2 pb-[20px]">Back</CustomButton>
               </CardContent>
             </Card>
             </RevealOnScroll>
@@ -583,12 +579,12 @@ export default function CheckoutPage() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
         <RevealOnScroll>
         <div className=" p-8 rounded-xl text-center max-w-md w-full">
-          <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-teal-500" />
+          <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-red-500" />
           <h2 className="text-2xl font-bold mb-2 text-gray-900">Your cart is empty</h2>
           <p className="text-gray-600 mb-6">You can't proceed to checkout without any products in your cart.</p>
-          <Button onClick={() => router.push('/shop')} className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-full font-semibold shadow">
+          <CustomButton onClick={() => router.push('/shop')} className=" text-white px-6 py-2 rounded-full font-semibold pb-[20px]">
             Go Shopping Now
-          </Button>
+          </CustomButton>
         </div>
         </RevealOnScroll>
       </div>
@@ -596,15 +592,15 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen ">
       {isPlacingOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[9999]">
           <div className="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
-            <svg className="animate-spin h-8 w-8 text-teal-600 mb-4" viewBox="0 0 24 24">
+            <svg className="animate-spin h-8 w-8 text-red-600 mb-4" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
-            <span className="text-teal-700 font-semibold">Placing your order...</span>
+            <span className="text-red-700 font-semibold">Placing your order...</span>
           </div>
         </div>
       )}
@@ -635,7 +631,7 @@ export default function CheckoutPage() {
                       key={step.number}
                       className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
                         currentStep === step.number
-                          ? "bg-teal-50 border border-teal-200"
+                          ? "bg-red-50 border border-red-200"
                           : step.completed
                             ? "bg-green-50 border border-green-200"
                             : "bg-gray-50"
@@ -648,7 +644,7 @@ export default function CheckoutPage() {
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                           currentStep === step.number
-                            ? "bg-teal-600 text-white"
+                            ? "bg-red-600 text-white"
                             : step.completed
                               ? "bg-green-600 text-white"
                               : "bg-gray-300 text-gray-600"
@@ -660,7 +656,7 @@ export default function CheckoutPage() {
                         <p
                           className={`font-medium ${
                             currentStep === step.number
-                              ? "text-teal-900"
+                              ? "text-red-900"
                               : step.completed
                                 ? "text-green-900"
                                 : "text-gray-600"

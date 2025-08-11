@@ -134,7 +134,11 @@ export default function CategoryPage(props: { params: Promise<{ category: string
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Decorative stars */}
+      <img src="/star-yellow.png" alt="نجمة صفراء" className="pointer-events-none absolute top-6 left-6 w-17 h-17 opacity-80 rotate-12 z-10" />
+      <img src="/Star_Green.png" alt="نجمة خضراء" className="pointer-events-none absolute bottom-6 right-6 w-19 h-19 opacity-80 -rotate-12 z-10" />
+
       <RevealOnScroll alwaysAnimate>
         {/* Breadcrumbs */}
         <div className="bg-white border-b border-gray-200">

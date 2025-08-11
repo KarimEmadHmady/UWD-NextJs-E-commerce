@@ -12,6 +12,7 @@ import { setCategories, setSizes, setQuantities, setPriceRange, clearFilters } f
 import { useCategories } from '@/hooks/useCategories';
 import { useAllProducts } from '@/hooks/useProducts';
 import { convertApiProductToUI } from '@/components/product/product-data';
+import CustomButton from "../common/Button/CustomButton";
 
 interface FilterSidebarProps {
   isOpen: boolean
@@ -218,7 +219,7 @@ export default function FilterSidebar({ isOpen, onClose, hideCategories = false 
                   onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
                   className={`
                     flex items-center gap-2 w-full p-2 rounded-lg transition-colors
-                    ${selectedRating === rating ? "bg-teal-50 border border-teal-200" : "hover:bg-gray-50"}
+                    ${selectedRating === rating ? "bg-red-50 border border-red-200" : "hover:bg-gray-50"}
                   `}
                 >
                   <div className="flex items-center">
@@ -247,7 +248,7 @@ export default function FilterSidebar({ isOpen, onClose, hideCategories = false 
           </div>
 
           {/* Apply Filters Button */}
-          <Button className="w-full bg-teal-600 hover:bg-teal-700 cursor-pointer">Apply Filters</Button>
+          <CustomButton className="w-full border-none outline-none  cursor-pointer pb-[20px]">Apply Filters</CustomButton>
         </div>
       </div>
     </>

@@ -19,23 +19,58 @@
   }
 }
 
+@font-face {
+  font-family: 'BOVEN2';
+  src: url('/fonts/BOVEN 2.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BOVEN3';
+  src: url('/fonts/BOVEN 3.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MishafiGold';
+  src: url('/fonts/Mishafi Gold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NotoNastaliqUrdu';
+  src: url('/fonts/NotoNastaliqUrdu-VariableFont_wght-arabic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 body {
-  background: var(--background);
+  /* الخلفية الأساسية - صورة متكررة */
+  background: url('/background.jpg') repeat;
+  background-size: auto;
+  background-attachment: fixed;
+  background-position: center;
+  
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  /* font-family: 'BOVEN2', Arial, Helvetica, sans-serif; */
   height: 100vh;
 }
 
 ::selection {
   background: #fff;
-  color: #73cdca; 
+  color: #bf3a30; 
 }
 ::-webkit-scrollbar {
   width: 10px;
   background: #f3f4f6; 
 }
 ::-webkit-scrollbar-thumb {
-  background: #73cdca;
+  background: #bf3a30;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -45,4 +80,21 @@ body {
 /* flag map in find location */
 .leaflet-control-attribution {
   display: none;
+}
+
+/* Font utility classes */
+.font-boven2 {
+  font-family: 'BOVEN2', sans-serif;
+}
+
+.font-boven3 {
+  font-family: 'BOVEN3', sans-serif;
+}
+
+.font-mishafi {
+  font-family: 'MishafiGold', sans-serif;
+}
+
+.font-nastaliq {
+  font-family: 'NotoNastaliqUrdu', sans-serif;
 }

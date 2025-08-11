@@ -145,7 +145,11 @@ export default function ShopPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Decorative stars */}
+      <img src="/star-yellow.png" alt="نجمة صفراء" className="pointer-events-none absolute top-6 left-6 w-20 h-20 opacity-80 rotate-12 z-10" />
+      <img src="/Star_Green.png" alt="نجمة خضراء" className="pointer-events-none absolute bottom-6 right-6 w-20 h-20 opacity-80 -rotate-12 z-10" />
+
       <RevealOnScroll alwaysAnimate>
         {/* Breadcrumbs */}
         <div className="bg-white border-b border-gray-200">
@@ -180,7 +184,7 @@ export default function ShopPage() {
                 placeholder="Search sweets..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 text-black pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="pl-10 text-black pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               />
             </div>
           </div>

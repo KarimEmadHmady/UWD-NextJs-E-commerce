@@ -321,12 +321,12 @@ export default function RegisterPage() {
                 </div>
               </div>
               {location && (
-                <div className="bg-teal-50 rounded-lg p-3 mb-2 text-xs text-gray-700">
+                <div className="bg-red-50 rounded-lg p-3 mb-2 text-xs text-gray-700">
                   <b>Location:</b> {location.address} <br />
                   <span>Lat: {location.latitude?.toFixed(5)}, Lng: {location.longitude?.toFixed(5)}</span>
                 </div>
               )}
-              <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 py-3" disabled={registrationLoading}>
+              <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 py-3" disabled={registrationLoading}>
                 {registrationLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -343,7 +343,7 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex justify-center text-sm text-gray-600">
             Already have an account?{" "}
-            <Link href="/login" className="text-teal-600 hover:underline ml-1">
+            <Link href="/login" className="text-red-600 hover:underline ml-1">
               Login
             </Link>
           </CardFooter>

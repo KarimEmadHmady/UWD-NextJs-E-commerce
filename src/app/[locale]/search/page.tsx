@@ -164,7 +164,7 @@ export default function SearchPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading search results...</p>
           </div>
         </div>
@@ -200,7 +200,7 @@ export default function SearchPage() {
                 placeholder="Search for products..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="pl-12 pr-4 py-4 text-lg border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="pl-12 pr-4 py-4 text-lg border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               />
               {searchQuery && (
                 <Button
@@ -263,7 +263,7 @@ export default function SearchPage() {
                   <X className="w-3 h-3 cursor-pointer" onClick={() => handleBrandToggle(filter)} />
                 </Badge>
               ))}
-              <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-teal-600">
+              <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-red-600">
                 Clear all
               </Button>
             </div>

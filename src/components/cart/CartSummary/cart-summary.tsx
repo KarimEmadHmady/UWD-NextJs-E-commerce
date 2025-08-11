@@ -89,7 +89,7 @@ export default function CartSummary({ subtotal, shipping, tax, discount, total, 
       </div>
 
       {/* Checkout Button */}
-      <Button onClick={onCheckout} className="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 text-lg cursor-pointer">
+      <Button onClick={onCheckout} className="w-full bg-red-600 hover:bg-red-700 text-white py-3 text-lg cursor-pointer">
         Proceed to Checkout
         <ArrowRight className="w-5 h-5 ml-2 cursor-pointer" />
       </Button>

@@ -95,7 +95,7 @@ export default function CategorySection({ categories, loading, error }: Category
       <div className="w-full bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="text-center">
-            <h2 className="text-lg font-semibold text-red-600 mb-2">Error Loading Categories</h2>
+            <h2 className="text-lg font-semibold text-red-600 mb-2">خطأ في تحميل الفئات</h2>
             <p className="text-sm text-gray-500">{error}</p>
           </div>
         </div>
@@ -104,13 +104,39 @@ export default function CategorySection({ categories, loading, error }: Category
   }
 
   return (
-    <div className="w-full bg-white border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="w-full  border-b border-gray-100"       
+    style={{
+      backgroundImage: `url('/box newspaper.jpg')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      position: 'relative'
+    }}>
+      {/* طبقة شفافة بيضاء على الصورة */}
+      <div 
+        className="absolute inset-0 bg-white/80"
+        style={{ zIndex: 1 }}
+      ></div>
+      
+      {/* صورة النجمة الصفراء في الجانب الأيمن */}
+      <div 
+        className="absolute bottom-4 right-4 z-10"
+        style={{ opacity: 0.7, transform: 'rotate(15deg)' }}
+      >
+        <img 
+          src="/star-yellow.png" 
+          alt="نجمة صفراء" 
+          className="w-20 h-20 object-contain"
+        />
+      </div>
+      
+      {/* المحتوى مع z-index أعلى */}
+      <div className="max-w-7xl mx-auto px-4 py-6 relative" style={{ zIndex: 2 }}>
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Shop by Category</h2>
-            <p className="text-sm text-gray-500">Find what you're looking for</p>
+            <h2 className="text-lg font-semibold text-gray-900 text-right">تسوق حسب الفئة</h2>
+            <p className="text-sm text-gray-500 text-right">ابحث عما تريد</p>
           </div>
 
           {/* Navigation Arrows */}
@@ -160,7 +186,7 @@ export default function CategorySection({ categories, loading, error }: Category
                   <div
                     className={
                       `relative w-16 h-16 rounded-full bg-gray-100 p-2 overflow-hidden flex items-center justify-center transition-all duration-300 ` +
-                      (selectedCategory === category.id.toString() ? "ring-2 ring-teal-500 ring-offset-2" : "")
+                      (selectedCategory === category.id.toString() ? "ring-2 ring-red-500 ring-offset-2" : "")
                     }
                   >
                     {category.image ? (
@@ -183,7 +209,7 @@ export default function CategorySection({ categories, loading, error }: Category
                   <div className="text-center">
                     <h3 className="text-xs font-medium text-gray-900 truncate max-w-[70px]">{category.name}</h3>
                     <p className="text-xs text-gray-500">
-                      {category.count} items
+                      {category.count} منتج
                     </p>
                   </div>
                 </div>
@@ -202,7 +228,7 @@ export default function CategorySection({ categories, loading, error }: Category
             className="text-black hover:text-gray-900 text-xs font-semibold rounded-full flex items-center gap-1 px-3 py-1.5 border border-gray-200 hover:bg-gray-100 transition-all duration-150 shadow-none"
             onClick={() => router.push('/categore')}
           >
-            View All Categories
+            عرض جميع الفئات
             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="ml-1 text-black"><path d="M9 6l6 6-6 6"/></svg>
           </Button>
         </div>

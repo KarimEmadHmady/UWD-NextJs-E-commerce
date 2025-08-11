@@ -17,11 +17,11 @@ export default function OutOfCoverageModal({ onClose }: { onClose: () => void })
           The address you entered is outside our current service coverage.<br />
           Please select an address within our available service areas.
         </p>
-        <div className="bg-teal-50 rounded-lg p-3 mb-2">
-          <div className="font-semibold text-teal-700 mb-1">Available Service Areas:</div>
+        <div className="bg-red-50 rounded-lg p-3 mb-2">
+          <div className="font-semibold text-red-700 mb-1">Available Service Areas:</div>
           <ul className="flex flex-wrap gap-2 justify-center">
-            <li className="bg-teal-600 text-white rounded-full px-3 py-1 text-xs font-bold">Mohandessin</li>
-            <li className="bg-teal-600 text-white rounded-full px-3 py-1 text-xs font-bold">Heliopolis</li>
+            <li className="bg-red-600 text-white rounded-full px-3 py-1 text-xs font-bold">Mohandessin</li>
+            <li className="bg-red-600 text-white rounded-full px-3 py-1 text-xs font-bold">Heliopolis</li>
             {/* Add more areas here */}
           </ul>
         </div>

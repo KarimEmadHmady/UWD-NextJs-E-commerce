@@ -56,7 +56,7 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
             <h3 className="font-semibold text-gray-900 text-lg mb-1 line-clamp-2">{item.name}</h3>
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <span>Category: {item.category}</span>
-              <span>Brand: {item.brand}</span>
+              {/* <span>Brand: {item.brand}</span> */}
             </div>
           </div>
           <Button

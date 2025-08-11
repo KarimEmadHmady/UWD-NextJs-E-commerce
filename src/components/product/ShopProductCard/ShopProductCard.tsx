@@ -138,7 +138,7 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
         {/* Add to Cart - Icon Only on Mobile */}
         {product.inStock && (
           <button
-            className="absolute bottom-2 right-3.5 z-20 bg-teal-600 text-white rounded-full p-[8px] shadow-lg sm:hidden cursor-pointer"
+            className="absolute bottom-2 right-3.5 z-20 bg-red-600 text-white rounded-full p-[8px] shadow-lg sm:hidden cursor-pointer"
             onClick={handleAddToCart}
             disabled={isAdding}
             aria-label="Add to Cart"
@@ -171,7 +171,7 @@ export default function ShopProductCard({ product }: ShopProductCardProps) {
       <div className="p-4">
         <div className="mb-2">
           <p className="text-xs sm:text-sm text-gray-500">{product.categories?.[0] || 'General'}</p>
-          <h3 className="font-semibold text-gray-900 group-hover:text-teal-600 transition-colors duration-300 text-[10px] sm:text-sm mt-[5px] ">
+          <h3 className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors duration-300 text-[10px] sm:text-sm mt-[5px] ">
             {product.name}
           </h3>
         </div>

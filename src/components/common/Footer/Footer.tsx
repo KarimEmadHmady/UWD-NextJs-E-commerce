@@ -1,5 +1,6 @@
 // src/components/common/Footer/Footer.tsx 
 import Link from "next/link";
+import CustomButton from "../Button/CustomButton";
 
 export default function Footer() {
  return (
@@ -13,7 +14,7 @@ export default function Footer() {
 
                 <ul className="flex items-center space-x-3 mt-9">
                     <li>
-                        <a href="https://www.instagram.com/" title="Instagram" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-teal-600 focus:bg-teal-600">
+                        <a href="https://www.instagram.com/" title="Instagram" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-red-600 focus:bg-red-600">
                             {/* Instagram Icon */}
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M11.999 7.377a4.623 4.623 0 1 0 0 9.248 4.623 4.623 0 0 0 0-9.248zm0 7.627a3.004 3.004 0 1 1 0-6.008 3.004 3.004 0 0 1 0 6.008z"></path>
@@ -23,7 +24,7 @@ export default function Footer() {
                         </a>
                     </li>
                     <li>
-                        <a href="https://facebook.com" title="Facebook" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-teal-600 focus:bg-teal-600">
+                        <a href="https://facebook.com" title="Facebook" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-red-600 focus:bg-red-600">
                             {/* Facebook Icon */}
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M13.397 20.997v-8.196h2.765l.411-3.209h-3.176V7.548c0-.926.258-1.56 1.587-1.56h1.684V3.127A22.336 22.336 0 0 0 14.201 3c-2.444 0-4.122 1.492-4.122 4.231v2.355H7.332v3.209h2.753v8.202h3.312z"></path>
@@ -31,7 +32,7 @@ export default function Footer() {
                         </a>
                     </li>
                     <li>
-                        <a href="https://x.com" title="X" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-teal-600 focus:bg-teal-600">
+                        <a href="https://x.com" title="X" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-red-600 focus:bg-red-600">
                             {/* X Icon instead of Twitter */}
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
                               <path d="M4 4L20 20M20 4L4 20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
@@ -39,7 +40,7 @@ export default function Footer() {
                         </a>
                     </li>
                     <li>
-                        <a href="https://wa.me/" title="WhatsApp" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-teal-600 focus:bg-teal-600">
+                        <a href="https://wa.me/" title="WhatsApp" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-red-600 focus:bg-red-600">
                             {/* WhatsApp Icon modern */}
                             <svg className="w-4 h-4" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M16 3C9.373 3 4 8.373 4 15c0 2.385.832 4.58 2.236 6.364L4 29l7.818-2.236A11.96 11.96 0 0 0 16 27c6.627 0 12-5.373 12-12S22.627 3 16 3Zm0 21.818c-1.818 0-3.591-.482-5.127-1.391l-.364-.218-4.655 1.336 1.336-4.655-.218-.364A9.818 9.818 0 1 1 16 24.818Zm5.273-7.273c-.291-.145-1.709-.845-1.973-.945-.264-.1-.455-.145-.646.145-.191.291-.736.945-.902 1.136-.164.191-.336.218-.627.073-.291-.145-1.229-.454-2.342-1.447-.866-.772-1.45-1.723-1.618-2.014-.164-.291-.018-.447.127-.591.13-.13.291-.336.436-.5.145-.164.191-.291.291-.482.1-.191.045-.364-.018-.509-.064-.145-.646-1.564-.882-2.145-.232-.558-.468-.482-.646-.491l-.545-.009c-.182 0-.473.064-.718.291-.245.227-.936.914-.936 2.227 0 1.314.958 2.584 1.091 2.764.127.182 1.885 2.873 4.573 3.914.64.218 1.139.348 1.528.445.642.163 1.227.14 1.689.085.515-.062 1.709-.699 1.951-1.374.241-.676.241-1.256.168-1.374-.073-.118-.264-.191-.555-.336Z" fill="currentColor"/>
@@ -54,16 +55,16 @@ export default function Footer() {
 
                 <ul className="mt-6 space-y-4">
                     <li>
-                        <Link href="/search" title="Search" className="flex text-base text-black transition-all duration-200 hover:text-teal-600 focus:text-teal-600"> Search </Link>
+                        <Link href="/search" title="Search" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Search </Link>
                     </li>
                     <li>
-                        <Link href="/shop" title="Sweets Menu" className="flex text-base text-black transition-all duration-200 hover:text-teal-600 focus:text-teal-600"> Sweets Menu </Link>
+                        <Link href="/shop" title="Sweets Menu" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Sweets Menu </Link>
                     </li>
                     <li>
-                        <Link href="/account" title="Profile" className="flex text-base text-black transition-all duration-200 hover:text-teal-600 focus:text-teal-600"> Profile </Link>
+                        <Link href="/account" title="Profile" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Profile </Link>
                     </li>
                     <li>
-                        <Link href="/contact" title="Contact Us" className="flex text-base text-black transition-all duration-200 hover:text-teal-600 focus:text-teal-600"> Contact Us </Link>
+                        <Link href="/contact" title="Contact Us" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Contact Us </Link>
                     </li>
                 </ul>
             </div>
@@ -73,16 +74,16 @@ export default function Footer() {
 
                 <ul className="mt-6 space-y-4">
                     <li>
-                        <Link href="/customer-support" title="Customer Support" className="flex text-base text-black transition-all duration-200 hover:text-teal-600 focus:text-teal-600"> Customer Support </Link>
+                        <Link href="/customer-support" title="Customer Support" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Customer Support </Link>
                     </li>
                     <li>
-                        <Link href="/privacy-policy" title="Privacy Policy" className="flex text-base text-black transition-all duration-200 hover:text-teal-600 focus:text-teal-600"> Privacy Policy </Link>
+                        <Link href="/privacy-policy" title="Privacy Policy" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Privacy Policy </Link>
                     </li>
                     <li>
-                        <Link href="/terms-conditions" title="Terms & Conditions" className="flex text-base text-black transition-all duration-200 hover:text-teal-600 focus:text-teal-600"> Terms & Conditions </Link>
+                        <Link href="/terms-conditions" title="Terms & Conditions" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Terms & Conditions </Link>
                     </li>
                     <li>
-                        <Link href="/faq" title="FAQ" className="flex text-base text-black transition-all duration-200 hover:text-teal-600 focus:text-teal-600"> FAQ </Link>
+                        <Link href="/faq" title="FAQ" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> FAQ </Link>
                     </li>
                 </ul>
             </div>
@@ -93,17 +94,17 @@ export default function Footer() {
                 <form action="#" method="POST" className="mt-6">
                     <div>
                         <label className="sr-only">Email</label>
-                        <input type="email" name="email" id="email" placeholder="Enter your email" className="block w-full p-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-teal-600 caret-teal-600" />
+                        <input type="email" name="email" id="email" placeholder="Enter your email" className="block w-full p-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-red-600 caret-red-600" />
                     </div>
 
-                    <button type="submit" className="inline-flex items-center justify-center px-6 py-4 mt-3 font-semibold text-white transition-all duration-200 bg-teal-600 rounded-md hover:bg-teal-700 focus:bg-teal-700">Subscribe</button>
+                    <CustomButton type="submit" className="inline-flex items-center justify-center px-6 py-4 mt-3 font-semibold text-white transition-all duration-200 rounded-md  ">Subscribe</CustomButton>
                 </form>
             </div>
         </div>
 
         <hr className="mt-16 mb-10 border-gray-200" />
 
-        <p className="text-sm text-center text-gray-600">© All rights reserved 2025 for Sweetness Sweets</p>
+        <p className="text-sm text-center text-gray-600">© All rights reserved 2025 for Roxy</p>
     </div>
 </section>
  )

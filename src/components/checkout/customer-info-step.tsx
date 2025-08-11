@@ -65,6 +65,45 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
       </div>
       <Card>
         <CardHeader>
+          <CardTitle>Shipping Method</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-3">
+
+            <Button
+              variant={shippingMethod === 'Standard' ? 'default' : 'outline'}
+              className={shippingMethod === 'Standard' ? 'bg-red-600 text-white' : ''}
+              onClick={() => setShippingMethod('Standard')}
+            >
+              Standard Delivery (E.L 50, 3-5 days)
+            </Button>
+            <Button
+              variant={shippingMethod === 'Pickup in Store' ? 'default' : 'outline'}
+              className={shippingMethod === 'Pickup in Store' ? 'bg-red-600 text-white' : ''}
+              onClick={() => setShippingMethod('Pickup in Store')}
+            >
+              Pickup in Store 
+            </Button>
+            <Button
+              variant={shippingMethod === 'Dine in' ? 'default' : 'outline'}
+              className={shippingMethod === 'Dine in' ? 'bg-red-600 text-white' : ''}
+              onClick={() => setShippingMethod('Dine in')}
+            >
+              Dine in
+            </Button>
+          </div>
+          {shippingMethod === 'Pickup in Store' && (
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded text-red-800 text-[12px]">
+              📍 Thanks for choosing pickup in store! Your order will be ready for collection one hour after confirmation <br />
+              ⚠️ Kindly wait at least one hour before coming to pick it up in store.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      {formError && <div className="text-red-500 text-sm">{formError}</div>}
+      <Button onClick={handleSubmit} className="w-full bg-red-600 hover:bg-red-700">Continue to Payment</Button>
+      <Card>
+        <CardHeader>
           <CardTitle>Customer Info</CardTitle>
         </CardHeader>
         <CardContent>
@@ -83,38 +122,6 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
           </div>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Shipping Method</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-3">
-
-            <Button
-              variant={shippingMethod === 'Standard' ? 'default' : 'outline'}
-              className={shippingMethod === 'Standard' ? 'bg-teal-600 text-white' : ''}
-              onClick={() => setShippingMethod('Standard')}
-            >
-              Standard Delivery (E.L 50, 3-5 days)
-            </Button>
-            <Button
-              variant={shippingMethod === 'Pickup  Store' ? 'default' : 'outline'}
-              className={shippingMethod === 'Pickup in Store' ? 'bg-teal-600 text-white' : ''}
-              onClick={() => setShippingMethod('Pickup in Store')}
-            >
-              Pickup in Store 
-            </Button>
-          </div>
-          {shippingMethod === 'Pickup in Store' && (
-            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded text-teal-800 text-[12px]">
-              📍 Thanks for choosing pickup in store! Your order will be ready for collection one hour after confirmation <br />
-              ⚠️ Kindly wait at least one hour before coming to pick it up in store.
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      {formError && <div className="text-red-500 text-sm">{formError}</div>}
-      <Button onClick={handleSubmit} className="w-full bg-teal-600 hover:bg-teal-700 mt-2">Continue to Payment</Button>
     </div>
   );
 } 

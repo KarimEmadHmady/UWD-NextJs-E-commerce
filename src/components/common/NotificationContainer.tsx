@@ -24,9 +24,9 @@ export default function NotificationContainer() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-md text-white transition-all w-auto min-w-fit text-sm
-              ${n.type === 'success' ? 'bg-teal-600' : ''}
+              ${n.type === 'success' ? 'bg-red-600' : ''}
               ${n.type === 'error' ? 'bg-red-600' : ''}
-              ${n.type === 'info' ? 'bg-teal-600' : ''}
+              ${n.type === 'info' ? 'bg-red-600' : ''}
               ${n.type === 'warning' ? 'bg-yellow-500 text-black' : ''}
             `}
             onClick={() => remove(n.id)}

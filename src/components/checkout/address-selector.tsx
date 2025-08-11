@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/common/Button/Button';
+import CustomButton from '@/components/common/Button/CustomButton';
 import LocationStep from './location-step';
 import { Input } from '../common/input/input';
 import { PhoneInput } from '../common/input/phone-input';
@@ -148,7 +149,7 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-black">Select Address</h2>
-        <Button onClick={() => setShowAdd(true)} variant="outline">Add New Address</Button>
+        <CustomButton onClick={() => setShowAdd(true)} className="cursor-pointer pb-[20px] border-none outline-none">Add New Address</CustomButton>
       </div>
       {/* قائمة العناوين */}
       {addresses.length === 0 && (
@@ -158,7 +159,7 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
         {addresses.map(addr => (
           <div
             key={addr.id}
-            className={`relative w-full bg-white rounded-xl p-3 shadow-sm border transition-all duration-150 cursor-pointer min-h-[80px] ${selectedId === addr.id ? 'border-teal-600' : 'border-gray-200'}`}
+            className={`relative w-full bg-white rounded-xl p-3 shadow-sm border transition-all duration-150 cursor-pointer min-h-[80px] ${selectedId === addr.id ? 'border-red-600' : 'border-gray-200'}`}
             onClick={() => { onSelect(addr); }}
           >
             {/* صف أعلى البطاقة: label يسار و Default يمين */}
@@ -192,7 +193,7 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
                   type="radio"
                   checked={selectedId === addr.id}
                   onChange={() => { onSelect(addr); }}
-                  className="w-4 h-4 rounded-full border-2 border-teal-600 focus:ring-2 focus:ring-teal-400 pointer-events-none appearance-none bg-white checked:bg-teal-600 checked:border-teal-600 transition-all duration-150 mt-1"
+                  className="w-4 h-4 rounded-full border-2 border-red-600 focus:ring-2 focus:ring-red-400 pointer-events-none appearance-none bg-white checked:bg-red-600 checked:border-red-600 transition-all duration-150 mt-1"
                   tabIndex={-1}
                 />
               </div>
@@ -245,10 +246,20 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
               <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" className="text-black" />
             </div>
             <LocationStep onLocationSet={handleLocationSet} initialLocation={undefined} isChecking={locationCheckLoading} forceOutOfCoverageModal={forceOutOfCoverageModal} onCloseOutOfCoverageModal={onCloseOutOfCoverageModal} />
-            {locationCheckMsg && <div className={`mt-2 text-sm ${locationCheckMsg.includes('✔️') ? 'text-green-600' : 'text-red-600'}`}>{locationCheckMsg}</div>}
+            {locationCheckMsg && (
+              <div
+                className={`mt-2 text-sm ${
+                  locationCheckMsg.includes('✔️')
+                    ? 'text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2'
+                    : 'text-red-600'
+                }`}
+              >
+                {locationCheckMsg}
+              </div>
+            )}
             {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
             <div className="flex gap-2 mt-3">
-              <Button onClick={handleSave} disabled={!label || !newLocation || !phone || !firstName || !lastName || !email || saving} className="bg-teal-600 text-white">Save Address</Button>
+              <Button onClick={handleSave} disabled={!label || !newLocation || !phone || !firstName || !lastName || !email || saving} className="bg-red-600 text-white">Save Address</Button>
               <Button variant="outline" onClick={() => { setShowAdd(false); setLabel(''); setNewLocation(null); setError(''); setLocationCheckMsg(''); setPhone(''); setFirstName(''); setLastName(''); setEmail(''); }}>Cancel</Button>
             </div>
           </div>

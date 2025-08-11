@@ -30,6 +30,7 @@ import AddressEditModal from '@/components/checkout/address-edit-modal';
 import { Edit } from 'lucide-react';
 import { Label } from "@/components/common/label/label";
 import OutOfCoverageModal from '@/components/common/ui/OutOfCoverageModal';
+import { CustomButton } from "@/components/common/Button"
 
 /**
  * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
@@ -97,7 +98,7 @@ export default function AccountPage() {
       case "delivered":
         return "bg-green-100 text-green-800"
       case "shipped":
-        return "bg-teal-100 text-teal-800"
+        return "bg-red-100 text-red-800"
       case "processing":
         return "bg-yellow-100 text-yellow-800"
       default:
@@ -186,8 +187,8 @@ export default function AccountPage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
-                    <Package className="w-6 h-6 text-teal-600" />
+                  <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                    <Package className="w-6 h-6 text-red-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
@@ -307,8 +308,8 @@ export default function AccountPage() {
                       className="flex flex-col md:flex-row items-center justify-between p-6 border border-gray-200 rounded-lg"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
-                          <Package className="w-6 h-6 text-teal-600" />
+                        <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                          <Package className="w-6 h-6 text-red-600" />
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900">{order.id}</p>
@@ -409,7 +410,7 @@ export default function AccountPage() {
                           <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
                           <p className="text-lg font-bold text-gray-900 mb-3">{formatPrice(item.price)}</p>
                           <div className="space-y-2">
-                            <Button className="w-full bg-teal-600 hover:bg-teal-700 cursor-pointer" onClick={() => { addCartItem(product, 1); removeWishlistItem(Number(item.id)); toggleCart(); }}>
+                            <Button className="w-full bg-red-600 hover:bg-red-700 cursor-pointer" onClick={() => { addCartItem(product, 1); removeWishlistItem(Number(item.id)); toggleCart(); }}>
                               Add to Cart
                             </Button>
                             <Button variant="outline" className="w-full bg-transparent cursor-pointer" onClick={() => removeWishlistItem(Number(item.id))}>
@@ -433,9 +434,9 @@ export default function AccountPage() {
               <CardContent>
                 {addressesLoading && <div className="text-center text-gray-500 py-4">Loading addresses...</div>}
                 <div className="flex justify-end mb-4">
-                  <Button className="bg-teal-600 text-white" onClick={() => setShowLocationModal(true)}>
+                 <CustomButton className="pb-[20px] cursor-pointer border-none outline-none" onClick={() => setShowLocationModal(true)}>
                     + Add New Address
-                  </Button>
+                  </CustomButton>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {allAddresses.length === 0 && !addressesLoading && (
@@ -446,14 +447,14 @@ export default function AccountPage() {
                     return (
                       <div
                         key={addr.id || idx}
-                        className={`relative bg-white rounded-2xl shadow-sm hover:shadow-lg border transition-shadow duration-200 p-6 flex flex-col gap-2 ${isDefault ? 'border-teal-600 ring-2 ring-teal-200' : 'border-gray-200'}`}
+                        className={`relative bg-white rounded-2xl shadow-sm hover:shadow-lg border transition-shadow duration-200 p-6 flex flex-col gap-2 ${isDefault ? 'border-red-600 ring-2 ring-red-200' : 'border-gray-200'}`}
                         style={{ minHeight: 180 }}
                       >
                         {isDefault && (
-                          <span className="absolute top-2 right-2 bg-teal-600 text-white text-xs px-2 py-1 rounded-full z-10">Default</span>
+                          <span className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full z-10">Default</span>
                         )}
                         {addr.label && (
-                          <span className="absolute -top-2 -left-3 bg-teal-600 text-white text-xs px-2 py-1 rounded-full z-10 shadow">{addr.label}</span>
+                          <span className="absolute -top-2 -left-3 bg-red-600 text-white text-xs px-2 py-1 rounded-full z-10 shadow">{addr.label}</span>
                         )}
                         <Button variant="ghost" size="icon" className="absolute top-2 right-2 cursor-pointer" onClick={() => setEditAddress(addr)}>
                           <Edit className="w-4 h-4" />
@@ -465,11 +466,11 @@ export default function AccountPage() {
                           )}
                         </div>
                         <div className="flex items-center gap-2 text-gray-700 text-sm mb-1">
-                          <Phone className="w-4 h-4 text-teal-400" />
+                          <Phone className="w-4 h-4 text-red-400" />
                           <span className="font-medium">{addr.phone || '-'}</span>
                         </div>
                         <div className="flex items-center gap-2 text-gray-700 text-sm mt-1">
-                          <MapPin className="w-4 h-4 text-teal-500" />
+                          <MapPin className="w-4 h-4 text-red-500" />
                           <span className="break-words">{addr.address_1 || addr.street || '-'}</span>
                         </div>
                         <div className="flex gap-2 text-gray-500 text-xs mt-2">
@@ -519,7 +520,17 @@ export default function AccountPage() {
                     forceOutOfCoverageModal={showOutOfCoverageModal}
                     onCloseOutOfCoverageModal={() => setShowOutOfCoverageModal(false)}
                   />
-                  {locationCheckMsg && <div className={`mt-2 text-sm ${locationCheckMsg.startsWith('✔️') ? 'text-green-600' : 'text-red-600'}`}>{locationCheckMsg}</div>}
+                  {locationCheckMsg && (
+                    <div
+                      className={`mt-2 text-sm ${
+                        locationCheckMsg.startsWith('✔️')
+                          ? 'text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2'
+                          : 'text-red-600'
+                      }`}
+                    >
+                      {locationCheckMsg}
+                    </div>
+                  )}
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
                     <div>
                       <Label className="text-xs mb-1">Label</Label>
@@ -577,7 +588,7 @@ export default function AccountPage() {
                     </div>
                   </div>
                   <Button
-                    className="mt-4 w-full bg-teal-600 text-white"
+                    className="mt-4 w-full bg-red-600 text-white"
                     onClick={async () => {
                       if (!newLocation) {
                         notify('error', 'Please select a valid location within our service area!');

@@ -252,7 +252,7 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
             value={manualAddress}
             onChange={e => setManualAddress(e.target.value)}
             placeholder="Search for your address..."
-            className="w-full pl-8 text-black border-2 border-teal-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 rounded-lg shadow-sm"
+            className="w-full pl-8 text-black border-2 border-red-200 focus:border-red-500 focus:ring-2 focus:ring-red-100 rounded-lg shadow-sm"
             autoComplete="off"
           />
           {suggestLoading && <div className="absolute right-2 top-2 text-xs text-gray-400">Loading...</div>}
@@ -262,7 +262,7 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
               {suggestions.map(s => (
                 <li
                   key={s.place_id}
-                  className="p-2 hover:bg-teal-100 cursor-pointer text-sm font-medium text-gray-800"
+                  className="p-2 hover:bg-red-100 cursor-pointer text-sm font-medium text-gray-800"
                   onClick={() => handleManualSelect(s)}
                 >
                   {s.display_name}
@@ -272,7 +272,7 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
           )}
         </div>
         <div className="mb-2 flex items-center gap-2">
-          <Button type="button" className="bg-teal-500 text-white px-3 py-1 rounded text-xs" onClick={handleGetLocation}>
+          <Button type="button" className="bg-red-500 text-white px-3 py-1 rounded text-xs" onClick={handleGetLocation}>
             Get My Location
           </Button>
         </div>
@@ -280,10 +280,20 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
           <MapWithMarker lat={mapLoc.latitude} lng={mapLoc.longitude} onChange={handleMapChange} />
           <div className="mt-1 text-xs text-gray-700">Lat: {mapLoc.latitude?.toFixed(5)}, Lng: {mapLoc.longitude?.toFixed(5)}</div>
         </div>
-        {locationCheckMsg && <div className={`mb-2 text-xs ${locationCheckMsg.startsWith('✔️') ? 'text-green-600' : 'text-red-600'}`}>{locationCheckMsg}</div>}
+        {locationCheckMsg && (
+          <div
+            className={`mb-2 text-xs ${
+              locationCheckMsg.startsWith('✔️')
+                ? 'text-green-700 bg-green-50 border border-green-200 rounded px-2 py-1'
+                : 'text-red-600'
+            }`}
+          >
+            {locationCheckMsg}
+          </div>
+        )}
         {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
 
-        <Button className="w-full bg-teal-600 text-white py-2 text-sm" onClick={handleSave} loading={saving} disabled={locationCheckMsg.startsWith('❌') || locationCheckLoading}>
+        <Button className="w-full bg-red-600 text-white py-2 text-sm" onClick={handleSave} loading={saving} disabled={locationCheckMsg.startsWith('❌') || locationCheckLoading}>
           Save Changes
         </Button>
       </div>

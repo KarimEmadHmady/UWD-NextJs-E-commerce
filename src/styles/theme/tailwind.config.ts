@@ -20,6 +20,12 @@ module.exports = {
         },
       },
       extend: {
+        fontFamily: {
+          boven2: ['BOVEN2', 'sans-serif'],
+          boven3: ['BOVEN3', 'sans-serif'],
+          mishafi: ['MishafiGold', 'sans-serif'],
+          nastaliq: ['NotoNastaliqUrdu', 'sans-serif'],
+        },
         colors: {
           border: "hsl(var(--border))",
           input: "hsl(var(--input))",
@@ -54,15 +60,15 @@ module.exports = {
             DEFAULT: "hsl(var(--card))",
             foreground: "hsl(var(--card-foreground))",
           },
-          // Custom Pink Palette
-          pink: {
+          // Custom red Palette
+          red: {
             50: "#fdf2f8",
             100: "#fce7f3",
             200: "#fbcfe8",
             300: "#f9a8d4",
             400: "#f472b6",
-            500: "#73cdca", // Default pink
-            600: "#db2777", // Darker pink for hover/active
+            500: "#bf3a30", // Default red
+            600: "#db2777", // Darker red for hover/active
             700: "#be185d",
             800: "#9d174d",
             900: "#831843",

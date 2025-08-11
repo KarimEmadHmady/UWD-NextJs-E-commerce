@@ -42,11 +42,11 @@ export default function OrderConfirmationPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
         <div className=" p-8 rounded-xl text-center max-w-md w-full">
-        <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-teal-500" />
+        <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-red-500" />
 
           <h2 className="text-2xl font-bold mb-2 text-gray-900">No order found</h2>
           <p className="text-gray-600 mb-6">You have not placed any order yet.</p>
-          <Button onClick={() => router.push('/shop')} className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-full text-lg font-semibold shadow">
+          <Button onClick={() => router.push('/shop')} className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full text-lg font-semibold shadow">
             Go Shopping Now
           </Button>
         </div>
@@ -238,7 +238,7 @@ export default function OrderConfirmationPage() {
                   </div>
                 )}
                 {showTrackMsg && (
-                  <div className="absolute top-14 left-0 bg-teal-50 border border-teal-200 text-teal-700 px-4 py-2 rounded shadow text-sm z-10">
+                  <div className="absolute top-14 left-0 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded shadow text-sm z-10">
                     Order tracking is under development!
                   </div>
                 )}
@@ -280,21 +280,21 @@ export default function OrderConfirmationPage() {
                     <h3 className="font-semibold text-gray-900 mb-3">What's Next?</h3>
                     <div className="space-y-3 text-sm text-gray-600">
                       <div className="flex items-start gap-2">
-                        <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
+                        <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
                         <span>You'll receive an order confirmation by email soon</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
+                        <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
                         <span>We'll notify you when your sweets are out for delivery</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
+                        <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
                         <span>Enjoy your fresh and delicious sweets!</span>
                       </div>
                     </div>
                   </div>
 
-                  <Button onClick={() => router.push("/shop")} className="w-full mt-6 bg-teal-600 hover:bg-teal-700">
+                  <Button onClick={() => router.push("/shop")} className="w-full mt-6 bg-red-600 hover:bg-red-700">
                     Order More Sweets
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
