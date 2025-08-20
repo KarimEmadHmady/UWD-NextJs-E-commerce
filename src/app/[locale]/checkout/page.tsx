@@ -29,6 +29,7 @@ import AddressSelector from '@/components/checkout/address-selector';
 import { useUserAddresses } from '@/hooks/useUserAddresses';
 import AddressEditModal from '@/components/checkout/address-edit-modal';
 import { Edit } from 'lucide-react';
+import { selectRedeemedRewards } from '@/redux/features/loyalty/loyaltySelectors';
 
 import type { LocationData, ShippingOption } from '@/types';
 
@@ -61,6 +62,8 @@ export default function CheckoutPage() {
   const { addresses: backendAddresses, loading: addressesLoading, refetch } = useUserAddresses(token);
   const [editAddress, setEditAddress] = useState<any>(null);
   const [showOutOfCoverageModal, setShowOutOfCoverageModal] = useState(false);
+
+  const redeemedRewards = useSelector(selectRedeemedRewards);
 
   // إعداد بيانات العميل الافتراضية من بيانات اليوزر
   const defaultCustomerInfo = user ? {
@@ -115,10 +118,18 @@ export default function CheckoutPage() {
     shippingMethod === 'Overnight Shipping'
   ) shippingCost = 150;
   else shippingCost = 0;
-  const total = subtotal + tax + shippingCost;
+  // Apply loyalty rewards (discount and free shipping)
+  const loyaltyDiscount = redeemedRewards
+    .filter(r => r.type === 'discount')
+    .reduce((sum, r) => sum + (r.value || 0), 0);
+  const hasFreeShipping = redeemedRewards.some(r => r.type === 'freeShipping');
+  if (hasFreeShipping) {
+    shippingCost = 0;
+  }
+  const total = Math.max(0, subtotal - loyaltyDiscount) + tax + shippingCost;
 
   const orderSummary = {
-    subtotal,
+    subtotal: Math.max(0, subtotal - loyaltyDiscount),
     tax,
     shipping: shippingCost,
     total,
@@ -541,6 +552,12 @@ export default function CheckoutPage() {
                     <span>Shipping ({shippingMethod})</span>
                     <span>{formatPrice(orderSummary.shipping)}</span>
                   </div>
+                  {loyaltyDiscount > 0 && (
+                    <div className="flex justify-between">
+                      <span>Discount (Loyalty)</span>
+                      <span>-{formatPrice(loyaltyDiscount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span>Tax</span>
                     <span>{formatPrice(orderSummary.tax)}</span>

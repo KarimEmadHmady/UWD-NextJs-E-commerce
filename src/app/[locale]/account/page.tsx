@@ -31,6 +31,8 @@ import { Edit } from 'lucide-react';
 import { Label } from "@/components/common/label/label";
 import OutOfCoverageModal from '@/components/common/ui/OutOfCoverageModal';
 import { CustomButton } from "@/components/common/Button"
+import LoyaltyPanel, { LoyaltyReward } from "@/components/loyalty/LoyaltyPanel"
+import { availableRewards as defaultRewards } from "@/components/loyalty/rewardsData"
 
 /**
  * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
@@ -86,7 +88,7 @@ export default function AccountPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const { items: wishlistItems, removeItem: removeWishlistItem } = useWishlist();
-  const { addItem: addCartItem, toggle: toggleCart } = useCart();
+  const { addItem: addCartItem, toggle: toggleCart, addCustomItem } = useCart();
   const { notify } = useNotifications();
 
   const formatPrice = (price: number) => {
@@ -239,7 +241,37 @@ export default function AccountPage() {
           </TabsList>
 
           <TabsContent value="overview" className="mt-6 ">
+              <div className="mb-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Loyalty</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <LoyaltyPanel
+                    subtotal={orders.reduce((s: number, o: any) => s + (o.total || 0), 0)}
+                    availableRewards={defaultRewards}
+                    onRewardRedeemed={(reward: LoyaltyReward) => {
+                      if (reward.type === 'product' && reward.productId) {
+                        addCustomItem({
+                          id: reward.productId,
+                          name: reward.productName || reward.name,
+                          description: '',
+                          price: reward.productPrice ?? 0,
+                          images: [],
+                          category: 'Reward',
+                          rating: 0,
+                          stock: 1,
+                          brand: '',
+                          tags: ['reward'],
+                        }, 1);
+                      }
+                    }}
+                  />
+                </CardContent>
+            </Card>
+              </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
               {/* Recent Orders */}
               <Card>
                 <CardHeader>

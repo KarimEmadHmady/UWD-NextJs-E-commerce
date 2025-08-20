@@ -270,6 +270,24 @@ export const useCart = () => {
     refetchCart();
   }, [refetchCart]);
 
+  // Add a custom item locally (used for loyalty free products)
+  const addCustomItem = useCallback((product: CartProduct, quantity = 1) => {
+    const customItem: any = {
+      id: product.id,
+      key: `reward_${product.id}_${Date.now()}`,
+      name: product.name,
+      quantity,
+      price: product.price,
+      images: product.images || [],
+      description: product.description || '',
+      category: product.category || 'Reward',
+      stock: product.stock || 999,
+      brand: product.brand || '',
+      tags: product.tags || ['reward'],
+    };
+    dispatch(addToCart(customItem));
+  }, [dispatch]);
+
   return {
     items,
     isOpen,
@@ -288,6 +306,7 @@ export const useCart = () => {
     clear,
     toggle,
     fetchCartFromServer,
+    addCustomItem,
     addToCartMutation,
     updateCartMutation,
     removeFromCartMutation,

@@ -14,6 +14,7 @@ import checkoutReducer from './features/checkout/checkoutSlice';
 import orderReducer from './features/order/orderSlice';
 import addressReducer from './features/address/addressSlice';
 import authReducer from './features/auth/authSlice';
+import loyaltyReducer from './features/loyalty/loyaltySlice';
 
 /**
  * Redux store configuration for the e-commerce app.
@@ -35,6 +36,7 @@ export const store = configureStore({
     address: addressReducer,
     order: orderReducer,
     auth: authReducer,
+    loyalty: loyaltyReducer,
   },
 });
 
