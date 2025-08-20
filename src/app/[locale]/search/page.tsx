@@ -61,7 +61,7 @@ export default function SearchPage() {
   const categoriesWithCount = useMemo(() => {
     return categories.map(cat => ({
       ...cat,
-      count: productsWithPrice.filter(p => p.categories && p.categories.includes(cat.name)).length,
+      count: productsWithPrice.filter(p => p.categories && p.categories.some(c => c.name === cat.name)).length,
     }));
   }, [categories, productsWithPrice]);
 
@@ -76,7 +76,7 @@ export default function SearchPage() {
       const itemPrice = typeof item.price === 'number' ? item.price : parseFloat(String(item.price || 0));
       
       const matchesQuery = searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
-      const matchesCategory = selectedCategories.length > 0 ? selectedCategories.some(cat => item.categories && item.categories.includes(cat)) : true;
+      const matchesCategory = selectedCategories.length > 0 ? selectedCategories.some(cat => item.categories && item.categories.some(c => c.name === cat)) : true;
       const matchesQuantity = selectedQuantities.length > 0 ? selectedQuantities.some(q => item.name.toLowerCase().includes(q.toLowerCase())) : true;
       const matchesSize = selectedSizes.length > 0 ? selectedSizes.some(s => item.name.toLowerCase().includes(s.toLowerCase())) : true;
       const matchesPrice = priceRange && priceRange.length === 2 && !isNaN(priceRange[0]) && !isNaN(priceRange[1]) 

@@ -82,12 +82,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         price: product.price,
         description: product.description,
         images: [product.image || '', ...(product.gallery || [])],
-        category: product.categories?.[0] || 'General',
+        category: product.categories?.[0].name || 'General',
         rating: product.rating,
         stock: product.inStock ? 10 : 0,
         brand: 'Brand',
-        tags: product.categories || []
-      }
+        tags: product.categories?.map((category) => category.name) || [],
+            }
       addItem(commonProduct, quantity)
       // Notification is handled by useCart hook
     } catch (error) {
@@ -104,12 +104,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       price: product.price,
       description: product.description,
       images: [product.image || '', ...(product.gallery || [])],
-      category: product.categories?.[0] || 'General',
+      category: product.categories?.[0].name || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
       brand: 'Brand',
-      tags: product.categories || [],
-    }
+      tags: product.categories?.map((category) => category.name) || [],
+        }
     if (isInWishlist) {
       removeWishlist(product.id)
       notify('success', 'Removed from wishlist')
@@ -370,7 +370,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">Category</p>
-                  <p className="font-medium">{product.categories?.[0] || 'General'}</p>
+                  <p className="font-medium">{product.categories?.[0].name || 'General'}</p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">Size</p>

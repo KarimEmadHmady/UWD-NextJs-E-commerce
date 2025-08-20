@@ -31,11 +31,11 @@ export default function ProductListItem({ product }: ProductListItemProps) {
       price: product.price,
       description: product.description,
       images: [product.image || '', ...(product.gallery || [])],
-      category: product.categories?.[0] || 'General',
+      category: product.categories?.[0].name || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
       brand: "Brand",
-      tags: product.categories || [],
+      tags: product.categories?.map((category) => category.name) || [],
     }
     if (isWishlisted) {
       removeWishlist(product.id)
@@ -53,12 +53,12 @@ export default function ProductListItem({ product }: ProductListItemProps) {
       price: product.price,
       description: product.description,
       images: [product.image || '', ...(product.gallery || [])],
-      category: product.categories?.[0] || 'General',
+      category: product.categories?.[0].name || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
       brand: 'Brand',
-      tags: product.categories || []
-    };
+      tags: product.categories?.map((category) => category.name) || [],
+        };
     addItem(cartProduct, 1);
     // Notification is handled by useCart hook
   };
@@ -171,7 +171,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start mb-2">
             <div>
-                              <p className="text-sm text-gray-500 mb-1">{product.categories?.[0] || 'General'}</p>
+                              <p className="text-sm text-gray-500 mb-1">{product.categories?.[0].name || 'General'}</p>
               <h3 className="font-semibold text-gray-900 text-lg mb-2 line-clamp-2">{product.name}</h3>
             </div>
 

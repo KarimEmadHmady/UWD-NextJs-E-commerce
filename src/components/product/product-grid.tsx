@@ -38,12 +38,12 @@ export default function ProductGrid() {
       price: product.price,
       description: product.description,
       images: [product.image || '', ...(product.gallery || [])],
-      category: product.categories?.[0] || 'General',
+      category: product.categories?.[0]?.name || 'General',
       rating: product.rating,
       stock: product.inStock ? 10 : 0,
       brand: "Brand",
-      tags: product.categories || [],
-    }
+      tags: product.categories?.map((category) => category.name) || [],
+        }
     if (isInWishlist(product.id)) {
       removeWishlist(product.id)
       notify('success', 'Removed from wishlist')
@@ -63,12 +63,12 @@ export default function ProductGrid() {
       price: product.price,
       description: product.description,
               images: [product.image || '', ...(product.gallery || [])],
-        category: product.categories?.[0] || 'General',
+        category: product.categories?.[0].name  || 'General',
         rating: product.rating,
         stock: product.inStock ? 10 : 0,
         brand: 'Brand',
-        tags: product.categories || []
-    }
+        tags: product.categories?.map((category) => category.name) || [],
+          }
     addItem(commonProduct, 1)
     // Notification is handled by useCart hook
   }

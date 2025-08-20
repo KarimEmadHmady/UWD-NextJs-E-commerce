@@ -34,7 +34,7 @@ export default function FilterSidebar({ isOpen, onClose, hideCategories = false 
   // احسب عدد المنتجات لكل كاتيجوري ديناميكياً
   const categoriesWithCount = categories.map(cat => ({
     ...cat,
-    count: products.filter(p => p.categories && p.categories.includes(cat.name)).length,
+    count: products.filter(p => p.categories && p.categories.some(c => c.name === cat.name)).length,
   }));
 
   // فلتر السعر من المنتجات
