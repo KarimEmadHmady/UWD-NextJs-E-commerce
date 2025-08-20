@@ -3,8 +3,8 @@ import React from "react"
 import { useDispatch, useSelector } from 'react-redux'
 import { Gift, Star, Crown, Trophy, Zap } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
-import { redeemReward as redeemRewardAction } from '@/redux/features/loyalty/loyaltySlice'
-import { selectLoyaltyPoints, selectRedeemedRewards } from '@/redux/features/loyalty/loyaltySelectors'
+import { redeemReward as redeemRewardAction, unredeemReward } from '@/redux/features/loyalty/loyaltySlice'
+import { selectLoyaltyPoints, selectSessionRedeemedRewards } from '@/redux/features/loyalty/loyaltySelectors'
 
 type LoyaltyTier = {
   name: string
@@ -21,34 +21,44 @@ export type LoyaltyReward = {
   description: string
   type: "discount" | "freeShipping" | "product"
   value?: number
+  isPercent?: boolean
   // Optional product info for product reward
   productId?: number
   productName?: string
   productPrice?: number
+  image?: string
 }
 
 const loyaltyTiers: LoyaltyTier[] = [
-  { name: "Bronze", minPoints: 0, color: "text-amber-600", icon: <Star className="w-4 h-4" />, benefits: ["1 point per E.L1 spent", "Birthday discount"] },
-  { name: "Silver", minPoints: 500, color: "text-gray-500", icon: <Gift className="w-4 h-4" />, benefits: ["1.5 points per E.L1 spent", "Free shipping on orders E.L50+", "Early access to sales"] },
-  { name: "Gold", minPoints: 1500, color: "text-yellow-500", icon: <Crown className="w-4 h-4" />, benefits: ["2 points per E.L1 spent", "Free shipping on all orders", "Exclusive products", "Priority support"] },
-  { name: "Platinum", minPoints: 3000, color: "text-red-600", icon: <Trophy className="w-4 h-4" />, benefits: ["3 points per E.L1 spent", "Free express shipping", "Personal shopper", "VIP events"] },
+  { name: "Bronze", minPoints: 0, color: "text-amber-600", icon: <Star className="w-4 h-4" />, benefits: ["0.5 point per E.L1 spent", "Birthday discount"] },
+  { name: "Silver", minPoints: 500, color: "text-gray-500", icon: <Gift className="w-4 h-4" />, benefits: ["0.5 point per E.L1 spent", "Free shipping on orders E.L500+", "Early access to sales"] },
+  { name: "Gold", minPoints: 1500, color: "text-yellow-500", icon: <Crown className="w-4 h-4" />, benefits: ["1 point per E.L1 spent", "Free shipping on all orders", "Exclusive products", "Priority support"] },
+  { name: "Platinum", minPoints: 3000, color: "text-red-600", icon: <Trophy className="w-4 h-4" />, benefits: ["1.5 points per E.L1 spent", "Free express shipping", "Personal shopper", "VIP events"] },
+  { name: "Diamond", minPoints: 5000, color: "text-red-700", icon: <Crown className="w-4 h-4" />, benefits: ["2 points per E.L1 spent", "VIP concierge", "Exclusive launches"] },
 ]
 
 const MIN_REDEEM_SUBTOTAL = 150
-const MAX_REDEEM_PERCENT = 0.2
+const MAX_REDEEM_PERCENT = 0.2 // 20%
 
 export function LoyaltyPanel({
   subtotal,
   availableRewards,
   onRewardRedeemed,
+  onRewardUnredeemed,
+  allowCancel = true,
+  showRedeemButtons = true,
 }: {
   subtotal: number
   availableRewards: LoyaltyReward[]
   onRewardRedeemed?: (reward: LoyaltyReward) => void
+  onRewardUnredeemed?: (reward: LoyaltyReward) => void
+  allowCancel?: boolean
+  showRedeemButtons?: boolean
 }) {
   const dispatch = useDispatch();
   const points = useSelector(selectLoyaltyPoints);
-  const redeemed = useSelector(selectRedeemedRewards);
+  // for current order session only
+  const redeemed = useSelector(selectSessionRedeemedRewards);
   const [showRewards, setShowRewards] = React.useState(false)
 
   const getCurrentTier = () => {
@@ -66,9 +76,10 @@ export function LoyaltyPanel({
   const getPointsEarned = () => {
     const currentTier = getCurrentTier();
     const multiplier =
-      currentTier.name === "Bronze" ? 1 :
-      currentTier.name === "Silver" ? 1.5 :
-      currentTier.name === "Gold" ? 2 : 3
+      currentTier.name === "Diamond" ? 2 :
+      currentTier.name === "Platinum" ? 1.5 :
+      currentTier.name === "Gold" ? 1 :
+      /* Silver & Bronze */ 0.5
     return Math.floor(subtotal * multiplier)
   }
 
@@ -78,18 +89,20 @@ export function LoyaltyPanel({
   const pointsEarned = getPointsEarned()
 
   const isRedeemed = (id: string) => redeemed.some(r => r.id === id)
+  const redeemedCount = (id: string) => redeemed.filter(r => r.id === id).length
 
   const canRedeem = (reward: LoyaltyReward) => {
     if (points < reward.pointsCost) return false
     if (isRedeemed(reward.id)) return false
     if (subtotal < MIN_REDEEM_SUBTOTAL) return false
-    if (reward.type === 'discount' && (reward.value || 0) > subtotal * MAX_REDEEM_PERCENT) return false
+    // allow only one discount reward at a time
+    if (reward.type === 'discount' && redeemed.some(r => r.type === 'discount')) return false
     return true
   }
 
   const handleRedeem = (reward: LoyaltyReward) => {
     if (!canRedeem(reward)) return
-    dispatch(redeemRewardAction({ id: reward.id, name: reward.name, type: reward.type, pointsCost: reward.pointsCost, value: reward.value }))
+    dispatch(redeemRewardAction({ id: reward.id, name: reward.name, type: reward.type, pointsCost: reward.pointsCost, value: reward.value, isPercent: reward.isPercent, image: reward.image, productId: reward.productId }))
     onRewardRedeemed?.(reward)
   }
 
@@ -145,27 +158,51 @@ export function LoyaltyPanel({
         <div className="mt-6 pt-6 border-t border-red-200">
           <h4 className="text-lg font-semibold text-gray-900 mb-4">Available Rewards</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {availableRewards.map((reward) => (
+            {availableRewards.map((reward) => {
+              const already = isRedeemed(reward.id)
+              return (
               <div key={reward.id} className="bg-white rounded-lg p-4 border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
                   <h5 className="font-medium text-gray-900">{reward.name}</h5>
                   <Gift className="w-4 h-4 text-red-500" />
                 </div>
                 <p className="text-sm text-gray-600 mb-3">{reward.description}</p>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium text-red-600">{reward.pointsCost} points</span>
-                  <Button
-                    size="sm"
-                    variant={canRedeem(reward) ? "default" : "outline"}
-                    disabled={!canRedeem(reward)}
-                    onClick={() => handleRedeem(reward)}
-                    className={canRedeem(reward) ? "bg-red-600 hover:bg-red-700" : ""}
-                  >
-                    {isRedeemed(reward.id) ? "تم الاستبدال" : "استبدل"}
-                  </Button>
+                  {showRedeemButtons && (
+                    !already ? (
+                      <Button
+                        size="sm"
+                        variant={canRedeem(reward) ? "default" : "outline"}
+                        disabled={!canRedeem(reward)}
+                        onClick={() => handleRedeem(reward)}
+                        className={canRedeem(reward) ? "bg-red-600 hover:bg-red-700" : ""}
+                      >
+                        استبدل
+                      </Button>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-green-700">تم الاستبدال{redeemedCount(reward.id) > 1 ? ` x${redeemedCount(reward.id)}` : ''}</span>
+                        {allowCancel && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              // إلغاء استبدال واحد فقط من نفس المكافأة (decrement)
+                              dispatch(unredeemReward(reward.id))
+                              onRewardUnredeemed?.(reward)
+                            }}
+                            className=""
+                          >
+                            إلغاء عنصر
+                          </Button>
+                        )}
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
       )}

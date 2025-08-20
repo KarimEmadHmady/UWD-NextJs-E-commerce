@@ -1,9 +1,10 @@
 // src/hooks/useCart.ts
 import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import {
+import { 
   addToCart,
   removeFromCart,
+  removeFromCartByKey,
   updateQuantity,
   clearCart,
   toggleCart,
@@ -75,8 +76,8 @@ export const useCart = () => {
 
   // Mutation for adding product to cart
   const addToCartMutation = useMutation({
-    mutationFn: ({ productId, quantity, productData }: { productId: number; quantity: number; productData?: CartProduct }) =>
-      addToCartApi(productId, quantity),
+    mutationFn: ({ productId, quantity, productData, variations }: { productId: number; quantity: number; productData?: CartProduct; variations?: any[] }) =>
+      addToCartApi(productId, quantity, variations),
     onMutate: async ({ productId, quantity, productData }) => {
       // Optimistic update for immediate UI feedback
       const currentCount = serverCartCount || itemsCount;
@@ -102,13 +103,15 @@ export const useCart = () => {
       
       dispatch(addToCart(optimisticItem));
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       notify('success', data.message);
       
       // Update cart item key if provided
       if (data.cart_item_key) {
         // TODO: Implement key update logic if needed
       }
+      // Refresh cart from server to sync real keys and totals
+      try { await refetchCart(); } catch {}
     },
     onError: (error: Error) => {
       // Rollback optimistic update
@@ -153,30 +156,20 @@ export const useCart = () => {
       const currentCount = serverCartCount || itemsCount;
       const itemToRemove = items.find(item => item.key === key);
       const quantityToRemove = itemToRemove?.quantity || 1;
-      
-      dispatch(setServerCartData({ 
-        count: Math.max(0, currentCount - quantityToRemove), 
-        total: serverCartTotal 
-      }));
-
-      // Remove item from Redux immediately (optimistic)
-      if (itemToRemove) {
-        dispatch(removeFromCart(itemToRemove.id));
+      dispatch(setServerCartData({ count: Math.max(0, currentCount - quantityToRemove), total: serverCartTotal }));
+      if (itemToRemove?.key) {
+        dispatch(removeFromCartByKey(itemToRemove.key));
       }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       notify('success', 'Product removed from cart');
+      // Sync with server state after removal
+      try { await refetchCart(); } catch {}
     },
     onError: (error: Error) => {
       // Rollback optimistic update
       const currentCount = serverCartCount || itemsCount;
-      const itemToRemove = items.find(item => item.key === (error as any).key);
-      const quantityToRemove = itemToRemove?.quantity || 1;
-      
-      dispatch(setServerCartData({ 
-        count: currentCount + quantityToRemove, 
-        total: serverCartTotal 
-      }));
+      dispatch(setServerCartData({ count: currentCount, total: serverCartTotal }));
       dispatch(setCartError(error.message));
       notify('error', 'Failed to remove product');
     },
@@ -244,22 +237,52 @@ export const useCart = () => {
     }
   }, [serverCart, dispatch]);
 
-  const addItem = useCallback((product: CartProduct, quantity = 1) => {
+  const addItem = useCallback((product: CartProduct, quantity = 1, variations?: any[]) => {
     dispatch(setCartLoading(true));
-    addToCartMutation.mutate({ productId: product.id, quantity, productData: product });
+    addToCartMutation.mutate({ productId: product.id, quantity, productData: product, variations });
   }, [addToCartMutation, dispatch]);
 
   const removeItem = useCallback((key: string) => {
+    // Handle locally added rewards without hitting server
+    if (key.startsWith('reward_') || key.startsWith('temp_')) {
+      dispatch(removeFromCartByKey(key));
+      const currentCount = serverCartCount || itemsCount;
+      const itemToRemove = items.find(i => i.key === key);
+      const quantityToRemove = itemToRemove?.quantity || 1;
+      dispatch(setServerCartData({ count: Math.max(0, currentCount - quantityToRemove), total: serverCartTotal }));
+      return;
+    }
     dispatch(setCartLoading(true));
     removeFromCartMutation.mutate(key);
-  }, [removeFromCartMutation, dispatch]);
+  }, [removeFromCartMutation, dispatch, items, itemsCount, serverCartCount, serverCartTotal]);
+
+  // Remove a locally added item by product id (used for loyalty reward products)
+  const removeLocalItemById = useCallback((productId: number) => {
+    dispatch(removeFromCart(productId));
+  }, [dispatch]);
+
+  // Decrement quantity by 1 for a local item; remove entirely if becomes 0
+  const decrementLocalItemById = useCallback((productId: number) => {
+    const currentItem = (items || []).find(i => i.id === productId);
+    if (!currentItem) return;
+    const newQty = (currentItem.quantity || 0) - 1;
+    if (newQty <= 0) {
+      dispatch(removeFromCart(productId));
+    } else {
+      dispatch(updateQuantity({ id: productId, quantity: newQty }));
+    }
+  }, [dispatch, items]);
 
   const updateItemQuantity = useCallback((key: string, quantity: number) => {
     updateCartMutation.mutate({ key, quantity });
   }, [updateCartMutation]);
 
-  const clear = useCallback(() => {
+  const clear = useCallback(async () => {
+    try {
+      await (await import('@/services/cartService')).clearCartApi();
+    } catch {}
     dispatch(clearCart());
+    dispatch(setServerCartData({ count: 0, total: '0' }));
   }, [dispatch]);
 
   const toggle = useCallback(() => {
@@ -307,6 +330,8 @@ export const useCart = () => {
     toggle,
     fetchCartFromServer,
     addCustomItem,
+    removeLocalItemById,
+    decrementLocalItemById,
     addToCartMutation,
     updateCartMutation,
     removeFromCartMutation,

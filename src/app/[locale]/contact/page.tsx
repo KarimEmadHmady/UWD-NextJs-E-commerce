@@ -15,11 +15,11 @@ import dynamic from 'next/dynamic';
 import { WorldMapDemo } from "@/components/common/ui/WorldMapDemo";
 
 const branches = [
-  { name: "Downtown Branch", address: "15 Dessert Ave, Cairo", lat: 30.0444, lng: 31.2357 },
-  { name: "Alexandria Branch", address: "22 Sweet St, Alexandria", lat: 31.2001, lng: 29.9187 },
-  { name: "Giza Branch", address: "8 Cake Road, Giza", lat: 30.0131, lng: 31.2089 },
-  { name: "Mansoura Branch", address: "77 Sugar Blvd, Mansoura", lat: 31.0364, lng: 31.3807 },
-  { name: "Tanta Branch", address: "5 Candy St, Tanta", lat: 30.7865, lng: 31.0004 },
+  { name: "فرع وسط البلد", address: "١٥ شارع رمسيس، القاهرة", lat: 30.0444, lng: 31.2357 },
+  { name: "فرع الإسكندرية", address: "٢٢ شارع الكورنيش، الإسكندرية", lat: 31.2001, lng: 29.9187 },
+  { name: "فرع الجيزة", address: "٨ شارع جامعة القاهرة، الجيزة", lat: 30.0131, lng: 31.2089 },
+  { name: "فرع المنصورة", address: "٧٧ شارع الجمهورية، المنصورة", lat: 31.0364, lng: 31.3807 },
+  { name: "فرع طنطا", address: "٥ شارع النادي، طنطا", lat: 30.7865, lng: 31.0004 },
 ];
 
 const MapWithMarkers = dynamic(() => import("@/components/common/ui/MapWithMarkers"), { ssr: false });
@@ -54,23 +54,23 @@ export default function ContactPage() {
   const contactInfo = [
     {
       icon: MapPin,
-      title: "Visit Our Sweets Shop",
-      details: ["15 Dessert Avenue", "Sweet City", "Egypt"],
+      title: "زورونا في مطعم روكسي",
+      details: ["١٥ شارع رمسيس", "القاهرة", "مصر"],
       color: "text-red-600",
       bgColor: "bg-red-100",
     },
     {
       icon: Phone,
-      title: "Call the Sweets Shop",
-      details: ["+20 115-123-4567", "Everyday 9AM-11PM"],
+      title: "اتصل بنا",
+      details: ["+20 115-123-4567", "يومياً 9 صباحاً - 11 مساءً"],
       color: "text-green-600",
       bgColor: "bg-green-100",
     },
 
     {
       icon: Clock,
-      title: "Sweets Shop Hours",
-      details: ["Everyday: 9AM - 11PM", "Friday: 2PM - 11PM"],
+      title: "مواعيد العمل",
+      details: ["طوال الأسبوع: 9 ص - 11 م", "الجمعة: 2 م - 11 م"],
       color: "text-orange-600",
       bgColor: "bg-orange-100",
     },
@@ -79,30 +79,30 @@ export default function ContactPage() {
   const supportOptions = [
     {
       icon: MessageCircle,
-      title: "Chat with Sweets Team",
-      description: "Chat with our sweets experts in real-time for any inquiry or order.",
-      action: "Start Sweets Chat",
+      title: "الدردشة مع فريق روكسي",
+      description: "تواصل معنا مباشرة لأي استفسار أو طلب شورما.",
+      action: "ابدأ الدردشة",
       available: true,
     },
     {
       icon: HeadphonesIcon,
-      title: "Call Sweets Shop",
-      description: "Speak directly with our sweets specialists.",
-      action: "Call Sweets Shop",
+      title: "اتصل بمطعم روكسي",
+      description: "تحدث مع فريق خدمة العملاء لدينا.",
+      action: "اتصل الآن",
       available: true,
     },
     {
       icon: Mail,
-      title: "Email the Sweets Shop",
-      description: "Send us your sweets questions or custom order requests.",
-      action: "Send Sweets Email",
+      title: "أرسل بريد إلكتروني",
+      description: "راسلنا لطلبات الشركات أو الملاحظات.",
+      action: "إرسال بريد",
       available: true,
     },
     {
       icon: Users,
-      title: "Sweets Lovers Community",
-      description: "Join our community of sweets lovers and share your experience.",
-      action: "Visit Sweets Forum",
+      title: "مجتمع روكسي",
+      description: "انضم لمجتمع محبي روكسي وشارك تجربتك.",
+      action: "زيارة المنتدى",
       available: true,
     },
   ]
@@ -113,7 +113,7 @@ export default function ContactPage() {
      <RevealOnScroll>
 
       <div className="max-w-7xl mx-auto px-4 py-16">
-        {/* Contact Info Cards */}
+        {/* معلومات التواصل */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {contactInfo.map((info, index) => (
             <Card key={index} className="text-center hover:shadow-lg transition-shadow">
@@ -135,18 +135,18 @@ export default function ContactPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
+          {/* نموذج التواصل */}
           <div>
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">Send us a Message about Sweets</CardTitle>
-                <p className="text-gray-600">Fill out the form below and our sweets team will get back to you as soon as possible.</p>
+                <CardTitle className="text-2xl">راسلنا</CardTitle>
+                <p className="text-gray-600">املأ البيانات وسيتواصل معك فريق روكسي في أقرب وقت.</p>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name">Full Name *</Label>
+                      <Label htmlFor="name">الاسم الكامل *</Label>
                       <Input
                         id="name"
                         name="name"
@@ -154,12 +154,12 @@ export default function ContactPage() {
                         required
                         value={formData.name}
                         onChange={handleInputChange}
-                        placeholder="your name"
+                        placeholder="اكتب اسمك"
                         className="mt-1"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="email">Email Address *</Label>
+                      <Label htmlFor="email">البريد الإلكتروني *</Label>
                       <Input
                         id="email"
                         name="email"
@@ -167,14 +167,14 @@ export default function ContactPage() {
                         required
                         value={formData.email}
                         onChange={handleInputChange}
-                        placeholder="email@example.com"
+                        placeholder="example@mail.com"
                         className="mt-1"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="subject">Subject *</Label>
+                    <Label htmlFor="subject">الموضوع *</Label>
                     <Input
                       id="subject"
                       name="subject"
@@ -182,20 +182,20 @@ export default function ContactPage() {
                       required
                       value={formData.subject}
                       onChange={handleInputChange}
-                      placeholder="How can we help you?"
+                      placeholder="كيف يمكننا مساعدتك؟"
                       className="mt-1"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="message">Message *</Label>
+                    <Label htmlFor="message">الرسالة *</Label>
                     <Textarea
                       id="message"
                       name="message"
                       required
                       value={formData.message}
                       onChange={handleInputChange}
-                      placeholder="Please describe your inquiry in detail..."
+                      placeholder="من فضلك اكتب تفاصيل استفسارك..."
                       rows={6}
                       className="mt-1"
                     />
@@ -205,12 +205,12 @@ export default function ContactPage() {
                     {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Sending...
+                        جاري الإرسال...
                       </>
                     ) : (
                       <>
                         <Send className="w-4 h-4 mr-2" />
-                        Send Message
+                        إرسال الرسالة
                       </>
                     )}
                   </Button>
@@ -219,12 +219,12 @@ export default function ContactPage() {
             </Card>
           </div>
 
-          {/* Support Options */}
+          {/* طرق تواصل أخرى */}
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Other Ways to Contact the Sweets Shop</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">طرق أخرى للتواصل مع مطعم روكسي</h2>
               <p className="text-gray-600 mb-6">
-                Choose the support option that works best for your sweets needs. Our team is available to help you with any sweets order or inquiry!
+                اختر وسيلة التواصل المناسبة لك. فريقنا جاهز للرد على أي استفسار أو طلب.
               </p>
             </div>
 
@@ -249,25 +249,25 @@ export default function ContactPage() {
               ))}
             </div>
 
-            {/* FAQ Link */}
+            {/* الأسئلة الشائعة */}
             <Card className="bg-red-50 border-red-200">
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-red-900 mb-2">Frequently Asked Sweets Questions</h3>
-                <p className="text-red-700 text-sm mb-4">Find quick answers to common sweets questions in our FAQ section.</p>
+                <h3 className="font-semibold text-red-900 mb-2">الأسئلة الشائعة</h3>
+                <p className="text-red-700 text-sm mb-4">اعثر على إجابات سريعة لأكثر الأسئلة شيوعاً.</p>
                 <Button variant="outline" className="bg-transparent border-red-300 text-red-700 hover:bg-red-100">
-                  View FAQ
+                  عرض الأسئلة الشائعة
                 </Button>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* Map Section */}
+        {/* خريطة الفروع */}
         <div className="mt-16">
           <Card>
             <CardHeader>
-              <CardTitle>Find Our Sweets Shop Locations</CardTitle>
-              <p className="text-gray-600">Visit any of our branches for in-person orders, tastings, and support.</p>
+              <CardTitle>مواقع فروع مطعم روكسي</CardTitle>
+              <p className="text-gray-600">تفضل بزيارة أقرب فرع لطلب الشاورما أو الاستلام من المطعم.</p>
             </CardHeader>
             <CardContent>
               <div className="w-full flex flex-col md:flex-row gap-8">
@@ -275,7 +275,7 @@ export default function ContactPage() {
                   <MapWithMarkers branches={branches} />
                 </div>
                 <div className="w-full md:w-72 max-h-[350px] overflow-y-auto border-l md:pl-4">
-                  <h4 className="font-semibold mb-2 text-gray-900">Our Branches</h4>
+                  <h4 className="font-semibold mb-2 text-gray-900">فروعنا</h4>
                   {branches.map((branch, idx) => (
                     <div key={idx} className="mb-4 pb-2 border-b last:border-b-0">
                       <b className="text-red-700">{branch.name}</b><br />

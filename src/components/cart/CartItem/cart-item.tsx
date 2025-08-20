@@ -4,6 +4,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { availableRewards as loyaltyRewards } from '@/components/loyalty/rewardsData'
 import { Minus, Plus, Trash2, Heart } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
 import type { CartItem as CartItemType } from '@/types/cart'
@@ -42,7 +43,7 @@ export default function CartItemComponent({ item, onUpdateQuantity, onRemove, on
       {/* Product Image */}
       <div className="relative w-24 h-24 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
         <Image 
-          src={item.images?.[0] || "/placeholder.svg"} 
+          src={(item.images && item.images[0]) || (loyaltyRewards.find(r => r.productId === item.id || r.name === item.name)?.image as string) || "/placeholder.svg"} 
           alt={item.name} 
           fill 
           className="object-contain p-2" 

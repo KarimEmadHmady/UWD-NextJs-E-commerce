@@ -16,4 +16,15 @@ export interface Order {
   updatedAt?: string;
   paymentMethod?: string;
   shippingMethod?: string;
+  // Loyalty info captured at order time
+  redeemedRewards?: Array<{
+    id: string;
+    name: string;
+    type: 'discount' | 'freeShipping' | 'product';
+    value?: number;
+    isPercent?: boolean;
+    image?: string;
+    productId?: number;
+    redeemedAt?: string;
+  }>;
 } 

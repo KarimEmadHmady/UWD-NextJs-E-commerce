@@ -29,7 +29,11 @@ import AddressSelector from '@/components/checkout/address-selector';
 import { useUserAddresses } from '@/hooks/useUserAddresses';
 import AddressEditModal from '@/components/checkout/address-edit-modal';
 import { Edit } from 'lucide-react';
-import { selectRedeemedRewards } from '@/redux/features/loyalty/loyaltySelectors';
+import { selectSessionRedeemedRewards, selectLoyaltyPoints } from '@/redux/features/loyalty/loyaltySelectors';
+import { addPoints, attachOrderIdToCurrentRedeemed } from '@/redux/features/loyalty/loyaltySlice';
+import { useDispatch as useReduxDispatch, useSelector as useReduxSelector } from 'react-redux';
+import { selectUser as selectAuthUser } from '@/redux/features/auth/authSelectors';
+import { setActiveUser } from '@/redux/features/loyalty/loyaltySlice';
 
 import type { LocationData, ShippingOption } from '@/types';
 
@@ -63,7 +67,14 @@ export default function CheckoutPage() {
   const [editAddress, setEditAddress] = useState<any>(null);
   const [showOutOfCoverageModal, setShowOutOfCoverageModal] = useState(false);
 
-  const redeemedRewards = useSelector(selectRedeemedRewards);
+  const redeemedRewards = useReduxSelector(selectSessionRedeemedRewards);
+  const currentPoints = useReduxSelector(selectLoyaltyPoints);
+  const authUser = useReduxSelector(selectAuthUser);
+  const reduxDispatch = useReduxDispatch();
+  useEffect(() => {
+    const uid = (authUser && (authUser.id || (authUser as any).user_id || authUser.email)) || 'guest';
+    reduxDispatch(setActiveUser(String(uid)));
+  }, [reduxDispatch, authUser]);
 
   // إعداد بيانات العميل الافتراضية من بيانات اليوزر
   const defaultCustomerInfo = user ? {
@@ -121,15 +132,20 @@ export default function CheckoutPage() {
   // Apply loyalty rewards (discount and free shipping)
   const loyaltyDiscount = redeemedRewards
     .filter(r => r.type === 'discount')
-    .reduce((sum, r) => sum + (r.value || 0), 0);
+    .reduce((sum, r) => {
+      const treatAsPercent = typeof r.isPercent === 'boolean' ? r.isPercent : (r.id === 'discount10' || r.id === 'discount25')
+      const raw = treatAsPercent ? ((r.value || 0) / 100) * subtotal : (r.value || 0);
+      return sum + raw;
+    }, 0);
+  const loyaltyDiscountCapped = loyaltyDiscount; // no cap, user asked for exact percent
   const hasFreeShipping = redeemedRewards.some(r => r.type === 'freeShipping');
   if (hasFreeShipping) {
     shippingCost = 0;
   }
-  const total = Math.max(0, subtotal - loyaltyDiscount) + tax + shippingCost;
+  const total = Math.max(0, subtotal - loyaltyDiscountCapped) + tax + shippingCost;
 
   const orderSummary = {
-    subtotal: Math.max(0, subtotal - loyaltyDiscount),
+    subtotal: Math.max(0, subtotal - loyaltyDiscountCapped),
     tax,
     shipping: shippingCost,
     total,
@@ -289,8 +305,10 @@ export default function CheckoutPage() {
   const handleReview = (reviewData: any) => {
     setIsPlacingOrder(true);
     // بناء بيانات الأوردر
+    const newOrderId = Date.now().toString();
+    const rewardsWithOrderId = (redeemedRewards || []).map(r => ({ ...r, orderId: newOrderId }));
     const order = {
-      id: Date.now().toString(),
+      id: newOrderId,
       userId: user?.id || 'guest',
       items: cartItems,
       total: orderSummary.total,
@@ -299,9 +317,29 @@ export default function CheckoutPage() {
       address: location?.address || '',
       status: 'processing',
       createdAt: new Date().toISOString(),
+      subtotal: orderSummary.subtotal,
+      shipping: orderSummary.shipping,
+      tax: orderSummary.tax,
+      redeemedRewards: rewardsWithOrderId,
     };
+    // اربط مكافآت الجلسة الحالية بالأوردر في الستور
+    try { reduxDispatch(attachOrderIdToCurrentRedeemed(order.id)); } catch {}
     createOrder(order);
     dispatch(setReview(reviewData));
+    // Award loyalty points based on current tier and subtotal before discounts
+    try {
+      const tiers = [
+        { name: 'Bronze', minPoints: 0, multiplier: 0.5 },
+        { name: 'Silver', minPoints: 500, multiplier: 0.5 },
+        { name: 'Gold', minPoints: 1500, multiplier: 1.0 },
+        { name: 'Platinum', minPoints: 3000, multiplier: 1.5 },
+        { name: 'Diamond', minPoints: 5000, multiplier: 2.0 },
+      ];
+      const tier = tiers.reduce((acc, t) => (currentPoints >= t.minPoints ? t : acc));
+      const pointsEarned = Math.floor(subtotal * tier.multiplier);
+      reduxDispatch(addPoints(pointsEarned));
+      reduxDispatch(attachOrderIdToCurrentRedeemed(order.id));
+    } catch {}
     dispatch(clearCart());
     router.push('/order-confirmation');
   }
@@ -552,10 +590,10 @@ export default function CheckoutPage() {
                     <span>Shipping ({shippingMethod})</span>
                     <span>{formatPrice(orderSummary.shipping)}</span>
                   </div>
-                  {loyaltyDiscount > 0 && (
+                  {loyaltyDiscountCapped > 0 && (
                     <div className="flex justify-between">
                       <span>Discount (Loyalty)</span>
-                      <span>-{formatPrice(loyaltyDiscount)}</span>
+                      <span>-{formatPrice(loyaltyDiscountCapped)}</span>
                     </div>
                   )}
                   <div className="flex justify-between">

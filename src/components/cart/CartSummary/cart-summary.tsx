@@ -16,7 +16,23 @@ interface CartSummaryProps {
   onCheckout: () => void
 }
 
+import { useSelector } from 'react-redux'
+import { selectSessionRedeemedRewards } from '@/redux/features/loyalty/loyaltySelectors'
+
 export default function CartSummary({ subtotal, shipping, tax, discount, total, onCheckout }: CartSummaryProps) {
+  // Use session-only rewards for current order calculations
+  const redeemed = useSelector(selectSessionRedeemedRewards)
+  const rawDiscount = redeemed
+    .filter(r => r.type === 'discount')
+    .reduce((sum, r) => {
+      const treatAsPercent = typeof r.isPercent === 'boolean' ? r.isPercent : (r.id === 'discount10' || r.id === 'discount25')
+      const val = treatAsPercent ? ((r.value || 0) / 100) * subtotal : (r.value || 0)
+      return sum + val
+    }, 0)
+  const loyaltyDiscount = rawDiscount // no cap per user request
+  const hasFreeShipping = redeemed.some(r => r.type === 'freeShipping')
+  const effectiveShipping = hasFreeShipping ? 0 : shipping
+  const computedTotal = Math.max(0, subtotal - loyaltyDiscount) + tax + effectiveShipping
   const [promoCode, setPromoCode] = useState("")
   const [isApplyingPromo, setIsApplyingPromo] = useState(false)
 
@@ -69,22 +85,32 @@ export default function CartSummary({ subtotal, shipping, tax, discount, total, 
         </div>
         <div className="flex justify-between text-gray-600">
           <span>Shipping</span>
-          <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
+          <span>{effectiveShipping === 0 ? "Free" : formatPrice(effectiveShipping)}</span>
         </div>
         <div className="flex justify-between text-gray-600">
           <span>Tax</span>
           <span>{formatPrice(tax)}</span>
         </div>
-        {discount > 0 && (
-          <div className="flex justify-between text-green-600">
-            <span>Discount</span>
-            <span>-{formatPrice(discount)}</span>
-          </div>
+        {(discount > 0 || loyaltyDiscount > 0) && (
+          <>
+            {discount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Discount</span>
+                <span>-{formatPrice(discount)}</span>
+              </div>
+            )}
+            {loyaltyDiscount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Discount (Loyalty)</span>
+                <span>-{formatPrice(loyaltyDiscount)}</span>
+              </div>
+            )}
+          </>
         )}
         <hr className="border-gray-200" />
         <div className="flex justify-between text-lg font-semibold text-gray-900">
           <span>Total</span>
-          <span>{formatPrice(total)}</span>
+          <span>{formatPrice(computedTotal)}</span>
         </div>
       </div>
 

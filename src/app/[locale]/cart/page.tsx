@@ -9,52 +9,13 @@ import { useCart } from "@/hooks/useCart"
 import RevealOnScroll from "@/components/common/RevealOnScroll"
 import React from "react"
 import LoyaltyPanel, { LoyaltyReward } from "@/components/loyalty/LoyaltyPanel"
+import { availableRewards as rewardsData } from "@/components/loyalty/rewardsData"
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectUser } from '@/redux/features/auth/authSelectors'
+import { setActiveUser } from '@/redux/features/loyalty/loyaltySlice'
 
-const availableRewards: LoyaltyReward[] = [
-  {
-    id: "freeDrink",
-    name: "مشروب مجاني",
-    pointsCost: 300,
-    description: "احصل على مشروب مجاني مع طلبك",
-    type: "product",
-    productId: 900001,
-    productName: "مشروب مجاني",
-    productPrice: 0,
-  },
-  {
-    id: "freeFries",
-    name: "بطاطس مجانية",
-    pointsCost: 400,
-    description: "بطاطس مقلية مجانية مع أي وجبة",
-    type: "product",
-    productId: 900002,
-    productName: "بطاطس مجانية",
-    productPrice: 0,
-  },
-  {
-    id: "freeDelivery",
-    name: "توصيل مجاني",
-    pointsCost: 350,
-    description: "توصيل مجاني للطلبات فوق 150 جنيه",
-    type: "freeShipping",
-  },
-  {
-    id: "discount10",
-    name: "خصم 10 جنيه",
-    pointsCost: 500,
-    description: "خصم 10 جنيه على طلبك القادم (حد أدنى 150 جنيه)",
-    type: "discount",
-    value: 10,
-  },
-  {
-    id: "discount25",
-    name: "خصم 25 جنيه",
-    pointsCost: 1200,
-    description: "خصم 25 جنيه على طلبك القادم (حد أدنى 200 جنيه)",
-    type: "discount",
-    value: 25,
-  },
-];
+const availableRewards: LoyaltyReward[] = rewardsData;
 
 /**
  * CartPage component - Displays the user's shopping cart with items, summary, and checkout option.
@@ -76,7 +37,16 @@ export default function CartPage() {
     serverCartTotal,
     fetchCartFromServer,
     addCustomItem,
+    removeLocalItemById,
+    clear,
   } = useCart()
+
+  const dispatch = useDispatch();
+  const authUser = useSelector(selectUser);
+  React.useEffect(() => {
+    const uid = (authUser && (authUser.id || (authUser as any).user_id || authUser.email)) || 'guest';
+    dispatch(setActiveUser(String(uid)));
+  }, [dispatch, authUser]);
 
   const handleRewardRedeemed = (reward: LoyaltyReward) => {
     if (reward.type === 'product' && reward.productId) {
@@ -85,7 +55,7 @@ export default function CartPage() {
         name: reward.productName || reward.name,
         description: '',
         price: reward.productPrice ?? 0,
-        images: [],
+        images: reward.image ? [reward.image] : [],
         category: 'Reward',
         rating: 0,
         stock: 1,
@@ -94,6 +64,15 @@ export default function CartPage() {
       }, 1);
     }
     // discount and freeShipping will be applied in checkout totals via loyalty state
+  }
+
+  const handleRewardUnredeemed = (reward: LoyaltyReward) => {
+    if (reward.type === 'product' && reward.productId) {
+      // تقليل عنصر واحد من نفس منتج المكافأة (بدل الحذف الكامل)
+      // لو عايز حذف كامل، استخدم removeLocalItemById
+      const dec = (useCart() as any).decrementLocalItemById as (id: number) => void
+      if (typeof dec === 'function') dec(reward.productId)
+    }
   }
 
   const moveToWishlist = (id: number) => {
@@ -175,7 +154,13 @@ export default function CartPage() {
         </div>
 
         <div className="mb-8 mx-3">
-          <LoyaltyPanel subtotal={subtotal} availableRewards={availableRewards} onRewardRedeemed={handleRewardRedeemed} />
+          <LoyaltyPanel
+            subtotal={subtotal}
+            availableRewards={availableRewards}
+            onRewardRedeemed={handleRewardRedeemed}
+            onRewardUnredeemed={handleRewardUnredeemed}
+            allowCancel={true}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -193,11 +178,14 @@ export default function CartPage() {
               />
             ))}
 
-            {/* Continue Shopping */}
-            <div className="pt-4">
+            {/* Actions */}
+            <div className="pt-4 flex flex-wrap gap-3">
               <Button variant="outline" onClick={() => router.push("/shop")} className="bg-transparent">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Continue Shopping
+              </Button>
+              <Button variant="outline" onClick={() => clear()} className="bg-transparent text-red-600 border-red-200 hover:text-red-700 cursor-pointer">
+                Clear Cart
               </Button>
             </div>
           </div>

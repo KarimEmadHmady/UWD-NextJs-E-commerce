@@ -7,9 +7,15 @@ import type {
   UpdateCartResponse 
 } from '@/types';
 
-export async function addToCartApi(productId: number, quantity: number): Promise<AddToCartResponse> {
-  const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/add?product_id=${productId}&quantity=${quantity}`, {
+export async function addToCartApi(productId: number, quantity: number, variations?: any[]): Promise<AddToCartResponse> {
+  // Backend expects JSON body. Support both simple and variations payloads.
+  const body = variations && Array.isArray(variations) && variations.length > 0
+    ? { product_id: productId, variations }
+    : { product_id: productId, quantity };
+  const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/add`, {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
     useAuthToken: true,
   });
   return response;
@@ -35,3 +41,10 @@ export async function removeFromCartApi(key: string) {
     useAuthToken: true,
   });
 } 
+
+export async function clearCartApi() {
+  return apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/clear`, {
+    method: 'POST',
+    useAuthToken: true,
+  });
+}

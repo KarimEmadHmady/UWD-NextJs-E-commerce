@@ -23,7 +23,8 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
     total,
     updateItemQuantity,
     removeItem,
-    fetchCartFromServer
+    fetchCartFromServer,
+    clear
   } = useCart()
 
   // منع التمرير على الجسم عند فتح السلة الجانبية
@@ -125,6 +126,7 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
               total={total}
               onCheckout={handleCheckout}
             />
+
             <Button
               onClick={() => {
                 onClose()
@@ -134,6 +136,15 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
               className="w-full mt-4 bg-transparent cursor-pointer"
             >
               View Full Cart <ArrowRight className="w-4 h-4 ml-2 cursor-pointer" />
+            </Button>
+            <Button
+              onClick={() => {
+                clear();
+              }}
+              variant="outline"
+              className="w-full mt-3 bg-transparent text-red-600 border-red-200 hover:text-red-700 cursor-pointer"
+            >
+               Clear Cart
             </Button>
           </div>
         )}

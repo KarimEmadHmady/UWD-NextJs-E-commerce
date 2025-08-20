@@ -123,8 +123,8 @@ export default function OrderConfirmationPage() {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-12 h-12 text-green-600" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Sweets Order Confirmed!</h1>
-            <p className="text-lg text-gray-600 mb-4">Thank you for your order. Your delicious sweets are being prepared!</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2"> Order Confirmed!</h1>
+            <p className="text-lg text-gray-600 mb-4">Thank you for your order. Your delicious  are being prepared!</p>
             <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
               <span>Order #{latestOrder.id}</span>
               <span>•</span>
@@ -151,7 +151,7 @@ export default function OrderConfirmationPage() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">Order Confirmed</h3>
-                        <p className="text-sm text-gray-600">We've received your sweets order and are preparing it for you!</p>
+                        <p className="text-sm text-gray-600">We've received your  order and are preparing it for you!</p>
                       </div>
                     </div>
                     <Badge className="bg-green-100 text-green-800">Processing</Badge>
@@ -177,7 +177,7 @@ export default function OrderConfirmationPage() {
               {/* Order Items */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Sweets Items</CardTitle>
+                  <CardTitle> Items</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -197,6 +197,25 @@ export default function OrderConfirmationPage() {
                         </div>
                       </div>
                     ))}
+                    {Array.isArray(latestOrder.redeemedRewards) && latestOrder.redeemedRewards.length > 0 && (
+                      <div className="mt-4">
+                        <h4 className="font-semibold text-gray-900 mb-2">Loyalty Rewards Used</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {latestOrder.redeemedRewards
+                            .filter((r: any) => !r.orderId || r.orderId === latestOrder.id)
+                            .map((r: any) => (
+                            <div key={r.id} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg bg-white">
+                              <img src={r.image || "/placeholder.svg"} alt={r.name} className="w-12 h-12 object-cover rounded" />
+                              <div className="flex-1">
+                                <div className="font-medium text-gray-900">{r.name}</div>
+                                <div className="text-xs text-gray-500">{r.type === 'discount' && r.value ? (r.isPercent ? `${r.value}%` : `E.L ${r.value.toFixed?.(2) || r.value}`) : r.type}</div>
+                                {r.redeemedAt && <div className="text-xs text-gray-400">{new Date(r.redeemedAt).toLocaleDateString()}</div>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -205,7 +224,7 @@ export default function OrderConfirmationPage() {
               <div className="flex flex-col sm:flex-row gap-4 relative">
                 <Button onClick={() => { setShowTrackMsg(true); setTimeout(() => setShowTrackMsg(false), 2000); }} className="flex-1 text-black  hover:bg-gray-50 border-[1px] border-gray-200 cursor-pointer border-inputborder-input">
                   <Package className="w-4 h-4 mr-2 text-black" />
-                  Track Sweets Order
+                  Track  Order
                 </Button>
                 <Button variant="outline" className="flex-1 bg-transparent" onClick={handleDownload}>
                   <Download className="w-4 h-4 mr-2" />
@@ -213,7 +232,7 @@ export default function OrderConfirmationPage() {
                 </Button>
                 <Button variant="outline" className="flex-1 bg-transparent" onClick={() => setShowShare(v => !v)}>
                   <Share2 className="w-4 h-4 mr-2" />
-                  Share Sweets Order
+                  Share  Order
                 </Button>
                 {showShare && (
                   <div className="absolute top-14 right-0 min-w-[180px] bg-white border border-gray-200 rounded-xl shadow-lg p-2 z-20 flex flex-col gap-2 animate-fade-in">
@@ -249,7 +268,7 @@ export default function OrderConfirmationPage() {
             <div className="lg:col-span-1">
               <Card className="sticky top-4">
                 <CardHeader>
-                  <CardTitle>Sweets Order Summary</CardTitle>
+                  <CardTitle> Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -269,6 +288,14 @@ export default function OrderConfirmationPage() {
                       <span>Tax</span>
                       <span>{formatPrice(orderSummary.tax)}</span>
                     </div>
+                    {Array.isArray(latestOrder.redeemedRewards) && latestOrder.redeemedRewards.filter((r: any) => !r.orderId || r.orderId === latestOrder.id).some((r: any) => r.type === 'discount') && (
+                      <div className="flex justify-between text-green-600">
+                        <span>Discount (Loyalty)</span>
+                        <span>
+                          -{formatPrice(Math.max(0, orderSummary.subtotal - latestOrder.subtotal))}
+                        </span>
+                      </div>
+                    )}
                     <hr className="border-gray-200" />
                     <div className="flex justify-between text-lg font-semibold text-gray-900">
                       <span>Total</span>
@@ -285,17 +312,17 @@ export default function OrderConfirmationPage() {
                       </div>
                       <div className="flex items-start gap-2">
                         <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
-                        <span>We'll notify you when your sweets are out for delivery</span>
+                        <span>We'll notify you when your  are out for delivery</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
-                        <span>Enjoy your fresh and delicious sweets!</span>
+                        <span>Enjoy your fresh and delicious !</span>
                       </div>
                     </div>
                   </div>
 
                   <Button onClick={() => router.push("/shop")} className="w-full mt-6 bg-red-600 hover:bg-red-700">
-                    Order More Sweets
+                    Order More 
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </CardContent>

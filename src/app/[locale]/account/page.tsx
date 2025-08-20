@@ -33,6 +33,11 @@ import OutOfCoverageModal from '@/components/common/ui/OutOfCoverageModal';
 import { CustomButton } from "@/components/common/Button"
 import LoyaltyPanel, { LoyaltyReward } from "@/components/loyalty/LoyaltyPanel"
 import { availableRewards as defaultRewards } from "@/components/loyalty/rewardsData"
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { setActiveUser } from '@/redux/features/loyalty/loyaltySlice';
+import { selectLoyaltyPoints, selectRedeemedRewards } from '@/redux/features/loyalty/loyaltySelectors';
+import { unredeemReward, clearRedeemed } from '@/redux/features/loyalty/loyaltySlice';
 
 /**
  * AccountPage component - Displays the user's profile, stats, recent orders, wishlist, addresses, and settings in tabbed sections.
@@ -80,6 +85,12 @@ export default function AccountPage() {
     email: "guest@example.com",
     phone_number: "",
   };
+  const dispatch = useDispatch();
+  useEffect(() => {
+    // Sync loyalty slice with current user id (or guest)
+    const uid = (userRedux && (userRedux.id || (userRedux as any).user_id || userRedux.email)) || 'guest';
+    dispatch(setActiveUser(String(uid)));
+  }, [dispatch, userRedux]);
   
   const userAvatar = "/placeholder.svg?height=100&width=100";
 
@@ -232,13 +243,70 @@ export default function AccountPage() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="flex w-full gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent px-0 mb-2 lg:grid lg:grid-cols-5 lg:gap-0 lg:overflow-visible lg:px-0 lg:mb-0 text-gray-900 cursor-pointer ">
+          <TabsList className="flex w-full gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent px-0 mb-2 lg:grid lg:grid-cols-6 lg:gap-0 lg:overflow-visible lg:px-0 lg:mb-0 text-gray-900 cursor-pointer ">
             <TabsTrigger value="overview" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base ">Overview</TabsTrigger>
             <TabsTrigger value="orders" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base ">Orders</TabsTrigger>
             <TabsTrigger value="wishlist" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Wishlist</TabsTrigger>
             <TabsTrigger value="addresses" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Addresses</TabsTrigger>
+            <TabsTrigger value="loyalty" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Loyalty</TabsTrigger>
             <TabsTrigger value="settings" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Settings</TabsTrigger>
           </TabsList>
+          <TabsContent value="loyalty" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Loyalty</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  const points = useSelector(selectLoyaltyPoints);
+                  const redeemed = useSelector(selectRedeemedRewards);
+                  return (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <div className="text-gray-900">
+                          <div className="text-sm text-gray-600">Current Points</div>
+                          <div className="text-2xl font-bold">{points.toLocaleString()} pts</div>
+                        </div>
+                        <div className="flex gap-2">
+                          {redeemed.length > 0 && (
+                            <Button variant="outline" className="bg-transparent cursor-pointer" onClick={() => dispatch(clearRedeemed())}>Clear History</Button>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-3">Redeemed Rewards</h4>
+                        {redeemed.length === 0 ? (
+                          <div className="text-gray-500">No rewards redeemed yet.</div>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {redeemed.map((r) => (
+                              <div key={r.id} className="border rounded-lg p-4 bg-white flex gap-3 items-center">
+                                <img
+                                  src={(typeof r.image === 'string' && r.image.startsWith('http')) ? r.image : (r.image || '/placeholder.svg')}
+                                  alt={r.name}
+                                  className="w-16 h-16 object-cover rounded"
+                                />
+                                <div className="flex-1">
+                                  <div className="font-semibold text-gray-900">{r.name}</div>
+                                  <div className="text-xs text-gray-500">
+                                    {isNaN(Date.parse(r.redeemedAt)) ? '' : new Date(r.redeemedAt).toLocaleDateString()}
+                                  </div>
+                                  <div className="text-xs text-gray-600">Cost: {r.pointsCost} pts</div>
+                                  {r.orderId && (
+                                    <div className="text-xs text-gray-600">Order: #{r.orderId}</div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="overview" className="mt-6 ">
               <div className="mb-6">
@@ -257,7 +325,7 @@ export default function AccountPage() {
                           name: reward.productName || reward.name,
                           description: '',
                           price: reward.productPrice ?? 0,
-                          images: [],
+                          images: reward.image ? [reward.image] : [],
                           category: 'Reward',
                           rating: 0,
                           stock: 1,
@@ -266,6 +334,8 @@ export default function AccountPage() {
                         }, 1);
                       }
                     }}
+                    allowCancel={false}
+                    showRedeemButtons={false}
                   />
                 </CardContent>
             </Card>

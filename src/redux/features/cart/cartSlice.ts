@@ -60,6 +60,13 @@ const cartSlice = createSlice({
       state.shipping = 0;
       state.total = state.subtotal + state.tax + state.shipping;
     },
+    removeFromCartByKey: (state, action: PayloadAction<string>) => {
+      state.items = state.items.filter((item) => item.key !== action.payload);
+      state.subtotal = state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+      state.tax = state.subtotal * 0.14;
+      state.shipping = 0;
+      state.total = state.subtotal + state.tax + state.shipping;
+    },
     updateQuantity: (state, action: PayloadAction<{ id: number; quantity: number }>) => {
       const item = state.items.find((item) => item.id === action.payload.id);
       if (item) {
@@ -104,6 +111,7 @@ const cartSlice = createSlice({
 export const { 
   addToCart, 
   removeFromCart, 
+  removeFromCartByKey,
   updateQuantity, 
   clearCart, 
   toggleCart,

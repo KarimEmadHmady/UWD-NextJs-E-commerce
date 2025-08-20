@@ -8,9 +8,9 @@ export default function Footer() {
     <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
         <div className="grid grid-cols-2 md:col-span-3 lg:grid-cols-6 gap-y-16 gap-x-12">
             <div className="col-span-2 md:col-span-3 lg:col-span-2 lg:pr-8">
-                <img className="w-auto h-16" src="/logo.png" alt="Sweetness Sweets" height="100px" />
+                <img className="w-auto h-16" src="/logo.png" alt="مطعم روكسي" height="100px" />
 
-                <p className="text-base leading-relaxed text-gray-600 mt-7">Sweetness Sweets offers you the most delicious and finest oriental and western sweets, freshly made every day. Experience authentic taste and high quality with fast and premium service.</p>
+                <p className="text-base leading-relaxed text-gray-600 mt-7">مطعم روكسي يقدم لكم أشهى ساندويتشات الشاورما والوجبات السريعة بجودة عالية وطعم أصيل. بنستخدم أفضل المكونات الطازجة ونوفر خدمة سريعة وتجربة مميزة لكل عميل.</p>
 
                 <ul className="flex items-center space-x-3 mt-9">
                     <li>
@@ -51,60 +51,60 @@ export default function Footer() {
             </div>
 
             <div>
-                <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">About</p>
+                <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">عن روكسي</p>
 
                 <ul className="mt-6 space-y-4">
                     <li>
-                        <Link href="/search" title="Search" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Search </Link>
+                        <Link href="/search" title="بحث" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> بحث </Link>
                     </li>
                     <li>
-                        <Link href="/shop" title="Sweets Menu" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Sweets Menu </Link>
+                        <Link href="/shop" title="قائمة الطعام" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> قائمة الطعام </Link>
                     </li>
                     <li>
-                        <Link href="/account" title="Profile" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Profile </Link>
+                        <Link href="/account" title="الملف الشخصي" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> الملف الشخصي </Link>
                     </li>
                     <li>
-                        <Link href="/contact" title="Contact Us" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Contact Us </Link>
+                        <Link href="/contact" title="اتصل بنا" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> اتصل بنا </Link>
                     </li>
                 </ul>
             </div>
 
             <div>
-                <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">Support</p>
+                <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">الدعم</p>
 
                 <ul className="mt-6 space-y-4">
                     <li>
-                        <Link href="/customer-support" title="Customer Support" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Customer Support </Link>
+                        <Link href="/customer-support" title="خدمة العملاء" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> خدمة العملاء </Link>
                     </li>
                     <li>
-                        <Link href="/privacy-policy" title="Privacy Policy" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Privacy Policy </Link>
+                        <Link href="/privacy-policy" title="سياسة الخصوصية" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> سياسة الخصوصية </Link>
                     </li>
                     <li>
-                        <Link href="/terms-conditions" title="Terms & Conditions" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> Terms & Conditions </Link>
+                        <Link href="/terms-conditions" title="الشروط والأحكام" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> الشروط والأحكام </Link>
                     </li>
                     <li>
-                        <Link href="/faq" title="FAQ" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> FAQ </Link>
+                        <Link href="/faq" title="الأسئلة الشائعة" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> الأسئلة الشائعة </Link>
                     </li>
                 </ul>
             </div>
 
             <div className="col-span-2 md:col-span-1 lg:col-span-2 lg:pl-8">
-                <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">Subscribe to our newsletter</p>
+                <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">اشترك في النشرة البريدية</p>
 
                 <form action="#" method="POST" className="mt-6">
                     <div>
-                        <label className="sr-only">Email</label>
-                        <input type="email" name="email" id="email" placeholder="Enter your email" className="block w-full p-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-red-600 caret-red-600" />
+                        <label className="sr-only">البريد الإلكتروني</label>
+                        <input type="email" name="email" id="email" placeholder="أدخل بريدك الإلكتروني" className="block w-full p-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-red-600 caret-red-600" />
                     </div>
 
-                    <CustomButton type="submit" className="inline-flex items-center justify-center px-6 py-4 mt-3 font-semibold text-white transition-all duration-200 rounded-md  ">Subscribe</CustomButton>
+                    <CustomButton type="submit" className="inline-flex items-center justify-center px-6 py-4 mt-3 font-semibold text-white transition-all duration-200 rounded-md  ">اشترك الآن</CustomButton>
                 </form>
             </div>
         </div>
 
         <hr className="mt-16 mb-10 border-gray-200" />
 
-        <p className="text-sm text-center text-gray-600">© All rights reserved 2025 for Roxy</p>
+        <p className="text-sm text-center text-gray-600">© جميع الحقوق محفوظة 2025 لمطعم روكسي</p>
     </div>
 </section>
  )
