@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import { usePathname } from "next/navigation"
 import { useCart } from "@/hooks/useCart"
 import { useWishlist } from "@/hooks/useWishlist"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
@@ -37,19 +37,21 @@ interface MenuItem {
 }
 
 export default function Navigation() {
+  const t = useTranslations('Navigation');
+  
   // State for side cart visibility
   const [isSideCartOpen, setIsSideCartOpen] = useState(false);
   // Main navigation menu items
   const menuItems: MenuItem[] = [
-    { label: 'Home', href: '/' },
-    { label: 'Shop', href: '/shop' },
-    { label: 'Categories', href: '/categore' },
-    { label: 'Cart', href: '/cart' },
-    { label: 'Checkout', href: '/checkout' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Wishlist', href: '/wishlist' },
-    { label: 'Orders', href: '/order-confirmation' },
-    { label: 'Profile', href: '/account' },
+    { label: t('home'), href: '/' },
+    { label: t('shop'), href: '/shop' },
+    { label: t('categories'), href: '/categore' },
+    { label: t('cart'), href: '/cart' },
+    { label: t('checkout'), href: '/checkout' },
+    { label: t('contact'), href: '/contact' },
+    { label: t('wishlist'), href: '/wishlist' },
+    { label: t('orders'), href: '/order-confirmation' },
+    { label: t('profile'), href: '/account' },
   ];
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([])
@@ -75,19 +77,6 @@ export default function Navigation() {
       }
     }
   }, [isAuthenticated, logout]);
-
-  // Menu translations
-  const menuTranslations: Record<string, { en: string; ar: string }> = {
-    Home: { en: 'Home', ar: 'الرئيسية' },
-    Shop: { en: 'Shop', ar: 'المتجر' },
-    Categories: { en: 'Categories', ar: 'التصنيفات' },
-    Cart: { en: 'Cart', ar: 'عربة التسوق' },
-    Checkout: { en: 'Checkout', ar: 'الدفع' },
-    Contact: { en: 'Contact', ar: 'اتصل بنا' },
-    Wishlist: { en: 'Wishlist', ar: 'المفضلة' },
-    Orders: { en: 'order-confirmation', ar: 'تاكيد الطلب' },
-    Profile: { en: 'account', ar: 'الملف الشخصي' },
-  };
 
   const router = useRouter();
   const pathname = usePathname();
@@ -384,7 +373,7 @@ export default function Navigation() {
               >
                 <Heart className={`w-5 h-5 ${wishlistCount > 0 ? "fill-red-500 text-red-500" : "text-black"}`} />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-[5px] -right-[8px] bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center border-2 bg-red-500 pb-[9px]">
+                  <span className="absolute -top-[5px] -right-[8px] bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center border-2 bg-red-500 ">
                     {wishlistCount}
                   </span>
                 )}
@@ -432,7 +421,7 @@ export default function Navigation() {
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-[5px] -right-[8px] bg-red-600 text-white text-xs font-bold rounded-full  min-w-[18px] h-[18px] flex items-center justify-center border-2 bg-black pb-[9px] ">
+                  <span className="absolute -top-[5px] -right-[8px] bg-red-600 text-white text-xs font-bold rounded-full  min-w-[18px] h-[18px] flex items-center justify-center border-2 bg-black ">
                     {cartCount}
                   </span>
                 )}
@@ -469,7 +458,7 @@ export default function Navigation() {
                 className="block px-6 py-3 text-base font-medium text-black hover:text-red-600 md:hover:text-bule-600 transition-colors duration-200"
                 onClick={toggleMobileMenu}
               >
-                {menuTranslations[item.label]?.[lang] || item.label}
+                {item.label}
               </Link>
             </li>
           ))}
@@ -477,7 +466,7 @@ export default function Navigation() {
         
         {/* Language Switcher and Social Media Icons at the bottom - improved style */}
         <div className="flex flex-col items-center justify-end mt-12 mb-8 gap-4">
-        <img className="w-auto h-35 mb-13" src="/logo.png" alt="Sweetness Sweets" height="100px" />
+        <img className="w-auto h-35 mb-13" src="/logo.png" alt="" height="100px" />
           <div className="flex flex-row items-center justify-between gap-2 w-[70%]">
           <div className="flex justify-center gap-2 mb-2">
             <button

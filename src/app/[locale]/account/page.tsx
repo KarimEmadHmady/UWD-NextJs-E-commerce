@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { User, Package, Heart, Settings, MapPin, CreditCard, Bell, Shield, LogOut,  Home, ChevronRight, Phone } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useLocale } from "next-intl"
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/avatar/avatar"
@@ -45,6 +46,8 @@ import { unredeemReward, clearRedeemed } from '@/redux/features/loyalty/loyaltyS
  */
 export default function AccountPage() {
   const router = useRouter();
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
   const [activeTab, setActiveTab] = useState("overview")
   const { start, stop } = useGlobalLoading();
   const { addresses, defaultAddress, add, update, remove, setDefault } = useAddress();
@@ -167,7 +170,7 @@ export default function AccountPage() {
           <nav className="flex items-center space-x-2 text-sm">
             <Home className="w-4 h-4 text-gray-400" />
             <ChevronRight className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-600">Profile</span>
+            <span className="text-gray-600">{isArabic ? 'الملف الشخصي' : 'Profile'}</span>
           </nav>
         </div>
       </div>
@@ -205,7 +208,7 @@ export default function AccountPage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
-                    <p className="text-sm text-gray-600">Total Orders</p>
+                    <p className="text-sm text-gray-600">{isArabic ? 'إجمالي الطلبات' : 'Total Orders'}</p>
                   </div>
                 </div>
               </CardContent>
@@ -219,7 +222,7 @@ export default function AccountPage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">{formatPrice(totalSpent)}</p>
-                    <p className="text-sm text-gray-600">Total Spent</p>
+                    <p className="text-sm text-gray-600">{isArabic ? 'إجمالي الإنفاق' : 'Total Spent'}</p>
                   </div>
                 </div>
               </CardContent>
@@ -233,7 +236,7 @@ export default function AccountPage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">{wishlistItems.length}</p>
-                    <p className="text-sm text-gray-600">Wishlist Items</p>
+                    <p className="text-sm text-gray-600">{isArabic ? 'منتجات المفضلة' : 'Wishlist Items'}</p>
                   </div>
                 </div>
               </CardContent>
@@ -244,17 +247,39 @@ export default function AccountPage() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="flex w-full gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent px-0 mb-2 lg:grid lg:grid-cols-6 lg:gap-0 lg:overflow-visible lg:px-0 lg:mb-0 text-gray-900 cursor-pointer ">
-            <TabsTrigger value="overview" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base ">Overview</TabsTrigger>
-            <TabsTrigger value="orders" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base ">Orders</TabsTrigger>
-            <TabsTrigger value="wishlist" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Wishlist</TabsTrigger>
-            <TabsTrigger value="addresses" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Addresses</TabsTrigger>
-            <TabsTrigger value="loyalty" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Loyalty</TabsTrigger>
-            <TabsTrigger value="settings" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base">Settings</TabsTrigger>
+            <TabsTrigger value="overview" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base flex items-center gap-2">
+              <svg className="w-4 h-4 hidden lg:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              {isArabic ? 'نظرة عامة' : 'Overview'}
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base flex items-center gap-2">
+              <Package className="w-4 h-4 hidden lg:block" />
+              {isArabic ? 'الطلبات' : 'Orders'}
+            </TabsTrigger>
+            <TabsTrigger value="wishlist" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base flex items-center gap-2">
+              <Heart className="w-4 h-4 hidden lg:block" />
+              {isArabic ? 'المفضلة' : 'Wishlist'}
+            </TabsTrigger>
+            <TabsTrigger value="addresses" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base flex items-center gap-2">
+              <MapPin className="w-4 h-4 hidden lg:block" />
+              {isArabic ? 'العناوين' : 'Addresses'}
+            </TabsTrigger>
+            <TabsTrigger value="loyalty" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base flex items-center gap-2">
+              <svg className="w-4 h-4 hidden lg:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {isArabic ? 'الولاء' : 'Loyalty'}
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base flex items-center gap-2">
+              <Settings className="w-4 h-4 hidden lg:block" />
+              {isArabic ? 'الإعدادات' : 'Settings'}
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="loyalty" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Your Loyalty</CardTitle>
+                <CardTitle>{isArabic ? 'نقاط الولاء' : 'Your Loyalty'}</CardTitle>
               </CardHeader>
               <CardContent>
                 {(() => {
@@ -264,19 +289,19 @@ export default function AccountPage() {
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div className="text-gray-900">
-                          <div className="text-sm text-gray-600">Current Points</div>
-                          <div className="text-2xl font-bold">{points.toLocaleString()} pts</div>
+                          <div className="text-sm text-gray-600">{isArabic ? 'النقاط الحالية' : 'Current Points'}</div>
+                          <div className="text-2xl font-bold">{points.toLocaleString()} {isArabic ? 'نقطة' : 'pts'}</div>
                         </div>
                         <div className="flex gap-2">
                           {redeemed.length > 0 && (
-                            <Button variant="outline" className="bg-transparent cursor-pointer" onClick={() => dispatch(clearRedeemed())}>Clear History</Button>
+                            <Button variant="outline" className="bg-transparent cursor-pointer" onClick={() => dispatch(clearRedeemed())}>{isArabic ? 'مسح السجل' : 'Clear History'}</Button>
                           )}
                         </div>
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-3">Redeemed Rewards</h4>
+                        <h4 className="font-semibold text-gray-900 mb-3">{isArabic ? 'المكافآت المستبدلة' : 'Redeemed Rewards'}</h4>
                         {redeemed.length === 0 ? (
-                          <div className="text-gray-500">No rewards redeemed yet.</div>
+                          <div className="text-gray-500">{isArabic ? 'لا يوجد مكافآت مستبدلة بعد.' : 'No rewards redeemed yet.'}</div>
                         ) : (
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {redeemed.map((r) => (
@@ -291,9 +316,9 @@ export default function AccountPage() {
                                   <div className="text-xs text-gray-500">
                                     {isNaN(Date.parse(r.redeemedAt)) ? '' : new Date(r.redeemedAt).toLocaleDateString()}
                                   </div>
-                                  <div className="text-xs text-gray-600">Cost: {r.pointsCost} pts</div>
+                                  <div className="text-xs text-gray-600">{isArabic ? 'التكلفة:' : 'Cost:'} {r.pointsCost} {isArabic ? 'نقطة' : 'pts'}</div>
                                   {r.orderId && (
-                                    <div className="text-xs text-gray-600">Order: #{r.orderId}</div>
+                                    <div className="text-xs text-gray-600">{isArabic ? 'طلب:' : 'Order:'} #{r.orderId}</div>
                                   )}
                                 </div>
                               </div>
@@ -312,7 +337,7 @@ export default function AccountPage() {
               <div className="mb-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Loyalty</CardTitle>
+                  <CardTitle>{isArabic ? 'الولاء' : 'Loyalty'}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <LoyaltyPanel
@@ -345,7 +370,7 @@ export default function AccountPage() {
               {/* Recent Orders */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Orders</CardTitle>
+                  <CardTitle>{isArabic ? 'الطلبات الأخيرة' : 'Recent Orders'}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -357,7 +382,7 @@ export default function AccountPage() {
                         <div>
                           <p className="font-semibold text-gray-900">{order.id}</p>
                           <p className="text-sm text-gray-600">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
-                          <p className="text-sm text-gray-600">{order.items.length} items</p>
+                          <p className="text-sm text-gray-600">{isArabic ? `${order.items.length} منتج` : `${order.items.length} items`}</p>
                         </div>
                         <div className="text-right">
                           <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
@@ -367,7 +392,7 @@ export default function AccountPage() {
                     ))}
                   </div>
                   <Button variant="outline" className="w-full mt-4 bg-transparent cursor-pointer" onClick={() => setActiveTab('orders')}>
-                    View All Orders
+                    {isArabic ? 'عرض كل الطلبات' : 'View All Orders'}
                   </Button>
                 </CardContent>
               </Card>
@@ -375,21 +400,21 @@ export default function AccountPage() {
               {/* Quick Actions */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
+                  <CardTitle>{isArabic ? 'إجراءات سريعة' : 'Quick Actions'}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer" onClick={() => setActiveTab('wishlist')}>
                       <Heart className="w-4 h-4 mr-3" />
-                      View Wishlist
+                      {isArabic ? 'عرض المفضلة' : 'View Wishlist'}
                     </Button>
                     <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer" onClick={() => setActiveTab('addresses')}>
                       <MapPin className="w-4 h-4 mr-3" />
-                      Manage Addresses
+                      {isArabic ? 'إدارة العناوين' : 'Manage Addresses'}
                     </Button>
                     <Button variant="outline" className="w-full justify-start bg-transparent cursor-pointer" onClick={() => setActiveTab('settings')}>
                       <Settings className="w-4 h-4 mr-3" />
-                      Account Settings
+                      {isArabic ? 'إعدادات الحساب' : 'Account Settings'}
                     </Button>
                   </div>
                 </CardContent>
@@ -400,7 +425,7 @@ export default function AccountPage() {
           <TabsContent value="orders" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Order History</CardTitle>
+                <CardTitle>{isArabic ? 'سجل الطلبات' : 'Order History'}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -417,14 +442,14 @@ export default function AccountPage() {
                           <p className="font-semibold text-gray-900">{order.id}</p>
                           <p className="text-sm text-gray-600">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
                           <p className="text-sm text-gray-600">
-                            {order.items.length} items • EGP {order.total.toFixed(2)}
+                            {isArabic ? `${order.items.length} منتج • EGP ${order.total.toFixed(2)}` : `${order.items.length} items • EGP ${order.total.toFixed(2)}`}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                         <Button variant="outline" size="sm" className="bg-transparent cursor-pointer" onClick={() => { setSelectedOrder(order); setShowOrderDetails(true); }}>
-                          View Details
+                          {isArabic ? 'عرض التفاصيل' : 'View Details'}
                         </Button>
                       </div>
                     </div>
@@ -456,14 +481,14 @@ export default function AccountPage() {
                     >
                       <X className="w-6 h-6" />
                     </button>
-                    <h2 className="text-2xl text-black font-bold mb-2">Order #{selectedOrder.id}</h2>
-                    <div className="mb-2 text-sm text-gray-600">Date: {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString() : 'N/A'}</div>
-                    <div className="mb-2 text-sm text-gray-600">Status: <Badge className={getStatusColor(selectedOrder.status)}>{selectedOrder.status}</Badge></div>
-                    <div className="mb-2 text-sm text-gray-600">Payment: {selectedOrder.paymentMethod}</div>
-                    <div className="mb-2 text-sm text-gray-600">Shipping: {selectedOrder.shippingMethod}</div>
-                    <div className="mb-2 text-sm text-gray-600">Address: {selectedOrder.address}</div>
-                    <div className="mb-4 text-sm text-gray-600">Total: <b>EGP {selectedOrder.total.toFixed(2)}</b></div>
-                    <div className="mb-2 text-black font-semibold">Products:</div>
+                    <h2 className="text-2xl text-black font-bold mb-2">{isArabic ? `طلب رقم #${selectedOrder.id}` : `Order #${selectedOrder.id}`}</h2>
+                    <div className="mb-2 text-sm text-gray-600">{isArabic ? 'التاريخ:' : 'Date:'} {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString() : 'N/A'}</div>
+                    <div className="mb-2 text-sm text-gray-600">{isArabic ? 'الحالة:' : 'Status:'} <Badge className={getStatusColor(selectedOrder.status)}>{selectedOrder.status}</Badge></div>
+                    <div className="mb-2 text-sm text-gray-600">{isArabic ? 'الدفع:' : 'Payment:'} {selectedOrder.paymentMethod}</div>
+                    <div className="mb-2 text-sm text-gray-600">{isArabic ? 'الشحن:' : 'Shipping:'} {selectedOrder.shippingMethod}</div>
+                    <div className="mb-2 text-sm text-gray-600">{isArabic ? 'العنوان:' : 'Address:'} {selectedOrder.address}</div>
+                    <div className="mb-4 text-sm text-gray-600">{isArabic ? 'الإجمالي:' : 'Total:'} <b>EGP {selectedOrder.total.toFixed(2)}</b></div>
+                    <div className="mb-2 text-black font-semibold">{isArabic ? 'المنتجات:' : 'Products:'}</div>
                     <ul className="mb-2 text-black space-y-2">
                       {selectedOrder.items.map((item: any) => (
                         <li key={item.id} className="flex justify-between text-sm border-b pb-1">
@@ -481,12 +506,12 @@ export default function AccountPage() {
           <TabsContent value="wishlist" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>My Wishlist</CardTitle>
+                <CardTitle>{isArabic ? 'المفضلة' : 'My Wishlist'}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {wishlistItems.length === 0 ? (
-                    <div className="text-gray-500 text-center col-span-3">Your wishlist is empty.</div>
+                    <div className="text-gray-500 text-center col-span-3">{isArabic ? 'قائمة المفضلة فارغة.' : 'Your wishlist is empty.'}</div>
                   ) : (
                     wishlistItems.map((item: any) => {
                       // Convert ItemType to CartProduct
@@ -513,10 +538,10 @@ export default function AccountPage() {
                           <p className="text-lg font-bold text-gray-900 mb-3">{formatPrice(item.price)}</p>
                           <div className="space-y-2">
                             <Button className="w-full bg-red-600 hover:bg-red-700 cursor-pointer" onClick={() => { addCartItem(product, 1); removeWishlistItem(Number(item.id)); toggleCart(); }}>
-                              Add to Cart
+                              {isArabic ? 'أضف إلى السلة' : 'Add to Cart'}
                             </Button>
                             <Button variant="outline" className="w-full bg-transparent cursor-pointer" onClick={() => removeWishlistItem(Number(item.id))}>
-                              Remove
+                              {isArabic ? 'إزالة' : 'Remove'}
                             </Button>
                           </div>
                         </div>
@@ -531,18 +556,18 @@ export default function AccountPage() {
           <TabsContent value="addresses" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Saved Addresses</CardTitle>
+                <CardTitle>{isArabic ? 'العناوين المحفوظة' : 'Saved Addresses'}</CardTitle>
               </CardHeader>
               <CardContent>
-                {addressesLoading && <div className="text-center text-gray-500 py-4">Loading addresses...</div>}
+                {addressesLoading && <div className="text-center text-gray-500 py-4">{isArabic ? 'جاري تحميل العناوين...' : 'Loading addresses...'}</div>}
                 <div className="flex justify-end mb-4">
                  <CustomButton className="pb-[20px] cursor-pointer border-none outline-none" onClick={() => setShowLocationModal(true)}>
-                    + Add New Address
+                    {isArabic ? '+ إضافة عنوان جديد' : '+ Add New Address'}
                   </CustomButton>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {allAddresses.length === 0 && !addressesLoading && (
-                    <div className="text-gray-500 col-span-3 text-center">No addresses found.</div>
+                    <div className="text-gray-500 col-span-3 text-center">{isArabic ? 'لا يوجد عناوين.' : 'No addresses found.'}</div>
                   )}
                   {allAddresses.map((addr, idx) => {
                     const isDefault = defaultAddressId === addr.id;
@@ -553,7 +578,7 @@ export default function AccountPage() {
                         style={{ minHeight: 180 }}
                       >
                         {isDefault && (
-                          <span className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full z-10">Default</span>
+                          <span className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full z-10">{isArabic ? 'افتراضي' : 'Default'}</span>
                         )}
                         {addr.label && (
                           <span className="absolute -top-2 -left-3 bg-red-600 text-white text-xs px-2 py-1 rounded-full z-10 shadow">{addr.label}</span>
@@ -597,7 +622,7 @@ export default function AccountPage() {
                   >
                     <X className="w-6 h-6" />
                   </button>
-                  <h2 className="text-xl font-bold mb-4 text-gray-900">Add New Address</h2>
+                  <h2 className="text-xl font-bold mb-4 text-gray-900">{isArabic ? 'إضافة عنوان جديد' : 'Add New Address'}</h2>
                   <LocationStep
                     onLocationSet={async (loc) => {
                       setLocationCheckMsg("");
@@ -690,7 +715,7 @@ export default function AccountPage() {
                     </div>
                   </div>
                   <Button
-                    className="mt-4 w-full bg-red-600 text-white"
+                    className="mt-4 w-full bg-red-600 text-white cursor-pointer"
                     onClick={async () => {
                       if (!newLocation) {
                         notify('error', 'Please select a valid location within our service area!');
@@ -759,7 +784,7 @@ export default function AccountPage() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Account Settings</CardTitle>
+                  <CardTitle>{isArabic ? 'إعدادات الحساب' : 'Account Settings'}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Button 
@@ -768,7 +793,7 @@ export default function AccountPage() {
                     onClick={() => router.push('/terms-conditions')}
                   >
                     <Shield className="w-4 h-4 mr-3" />
-                    Terms & Conditions
+                    {isArabic ? 'الشروط والأحكام' : 'Terms & Conditions'}
                   </Button>
                   <Button
                     variant="outline"
@@ -776,7 +801,7 @@ export default function AccountPage() {
                     onClick={handleLogout}
                   >
                     <LogOut className="w-4 h-4 mr-3" />
-                    Sign Out
+                    {isArabic ? 'تسجيل الخروج' : 'Sign Out'}
                   </Button>
                 </CardContent>
               </Card>

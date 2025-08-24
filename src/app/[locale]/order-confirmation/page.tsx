@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useLocale } from "next-intl"
 import { CheckCircle, Package, Truck, MapPin, Calendar, Download, Share2, ArrowRight, Facebook, MessageCircle ,ShoppingCart} from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
@@ -37,6 +38,8 @@ export default function OrderConfirmationPage() {
   const router = useRouter()
   const { orders } = useOrders();
   const latestOrder: any = orders && orders.length > 0 ? orders[0] : null;
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
 
   if (!latestOrder) {
     return (
@@ -44,10 +47,10 @@ export default function OrderConfirmationPage() {
         <div className=" p-8 rounded-xl text-center max-w-md w-full">
         <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-red-500" />
 
-          <h2 className="text-2xl font-bold mb-2 text-gray-900">No order found</h2>
-          <p className="text-gray-600 mb-6">You have not placed any order yet.</p>
+          <h2 className="text-2xl font-bold mb-2 text-gray-900">{isArabic ? 'لا يوجد طلبات' : 'No order found'}</h2>
+          <p className="text-gray-600 mb-6">{isArabic ? 'لم تقم بأي طلب بعد.' : 'You have not placed any order yet.'}</p>
           <Button onClick={() => router.push('/shop')} className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full text-lg font-semibold shadow">
-            Go Shopping Now
+            {isArabic ? 'تسوق الآن' : 'Go Shopping Now'}
           </Button>
         </div>
       </div>
@@ -123,12 +126,12 @@ export default function OrderConfirmationPage() {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-12 h-12 text-green-600" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2"> Order Confirmed!</h1>
-            <p className="text-lg text-gray-600 mb-4">Thank you for your order. Your delicious  are being prepared!</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{isArabic ? 'تم تأكيد الطلب!' : 'Order Confirmed!'}</h1>
+            <p className="text-lg text-gray-600 mb-4">{isArabic ? 'شكرًا لطلبك. يتم الآن تجهيز طلبك !' : 'Thank you for your order. Your delicious  are being prepared!'}</p>
             <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
-              <span>Order #{latestOrder.id}</span>
+              <span>{isArabic ? `طلب رقم #${latestOrder.id}` : `Order #${latestOrder.id}`}</span>
               <span>•</span>
-              <span>Estimated delivery: Soon</span>
+              <span>{isArabic ? 'موعد التسليم المتوقع: قريبًا' : 'Estimated delivery: Soon'}</span>
             </div>
           </div>
 
@@ -140,7 +143,7 @@ export default function OrderConfirmationPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Package className="w-5 h-5 text-green-600" />
-                    Order Status
+                    {isArabic ? 'حالة الطلب' : 'Order Status'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -150,25 +153,25 @@ export default function OrderConfirmationPage() {
                         <CheckCircle className="w-6 h-6 text-green-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">Order Confirmed</h3>
-                        <p className="text-sm text-gray-600">We've received your  order and are preparing it for you!</p>
+                        <h3 className="font-semibold text-gray-900">{isArabic ? 'تم تأكيد الطلب' : 'Order Confirmed'}</h3>
+                        <p className="text-sm text-gray-600">{isArabic ? 'تم استلام طلبك وجاري تجهيزه لك!' : "We've received your  order and are preparing it for you!"}</p>
                       </div>
                     </div>
-                    <Badge className="bg-green-100 text-green-800">Processing</Badge>
+                    <Badge className="bg-green-100 text-green-800">{isArabic ? 'قيد التنفيذ' : 'Processing'}</Badge>
                   </div>
 
                   <div className="mt-6 space-y-4">
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <Calendar className="w-4 h-4" />
-                      <span>Order placed: {new Date(latestOrder.createdAt).toLocaleDateString()}</span>
+                      <span>{isArabic ? 'تاريخ الطلب:' : 'Order placed:'} {new Date(latestOrder.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <Truck className="w-4 h-4" />
-                      <span>Expected delivery: Soon</span>
+                      <span>{isArabic ? 'التسليم المتوقع: قريبًا' : 'Expected delivery: Soon'}</span>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <MapPin className="w-4 h-4" />
-                      <span>Delivering to: {latestOrder.address}</span>
+                      <span>{isArabic ? 'سيتم التوصيل إلى:' : 'Delivering to:'} {latestOrder.address}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -177,7 +180,7 @@ export default function OrderConfirmationPage() {
               {/* Order Items */}
               <Card>
                 <CardHeader>
-                  <CardTitle> Items</CardTitle>
+                  <CardTitle>{isArabic ? 'المنتجات' : 'Items'}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -190,7 +193,7 @@ export default function OrderConfirmationPage() {
                         />
                         <div className="flex-1">
                           <h3 className="font-semibold text-gray-900">{item.name}</h3>
-                          <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                          <p className="text-sm text-gray-600">{isArabic ? 'الكمية:' : 'Quantity:'} {item.quantity}</p>
                         </div>
                         <div className="text-right">
                           <p className="font-semibold text-gray-900">{formatPrice(item.price * item.quantity)}</p>
@@ -199,7 +202,7 @@ export default function OrderConfirmationPage() {
                     ))}
                     {Array.isArray(latestOrder.redeemedRewards) && latestOrder.redeemedRewards.length > 0 && (
                       <div className="mt-4">
-                        <h4 className="font-semibold text-gray-900 mb-2">Loyalty Rewards Used</h4>
+                        <h4 className="font-semibold text-gray-900 mb-2">{isArabic ? 'مكافآت الولاء المستخدمة' : 'Loyalty Rewards Used'}</h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {latestOrder.redeemedRewards
                             .filter((r: any) => !r.orderId || r.orderId === latestOrder.id)
@@ -224,15 +227,15 @@ export default function OrderConfirmationPage() {
               <div className="flex flex-col sm:flex-row gap-4 relative">
                 <Button onClick={() => { setShowTrackMsg(true); setTimeout(() => setShowTrackMsg(false), 2000); }} className="flex-1 text-black  hover:bg-gray-50 border-[1px] border-gray-200 cursor-pointer border-inputborder-input">
                   <Package className="w-4 h-4 mr-2 text-black" />
-                  Track  Order
+                  {isArabic ? 'تتبع الطلب' : 'Track  Order'}
                 </Button>
                 <Button variant="outline" className="flex-1 bg-transparent" onClick={handleDownload}>
                   <Download className="w-4 h-4 mr-2" />
-                  Download Invoice
+                  {isArabic ? 'تحميل الفاتورة' : 'Download Invoice'}
                 </Button>
                 <Button variant="outline" className="flex-1 bg-transparent" onClick={() => setShowShare(v => !v)}>
                   <Share2 className="w-4 h-4 mr-2" />
-                  Share  Order
+                  {isArabic ? 'مشاركة الطلب' : 'Share  Order'}
                 </Button>
                 {showShare && (
                   <div className="absolute top-14 right-0 min-w-[180px] bg-white border border-gray-200 rounded-xl shadow-lg p-2 z-20 flex flex-col gap-2 animate-fade-in">
@@ -258,7 +261,7 @@ export default function OrderConfirmationPage() {
                 )}
                 {showTrackMsg && (
                   <div className="absolute top-14 left-0 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded shadow text-sm z-10">
-                    Order tracking is under development!
+                    {isArabic ? 'تتبع الطلب قيد التطوير!' : 'Order tracking is under development!'}
                   </div>
                 )}
               </div>
@@ -268,29 +271,29 @@ export default function OrderConfirmationPage() {
             <div className="lg:col-span-1">
               <Card className="sticky top-4">
                 <CardHeader>
-                  <CardTitle> Order Summary</CardTitle>
+                  <CardTitle>{isArabic ? 'ملخص الطلب' : 'Order Summary'}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between text-gray-600">
-                      <span>Subtotal :</span>
+                      <span>{isArabic ? 'الإجمالي الفرعي :' : 'Subtotal :'}</span>
                       <span>{formatPrice(orderSummary.subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
-                      <span>Shipping :</span>
-                      <span>{latestOrder.shippingMethod ? latestOrder.shippingMethod : (orderSummary.shipping === 0 ? "Free Delivery" : formatPrice(orderSummary.shipping))}</span>
+                      <span>{isArabic ? 'الشحن :' : 'Shipping :'}</span>
+                      <span>{latestOrder.shippingMethod ? (isArabic ? latestOrder.shippingMethod : latestOrder.shippingMethod) : (orderSummary.shipping === 0 ? (isArabic ? 'توصيل مجاني' : 'Free Delivery') : formatPrice(orderSummary.shipping))}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
-                      <span>Payment :</span>
+                      <span>{isArabic ? 'الدفع :' : 'Payment :'}</span>
                       <span>{latestOrder.paymentMethod}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
-                      <span>Tax</span>
+                      <span>{isArabic ? 'الضريبة' : 'Tax'}</span>
                       <span>{formatPrice(orderSummary.tax)}</span>
                     </div>
                     {Array.isArray(latestOrder.redeemedRewards) && latestOrder.redeemedRewards.filter((r: any) => !r.orderId || r.orderId === latestOrder.id).some((r: any) => r.type === 'discount') && (
                       <div className="flex justify-between text-green-600">
-                        <span>Discount (Loyalty)</span>
+                        <span>{isArabic ? 'خصم (نقاط الولاء)' : 'Discount (Loyalty)'}</span>
                         <span>
                           -{formatPrice(Math.max(0, orderSummary.subtotal - latestOrder.subtotal))}
                         </span>
@@ -298,31 +301,31 @@ export default function OrderConfirmationPage() {
                     )}
                     <hr className="border-gray-200" />
                     <div className="flex justify-between text-lg font-semibold text-gray-900">
-                      <span>Total</span>
+                      <span>{isArabic ? 'الإجمالي الكلي' : 'Total'}</span>
                       <span>{formatPrice(orderSummary.total)}</span>
                     </div>
                   </div>
 
                   <div className="mt-6 pt-6 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-3">What's Next?</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">{isArabic ? 'ما التالي؟' : "What's Next?"}</h3>
                     <div className="space-y-3 text-sm text-gray-600">
                       <div className="flex items-start gap-2">
                         <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
-                        <span>You'll receive an order confirmation by email soon</span>
+                        <span>{isArabic ? 'ستصلك رسالة تأكيد الطلب على البريد الإلكتروني قريبًا' : "You'll receive an order confirmation by email soon"}</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
-                        <span>We'll notify you when your  are out for delivery</span>
+                        <span>{isArabic ? 'سنقوم بإعلامك عند خروج الطلب للتوصيل' : "We'll notify you when your  are out for delivery"}</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
-                        <span>Enjoy your fresh and delicious !</span>
+                        <span>{isArabic ? 'استمتع بوجبتك الطازجة واللذيذة!' : 'Enjoy your fresh and delicious !'}</span>
                       </div>
                     </div>
                   </div>
 
                   <Button onClick={() => router.push("/shop")} className="w-full mt-6 bg-red-600 hover:bg-red-700">
-                    Order More 
+                    {isArabic ? 'اطلب المزيد' : 'Order More'}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </CardContent>

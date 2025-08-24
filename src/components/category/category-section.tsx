@@ -5,6 +5,7 @@ import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "../common/Button/Button"
 import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useAllProducts } from '@/hooks/useProducts';
 import { convertApiProductToUI } from '@/components/product/product-data';
 import type { Category } from '@/types/category';
@@ -17,6 +18,9 @@ interface CategorySectionProps {
 }
 
 export default function CategorySection({ categories, loading, error }: CategorySectionProps) {
+  const params = useParams();
+  const locale = params?.locale as string || 'en';
+  const isArabic = locale === 'ar';
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [scrollPosition, setScrollPosition] = useState(0)
   const router = useRouter();
@@ -135,8 +139,8 @@ export default function CategorySection({ categories, loading, error }: Category
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 text-right">تسوق حسب الفئة</h2>
-            <p className="text-sm text-gray-500 text-right">ابحث عما تريد</p>
+            <h2 className="text-lg font-semibold text-gray-900 text-right">{isArabic ? 'تسوق حسب الفئة' : 'Shop by Category'}</h2>
+            <p className="text-sm text-gray-500 text-right">{isArabic ? 'ابحث عما تريد' : 'Find what you want'}</p>
           </div>
 
           {/* Navigation Arrows */}
@@ -168,7 +172,9 @@ export default function CategorySection({ categories, loading, error }: Category
             className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 w-full"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {categories.map((category) => (
+            {categories
+              .filter(category => category.name !== "غير مصنف")
+              .map((category) => (
               <div
                 key={category.id}
                 onClick={() => {

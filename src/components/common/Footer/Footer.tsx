@@ -1,18 +1,25 @@
+"use client";
 // src/components/common/Footer/Footer.tsx 
 import Link from "next/link";
 import CustomButton from "../Button/CustomButton";
+import { useParams } from 'next/navigation';
 
 export default function Footer() {
- return (
-<section className="py-10 bg-gray-50 sm:pt-16 lg:pt-24">
-    <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+  const params = useParams();
+  const locale = params?.locale as string || 'en';
+  const isArabic = locale === 'ar';
+  return (
+    <section className="py-10 bg-gray-50 sm:pt-16 lg:pt-24">
+      <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
         <div className="grid grid-cols-2 md:col-span-3 lg:grid-cols-6 gap-y-16 gap-x-12">
-            <div className="col-span-2 md:col-span-3 lg:col-span-2 lg:pr-8">
-                <img className="w-auto h-16" src="/logo.png" alt="مطعم روكسي" height="100px" />
-
-                <p className="text-base leading-relaxed text-gray-600 mt-7">مطعم روكسي يقدم لكم أشهى ساندويتشات الشاورما والوجبات السريعة بجودة عالية وطعم أصيل. بنستخدم أفضل المكونات الطازجة ونوفر خدمة سريعة وتجربة مميزة لكل عميل.</p>
-
-                <ul className="flex items-center space-x-3 mt-9">
+          <div className="col-span-2 md:col-span-3 lg:col-span-2 lg:pr-8">
+            <img className="w-auto h-16" src="/logo.png" alt={isArabic ? "مطعم روكسي" : "Roxy Restaurant"} height="100px" />
+            <p className="text-base leading-relaxed text-gray-600 mt-7">
+              {isArabic
+                ? "مطعم روكسي يقدم لكم أشهى ساندويتشات الشاورما والوجبات السريعة بجودة عالية وطعم أصيل. بنستخدم أفضل المكونات الطازجة ونوفر خدمة سريعة وتجربة مميزة لكل عميل."
+                : "Roxy Restaurant offers you the most delicious shawarma sandwiches and fast food with high quality and authentic taste. We use the best fresh ingredients and provide fast service and a unique experience for every customer."}
+            </p>
+            <ul className="flex items-center space-x-3 mt-9">
                     <li>
                         <a href="https://www.instagram.com/" title="Instagram" className="flex items-center justify-center text-white transition-all duration-200 bg-gray-800 rounded-full w-7 h-7 hover:bg-red-600 focus:bg-red-600">
                             {/* Instagram Icon */}
@@ -48,65 +55,56 @@ export default function Footer() {
                         </a>
                     </li>
                 </ul>
-            </div>
-
-            <div>
-                <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">عن روكسي</p>
-
-                <ul className="mt-6 space-y-4">
-                    <li>
-                        <Link href="/search" title="بحث" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> بحث </Link>
-                    </li>
-                    <li>
-                        <Link href="/shop" title="قائمة الطعام" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> قائمة الطعام </Link>
-                    </li>
-                    <li>
-                        <Link href="/account" title="الملف الشخصي" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> الملف الشخصي </Link>
-                    </li>
-                    <li>
-                        <Link href="/contact" title="اتصل بنا" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> اتصل بنا </Link>
-                    </li>
-                </ul>
-            </div>
-
-            <div>
-                <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">الدعم</p>
-
-                <ul className="mt-6 space-y-4">
-                    <li>
-                        <Link href="/customer-support" title="خدمة العملاء" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> خدمة العملاء </Link>
-                    </li>
-                    <li>
-                        <Link href="/privacy-policy" title="سياسة الخصوصية" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> سياسة الخصوصية </Link>
-                    </li>
-                    <li>
-                        <Link href="/terms-conditions" title="الشروط والأحكام" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> الشروط والأحكام </Link>
-                    </li>
-                    <li>
-                        <Link href="/faq" title="الأسئلة الشائعة" className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600"> الأسئلة الشائعة </Link>
-                    </li>
-                </ul>
-            </div>
-
-            <div className="col-span-2 md:col-span-1 lg:col-span-2 lg:pl-8">
-                <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">اشترك في النشرة البريدية</p>
-
-                <form action="#" method="POST" className="mt-6">
-                    <div>
-                        <label className="sr-only">البريد الإلكتروني</label>
-                        <input type="email" name="email" id="email" placeholder="أدخل بريدك الإلكتروني" className="block w-full p-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-red-600 caret-red-600" />
-                    </div>
-
-                    <CustomButton type="submit" className="inline-flex items-center justify-center px-6 py-4 mt-3 font-semibold text-white transition-all duration-200 rounded-md  ">اشترك الآن</CustomButton>
-                </form>
-            </div>
+          </div>
+          <div>
+            <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">{isArabic ? 'عن روكسي' : 'About Roxy'}</p>
+            <ul className="mt-6 space-y-4">
+              <li>
+                <Link href="/search" title={isArabic ? "بحث" : "Search"} className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600">{isArabic ? "بحث" : "Search"}</Link>
+              </li>
+              <li>
+                <Link href="/shop" title={isArabic ? "قائمة الطعام" : "Menu"} className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600">{isArabic ? "قائمة الطعام" : "Menu"}</Link>
+              </li>
+              <li>
+                <Link href="/account" title={isArabic ? "الملف الشخصي" : "Profile"} className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600">{isArabic ? "الملف الشخصي" : "Profile"}</Link>
+              </li>
+              <li>
+                <Link href="/contact" title={isArabic ? "اتصل بنا" : "Contact Us"} className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600">{isArabic ? "اتصل بنا" : "Contact Us"}</Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">{isArabic ? 'الدعم' : 'Support'}</p>
+            <ul className="mt-6 space-y-4">
+              <li>
+                <Link href="/customer-support" title={isArabic ? "خدمة العملاء" : "Customer Support"} className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600">{isArabic ? "خدمة العملاء" : "Customer Support"}</Link>
+              </li>
+              <li>
+                <Link href="/privacy-policy" title={isArabic ? "سياسة الخصوصية" : "Privacy Policy"} className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600">{isArabic ? "سياسة الخصوصية" : "Privacy Policy"}</Link>
+              </li>
+              <li>
+                <Link href="/terms-conditions" title={isArabic ? "الشروط والأحكام" : "Terms & Conditions"} className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600">{isArabic ? "الشروط والأحكام" : "Terms & Conditions"}</Link>
+              </li>
+              <li>
+                <Link href="/faq" title={isArabic ? "الأسئلة الشائعة" : "FAQ"} className="flex text-base text-black transition-all duration-200 hover:text-red-600 focus:text-red-600">{isArabic ? "الأسئلة الشائعة" : "FAQ"}</Link>
+              </li>
+            </ul>
+          </div>
+          <div className="col-span-2 md:col-span-1 lg:col-span-2 lg:pl-8">
+            <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">{isArabic ? 'اشترك في النشرة البريدية' : 'Subscribe to Newsletter'}</p>
+            <form action="#" method="POST" className="mt-6">
+              <div>
+                <label className="sr-only">{isArabic ? 'البريد الإلكتروني' : 'Email'}</label>
+                <input type="email" name="email" id="email" placeholder={isArabic ? 'أدخل بريدك الإلكتروني' : 'Enter your email'} className="block w-full p-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-red-600 caret-red-600" />
+              </div>
+              <CustomButton type="submit" className="inline-flex items-center justify-center px-6 py-4 mt-3 font-semibold text-white transition-all duration-200 rounded-md  ">{isArabic ? 'اشترك الآن' : 'Subscribe Now'}</CustomButton>
+            </form>
+          </div>
         </div>
-
         <hr className="mt-16 mb-10 border-gray-200" />
-
-        <p className="text-sm text-center text-gray-600">© جميع الحقوق محفوظة 2025 لمطعم روكسي</p>
-    </div>
-</section>
- )
+        <p className="text-sm text-center text-gray-600">{isArabic ? '© جميع الحقوق محفوظة 2025 لمطعم روكسي' : '© All rights reserved 2025 for Roxy Restaurant'}</p>
+      </div>
+    </section>
+  );
 }
 

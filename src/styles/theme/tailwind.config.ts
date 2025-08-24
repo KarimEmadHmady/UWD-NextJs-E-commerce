@@ -24,7 +24,8 @@ module.exports = {
           boven2: ['BOVEN2', 'sans-serif'],
           boven3: ['BOVEN3', 'sans-serif'],
           mishafi: ['MishafiGold', 'sans-serif'],
-          nastaliq: ['NotoNastaliqUrdu', 'sans-serif'],
+          cairo: ['var(--font-cairo)', 'sans-serif'],
+          inter: ['var(--font-inter)', 'sans-serif'],
         },
         colors: {
           border: "hsl(var(--border))",

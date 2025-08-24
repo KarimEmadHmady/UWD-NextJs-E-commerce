@@ -1,5 +1,16 @@
 {
   "Home": {
 
+  },
+  "Navigation": {
+    "home": "الرئيسية",
+    "shop": "المتجر",
+    "categories": "الفئات",
+    "cart": "السلة",
+    "checkout": "الدفع",
+    "contact": "اتصل بنا",
+    "wishlist": "المفضلة",
+    "orders": "الطلبات",
+    "profile": "الملف الشخصي"
   }
 } 

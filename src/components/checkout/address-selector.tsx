@@ -6,6 +6,8 @@ import { Input } from '../common/input/input';
 import { PhoneInput } from '../common/input/phone-input';
 import { addAddressService, AddressPayload } from '@/services/addressService';
 import { useAuth } from '@/hooks/useAuth';
+import { useLocale } from 'next-intl';
+// import { useTranslation } from 'react-i18next';
 
 interface Address {
   id: string;
@@ -50,6 +52,7 @@ function parseCityStateFromAddress(address: string) {
 }
 
 export default function AddressSelector({ addresses, onAddAddress, onSelect, defaultAddressId, user, token, selectedId, renderAddressActions, forceOutOfCoverageModal = false, onCloseOutOfCoverageModal }: AddressSelectorProps) {
+  const locale = useLocale();
   const [showAdd, setShowAdd] = useState(false);
   // Remove internal selectedId state, use prop instead
   // const [selectedId, setSelectedId] = useState(defaultAddressId || addresses[0]?.id || '');
@@ -60,6 +63,8 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
   const [error, setError] = useState('');
   const [locationCheckMsg, setLocationCheckMsg] = useState('');
   const { checkLocation, locationCheckLoading } = useAuth();
+  // const { t, i18n } = useTranslation();
+  // const locale = i18n.language;
 
   // State for new address fields
   const [firstName, setFirstName] = useState("");
@@ -174,7 +179,7 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
               )}
             </div>
             {renderAddressActions && (
-              <div className="absolute bottom-[40px] right-[70px] cursor-pointer">
+              <div className={`absolute bottom-[40px] ${locale === 'ar' ? 'left-[70px]' : 'right-[70px]'} cursor-pointer`}>
                 {renderAddressActions(addr)}
               </div>
             )}

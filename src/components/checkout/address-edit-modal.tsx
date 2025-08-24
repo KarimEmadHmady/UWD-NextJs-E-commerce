@@ -1,13 +1,16 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Button } from "../common/Button/Button";
 import { Input } from "../common/input/input";
 import { PhoneInput } from "../common/input/phone-input";
 import dynamic from "next/dynamic";
 import { updateAddressService } from '@/services/addressService';
-import { X, Search } from 'lucide-react';
+import { X, Search, MapPin, User, Phone, Mail, Building, Globe, Navigation } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Label } from "../common/label/label";
 import OutOfCoverageModal from "../common/ui/OutOfCoverageModal";
+import { useLocale } from "next-intl";
 
 const MapWithMarker = dynamic(() => import("./ManualMap"), { ssr: false });
 
@@ -19,6 +22,9 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
   forceOutOfCoverageModal?: boolean,
   onCloseOutOfCoverageModal?: () => void,
 }) {
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
+  
   const { checkLocation, locationCheckLoading } = useAuth();
   const defaultCoords = { latitude: 30.0444, longitude: 31.2357, address: "Cairo, Egypt" };
   const lat = Number(address.lat ?? address.latitude);
@@ -91,13 +97,13 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
         address: mapLoc.address,
       });
       if (result.meta?.requestStatus === 'fulfilled') {
-        setLocationCheckMsg('✔️ This address is within our service area.');
+        setLocationCheckMsg(isArabic ? '✔️ هذا العنوان ضمن نطاق خدماتنا.' : '✔️ This address is within our service area.');
       } else {
-        setLocationCheckMsg('❌ This address is outside our service area.');
+        setLocationCheckMsg(isArabic ? '❌ هذا العنوان خارج نطاق خدماتنا.' : '❌ This address is outside our service area.');
         setShowOutOfCoverageModal(true);
       }
     })();
-  }, [mapLoc.latitude, mapLoc.longitude, mapLoc.address]);
+  }, [mapLoc.latitude, mapLoc.longitude, mapLoc.address, isArabic]);
 
   const handleMapChange = (lat: number, lng: number) => {
     setMapLoc(loc => ({ ...loc, latitude: lat, longitude: lng }));
@@ -113,7 +119,7 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
-      setError("Geolocation is not supported by this browser");
+      setError(isArabic ? "متصفحك لا يدعم تحديد الموقع الجغرافي" : "Geolocation is not supported by this browser");
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -132,7 +138,7 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
         setManualAddress(address);
       },
       (error) => {
-        setError("Failed to get location from browser");
+        setError(isArabic ? "فشل في الحصول على الموقع من المتصفح" : "Failed to get location from browser");
       },
       {
         enableHighAccuracy: true,
@@ -151,16 +157,16 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
       address: mapLoc.address,
     });
     if (result.meta?.requestStatus === 'fulfilled') {
-      setLocationCheckMsg('✔️ This address is within our service area.');
+      setLocationCheckMsg(isArabic ? '✔️ هذا العنوان ضمن نطاق خدماتنا.' : '✔️ This address is within our service area.');
     } else {
-      setLocationCheckMsg('❌ This address is outside our service area.');
+      setLocationCheckMsg(isArabic ? '❌ هذا العنوان خارج نطاق خدماتنا.' : '❌ This address is outside our service area.');
       setShowOutOfCoverageModal(true);
     }
   };
 
   const handleSave = async () => {
     if (!mapLoc.latitude || !mapLoc.longitude || locationCheckMsg.startsWith('❌')) {
-      setError('Please select a valid location within our service area!');
+      setError(isArabic ? 'يرجى اختيار موقع صحيح ضمن نطاق خدماتنا!' : 'Please select a valid location within our service area!');
       return;
     }
     setSaving(true);
@@ -196,106 +202,218 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
       if (onSave) onSave(updated);
       onClose();
     } catch (e: any) {
-      setError(e.message || 'Failed to update address');
+      setError(isArabic ? (e.message || 'فشل في تحديث العنوان') : (e.message || 'Failed to update address'));
     }
     setSaving(false);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-4 relative my-4">
-        <button className="absolute top-3 right-3 text-gray-400 hover:text-red-500" onClick={onClose} aria-label="Close">
-          <X className="w-6 h-6" />
-        </button>
-        <h2 className="text-lg font-bold mb-2 text-gray-900">Edit Address</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 mb-2">
-          <div>
-            <Label className="text-xs mb-1">Label</Label>
-            <Input placeholder="Label" value={form.label} onChange={e => setForm(f => ({ ...f, label: e.target.value }))} />
-          </div>
-          <div>
-            <Label className="text-xs mb-1">First Name</Label>
-            <Input placeholder="First Name" value={form.first_name} onChange={e => setForm(f => ({ ...f, first_name: e.target.value }))} />
-          </div>
-          <div>
-            <Label className="text-xs mb-1">Last Name</Label>
-            <Input placeholder="Last Name" value={form.last_name} onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))} />
-          </div>
-          <div>
-            <Label className="text-xs mb-1">Phone</Label>
-            <PhoneInput
-              value={form.phone}
-              onChange={(value) => setForm(f => ({ ...f, phone: value }))}
-              placeholder="Phone"
-              required
-            />
-          </div>
-          <div>
-            <Label className="text-xs mb-1">Email</Label>
-            <Input placeholder="Email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
-          </div>
-          <div>
-            <Label className="text-xs mb-1">City</Label>
-            <Input placeholder="City" value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} />
-          </div>
-          <div>
-            <Label className="text-xs mb-1">Region</Label>
-            <Input placeholder="Region" value={form.region} onChange={e => setForm(f => ({ ...f, region: e.target.value }))} />
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] relative flex flex-col">
+        {/* Header - Fixed */}
+        <div className="p-4 border-b border-gray-200 flex-shrink-0">
+          <button className="absolute top-3 right-3 text-gray-400 hover:text-red-500" onClick={onClose} aria-label={isArabic ? "إغلاق" : "Close"}>
+            <X className="w-6 h-6" />
+          </button>
+          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 pr-8">
+            <MapPin className="w-5 h-5 text-red-600" />
+            {isArabic ? 'تعديل العنوان' : 'Edit Address'}
+          </h2>
         </div>
-        {/* حقل البحث عن العنوان */}
-        <div className="mb-2 relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <Search className="w-4 h-4" />
-          </span>
-          <Input
-            value={manualAddress}
-            onChange={e => setManualAddress(e.target.value)}
-            placeholder="Search for your address..."
-            className="w-full pl-8 text-black border-2 border-red-200 focus:border-red-500 focus:ring-2 focus:ring-red-100 rounded-lg shadow-sm"
-            autoComplete="off"
-          />
-          {suggestLoading && <div className="absolute right-2 top-2 text-xs text-gray-400">Loading...</div>}
-          {/* تظهر الاقتراحات فقط إذا المستخدم غير العنوان */}
-          {manualAddress !== originalAddress && suggestions.length > 0 && (
-            <ul className="absolute left-0 top-full z-[9999] bg-white border w-full max-h-72 overflow-auto rounded shadow-lg mt-1">
-              {suggestions.map(s => (
-                <li
-                  key={s.place_id}
-                  className="p-2 hover:bg-red-100 cursor-pointer text-sm font-medium text-gray-800"
-                  onClick={() => handleManualSelect(s)}
-                >
-                  {s.display_name}
-                </li>
-              ))}
-            </ul>
+
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Personal Information Section */}
+          <div className="p-3 bg-blue-50 rounded-lg">
+            <h3 className="font-semibold text-blue-800 text-sm mb-3 flex items-center gap-2">
+              <User className="w-4 h-4" />
+              {isArabic ? 'المعلومات الشخصية' : 'Personal Information'}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+              <div>
+                <Label className="text-xs mb-1 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                  {isArabic ? 'الاسم الأول' : 'First Name'}
+                </Label>
+                <Input 
+                  placeholder={isArabic ? "الاسم الأول" : "First Name"} 
+                  value={form.first_name} 
+                  onChange={e => setForm(f => ({ ...f, first_name: e.target.value }))} 
+                />
+              </div>
+              <div>
+                <Label className="text-xs mb-1 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                  {isArabic ? 'الاسم الأخير' : 'Last Name'}
+                </Label>
+                <Input 
+                  placeholder={isArabic ? "الاسم الأخير" : "Last Name"} 
+                  value={form.last_name} 
+                  onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))} 
+                />
+              </div>
+              <div>
+                <Label className="text-xs mb-1 flex items-center gap-1">
+                  <Phone className="w-3 h-3 text-red-500" />
+                  {isArabic ? 'رقم الهاتف' : 'Phone'}
+                </Label>
+                <PhoneInput
+                  value={form.phone}
+                  onChange={(value) => setForm(f => ({ ...f, phone: value }))}
+                  placeholder={isArabic ? "رقم الهاتف" : "Phone"}
+                  required
+                />
+              </div>
+              <div>
+                <Label className="text-xs mb-1 flex items-center gap-1">
+                  <Mail className="w-3 h-3 text-red-500" />
+                  {isArabic ? 'البريد الإلكتروني' : 'Email'}
+                </Label>
+                <Input 
+                  placeholder={isArabic ? "البريد الإلكتروني" : "Email"} 
+                  value={form.email} 
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))} 
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Address Details Section */}
+          <div className="p-3 bg-green-50 rounded-lg">
+            <h3 className="font-semibold text-green-800 text-sm mb-3 flex items-center gap-2">
+              <Building className="w-4 h-4" />
+              {isArabic ? 'تفاصيل العنوان' : 'Address Details'}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+              <div>
+                <Label className="text-xs mb-1 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  {isArabic ? 'التسمية' : 'Label'}
+                </Label>
+                <Input 
+                  placeholder={isArabic ? "مثال: المنزل، العمل" : "e.g., Home, Work"} 
+                  value={form.label} 
+                  onChange={e => setForm(f => ({ ...f, label: e.target.value }))} 
+                />
+              </div>
+              <div>
+                <Label className="text-xs mb-1 flex items-center gap-1">
+                  <Building className="w-3 h-3 text-green-500" />
+                  {isArabic ? 'المدينة' : 'City'}
+                </Label>
+                <Input 
+                  placeholder={isArabic ? "المدينة" : "City"} 
+                  value={form.city} 
+                  onChange={e => setForm(f => ({ ...f, city: e.target.value }))} 
+                />
+              </div>
+              <div>
+                <Label className="text-xs mb-1 flex items-center gap-1">
+                  <Globe className="w-3 h-3 text-green-500" />
+                  {isArabic ? 'المنطقة' : 'Region'}
+                </Label>
+                <Input 
+                  placeholder={isArabic ? "المنطقة" : "Region"} 
+                  value={form.region} 
+                  onChange={e => setForm(f => ({ ...f, region: e.target.value }))} 
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Location Search Section */}
+          <div className="p-3 bg-orange-50 rounded-lg">
+            <h3 className="font-semibold text-orange-800 text-sm mb-3 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              {isArabic ? 'البحث عن العنوان' : 'Address Search'}
+            </h3>
+            <div className="relative mb-3">
+              <div className={`absolute inset-y-0 ${isArabic ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none`}>
+                <Search className="w-4 h-4 text-gray-400" />
+              </div>
+              <Input
+                value={manualAddress}
+                onChange={e => setManualAddress(e.target.value)}
+                placeholder={isArabic ? "اكتب عنوانك بالتفصيل..." : "Type your address in detail..."}
+                className={`w-full ${isArabic ? 'pr-10 pl-4' : 'pl-10 pr-4'} text-black border-2 border-orange-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 rounded-lg shadow-sm`}
+                autoComplete="off"
+              />
+              {suggestLoading && (
+                <div className={`absolute ${isArabic ? 'left-3' : 'right-3'} top-2 text-xs text-gray-400`}>
+                  {isArabic ? 'جاري البحث...' : 'Searching...'}
+                </div>
+              )}
+              {/* تظهر الاقتراحات فقط إذا المستخدم غير العنوان */}
+              {manualAddress !== originalAddress && suggestions.length > 0 && (
+                <ul className="absolute left-0 top-full z-[9999] bg-white border-2 border-orange-200 w-full max-h-48 overflow-auto rounded-lg shadow-lg mt-1">
+                  {suggestions.map(s => (
+                    <li
+                      key={s.place_id}
+                      className="p-2 hover:bg-orange-50 cursor-pointer text-sm font-medium text-gray-800 border-b border-orange-100 last:border-b-0"
+                      onClick={() => handleManualSelect(s)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        <span className="truncate">{s.display_name}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2 mb-3">
+              <Button 
+                type="button" 
+                className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded text-sm flex items-center gap-2" 
+                onClick={handleGetLocation}
+              >
+                <Navigation className="w-4 h-4" />
+                {isArabic ? 'احصل على موقعي' : 'Get My Location'}
+              </Button>
+            </div>
+          </div>
+
+          {/* Map Section */}
+          <div className="p-3 bg-purple-50 rounded-lg">
+            <h3 className="font-semibold text-purple-800 text-sm mb-3 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              {isArabic ? 'الخريطة والموقع' : 'Map & Location'}
+            </h3>
+            <div className="mb-2">
+              <MapWithMarker lat={mapLoc.latitude} lng={mapLoc.longitude} onChange={handleMapChange} />
+              <div className="mt-2 text-xs text-gray-700 text-center">
+                {isArabic ? 'خط العرض' : 'Lat'}: {mapLoc.latitude?.toFixed(5)}, {isArabic ? 'خط الطول' : 'Lng'}: {mapLoc.longitude?.toFixed(5)}
+              </div>
+            </div>
+          </div>
+
+          {/* Status Messages */}
+          {locationCheckMsg && (
+            <div
+              className={`text-sm p-2 rounded-lg ${
+                locationCheckMsg.startsWith('✔️')
+                  ? 'text-green-700 bg-green-50 border border-green-200'
+                  : 'text-red-600 bg-red-50 border border-red-200'
+              }`}
+            >
+              {locationCheckMsg}
+            </div>
           )}
+          {error && <div className="text-red-500 text-sm p-2 bg-red-50 border border-red-200 rounded-lg">{error}</div>}
         </div>
-        <div className="mb-2 flex items-center gap-2">
-          <Button type="button" className="bg-red-500 text-white px-3 py-1 rounded text-xs" onClick={handleGetLocation}>
-            Get My Location
+
+        {/* Footer - Fixed */}
+        <div className="p-4 border-t border-gray-200 flex-shrink-0">
+          <Button 
+            className="w-full bg-red-600 hover:bg-red-700 text-white py-3 text-sm font-semibold" 
+            onClick={handleSave} 
+            loading={saving} 
+            disabled={locationCheckMsg.startsWith('❌') || locationCheckLoading}
+          >
+            {saving ? (isArabic ? 'جاري الحفظ...' : 'Saving...') : (isArabic ? 'حفظ التغييرات' : 'Save Changes')}
           </Button>
         </div>
-        <div className="mb-2">
-          <MapWithMarker lat={mapLoc.latitude} lng={mapLoc.longitude} onChange={handleMapChange} />
-          <div className="mt-1 text-xs text-gray-700">Lat: {mapLoc.latitude?.toFixed(5)}, Lng: {mapLoc.longitude?.toFixed(5)}</div>
-        </div>
-        {locationCheckMsg && (
-          <div
-            className={`mb-2 text-xs ${
-              locationCheckMsg.startsWith('✔️')
-                ? 'text-green-700 bg-green-50 border border-green-200 rounded px-2 py-1'
-                : 'text-red-600'
-            }`}
-          >
-            {locationCheckMsg}
-          </div>
-        )}
-        {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
-
-        <Button className="w-full bg-red-600 text-white py-2 text-sm" onClick={handleSave} loading={saving} disabled={locationCheckMsg.startsWith('❌') || locationCheckLoading}>
-          Save Changes
-        </Button>
       </div>
       {(showOutOfCoverageModal || forceOutOfCoverageModal) && (
           <OutOfCoverageModal onClose={() => {

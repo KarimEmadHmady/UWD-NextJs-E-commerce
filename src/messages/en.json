@@ -1,5 +1,16 @@
 {
   "Home": {
 
+  },
+  "Navigation": {
+    "home": "Home",
+    "shop": "Shop",
+    "categories": "Categories",
+    "cart": "Cart",
+    "checkout": "Checkout",
+    "contact": "Contact",
+    "wishlist": "Wishlist",
+    "orders": "Orders",
+    "profile": "Profile"
   }
 } 

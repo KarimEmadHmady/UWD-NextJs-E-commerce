@@ -14,6 +14,7 @@ import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser } from '@/redux/features/auth/authSelectors'
 import { setActiveUser } from '@/redux/features/loyalty/loyaltySlice'
+import { useLocale } from "next-intl"
 
 const availableRewards: LoyaltyReward[] = rewardsData;
 
@@ -23,6 +24,8 @@ const availableRewards: LoyaltyReward[] = rewardsData;
  */
 export default function CartPage() {
   const router = useRouter()
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
   const {
     items,
     subtotal,
@@ -94,7 +97,7 @@ export default function CartPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading cart...</p>
+          <p className="text-gray-600">{isArabic ? 'جاري تحميل السلة...' : 'Loading cart...'}</p>
         </div>
       </div>
     )
@@ -105,10 +108,10 @@ export default function CartPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 py-16">
           <div className="text-center">
-            <div className="text-red-500 mb-4">Error loading cart</div>
+            <div className="text-red-500 mb-4">{isArabic ? 'حدث خطأ أثناء تحميل السلة' : 'Error loading cart'}</div>
             <p className="text-gray-600 mb-8">{error}</p>
             <Button onClick={fetchCartFromServer} className="bg-red-600 hover:bg-red-700">
-              Retry
+              {isArabic ? 'إعادة المحاولة' : 'Retry'}
             </Button>
           </div>
         </div>
@@ -122,10 +125,10 @@ export default function CartPage() {
         <div className="max-w-4xl mx-auto px-4 py-16">
           <div className="text-center">
             <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">Your cart is empty</h1>
-            <p className="text-gray-600 mb-8">Add some products to get started</p>
+            <h1 className="text-2xl font-semibold text-gray-900 mb-2">{isArabic ? 'سلة التسوق فارغة' : 'Your cart is empty'}</h1>
+            <p className="text-gray-600 mb-8">{isArabic ? 'أضف بعض المنتجات للبدء' : 'Add some products to get started'}</p>
             <Button onClick={() => router.push("/shop")} className="bg-red-600 hover:bg-red-700">
-              Continue Shopping
+              {isArabic ? 'تابع التسوق' : 'Continue Shopping'}
             </Button>
           </div>
         </div>
@@ -146,9 +149,11 @@ export default function CartPage() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{isArabic ? 'سلة التسوق' : 'Shopping Cart'}</h1>
             <p className="text-gray-600">
-              {items.reduce((total, item) => total + item.quantity, 0)} items in your cart
+              {isArabic
+                ? `${items.reduce((total, item) => total + item.quantity, 0)} منتج في السلة`
+                : `${items.reduce((total, item) => total + item.quantity, 0)} items in your cart`}
             </p>
           </div>
         </div>
@@ -182,10 +187,10 @@ export default function CartPage() {
             <div className="pt-4 flex flex-wrap gap-3">
               <Button variant="outline" onClick={() => router.push("/shop")} className="bg-transparent">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Continue Shopping
+                {isArabic ? 'متابعة التسوق' : 'Continue Shopping'}
               </Button>
               <Button variant="outline" onClick={() => clear()} className="bg-transparent text-red-600 border-red-200 hover:text-red-700 cursor-pointer">
-                Clear Cart
+                {isArabic ? 'إفراغ السلة' : 'Clear Cart'}
               </Button>
             </div>
           </div>
@@ -199,6 +204,7 @@ export default function CartPage() {
               discount={0}
               total={total}
               onCheckout={handleCheckout}
+              checkoutLabel={isArabic ? 'إتمام الشراء' : undefined}
             />
           </div>
         </div>

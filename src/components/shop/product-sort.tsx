@@ -36,7 +36,7 @@ export default function ProductSort({ viewMode, onViewModeChange, onFilterToggle
 
         {/* Results Count */}
         <p className="text-sm text-black">
-          Showing <span className="font-medium text-black">{totalProducts}</span> Sweets
+          Showing <span className="font-medium text-black">{totalProducts}</span> items
         </p>
       </div>
 

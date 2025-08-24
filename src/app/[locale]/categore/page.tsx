@@ -92,7 +92,9 @@ export default function Categore() {
       <div className="">
         <div className="container mx-auto px-4 py-16 lg:px-8 lg:py-32 xl:max-w-7xl">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {categories.map((cat, idx) => (
+            {categories
+              .filter(cat => cat.name !== "غير مصنف")
+              .map((cat, idx) => (
               <Link
                 key={cat.id}
                 href={`/shop/${cat.slug}`}

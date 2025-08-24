@@ -100,9 +100,9 @@ export default function ShopPage() {
           <div className="max-w-7xl mx-auto px-4 py-4">
             <Breadcrumbs
               items={[
-                { label: 'Home', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
-                { label: 'Products', href: '/shop', },
-                { label: 'All Products' }
+                { label: 'الرئيسية', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
+                { label: 'المنتجات', href: '/shop', },
+                { label: 'جميع المنتجات' }
               ]}
             />
           </div>
@@ -136,8 +136,8 @@ export default function ShopPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Products</h2>
-            <p className="text-gray-600">Failed to load products or categories. Please try again later.</p>
+            <h2 className="text-2xl font-bold text-red-600 mb-4">خطأ في تحميل المنتجات</h2>
+            <p className="text-gray-600">فشل في تحميل المنتجات أو الفئات. يرجى المحاولة مرة أخرى لاحقاً.</p>
           </div>
         </div>
       </div>
@@ -156,9 +156,9 @@ export default function ShopPage() {
           <div className="max-w-7xl mx-auto px-4 py-4">
             <Breadcrumbs
               items={[
-                { label: 'Home', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
-                { label: 'Products', href: '/shop', },
-                { label: 'All Products' }
+                { label: 'الرئيسية', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
+                { label: 'المنتجات', href: '/shop', },
+                { label: 'جميع المنتجات' }
               ]}
             />
           </div>
@@ -170,10 +170,10 @@ export default function ShopPage() {
           <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="text-center mb-8">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Shop All Sweets
+                 شاورما روكسي
               </h1>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Discover our complete collection of delicious sweets, cakes, pastries, and more. Perfect for every occasion!
+                اكتشف مجموعتنا الكاملة من أشهى أنواع الشاورما والوجبات السريعة. مثالية لكل مناسبة!
               </p>
             </div>
             {/* Search Bar */}
@@ -181,7 +181,7 @@ export default function ShopPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 type="text"
-                placeholder="Search sweets..."
+                placeholder="ابحث هنا ..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 text-black pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -211,7 +211,7 @@ export default function ShopPage() {
             <RevealOnScroll delay={0.4}>
               {/* Add this section at the top of the main shop page, before the product grid */}
               <div className="mb-8 grid grid-cols-2 md:grid-cols-5 gap-4">
-                {categories.map((cat) => (
+                {categories.filter(cat => cat.name !== "غير مصنف").map((cat) => (
                   <Link
                     key={cat.id}
                     href={`/shop/${cat.slug}`}
@@ -236,8 +236,8 @@ export default function ShopPage() {
                   dataLength={productsToShow.length}
                   next={loadMore}
                   hasMore={hasMore}
-                  loader={<div className="text-center py-4 text-gray-400">Loading...</div>}
-                  endMessage={<div className="text-center py-4 text-gray-400">No more products</div>}
+                  loader={<div className="text-center py-4 text-gray-400">جاري التحميل...</div>}
+                  endMessage={<div className="text-center py-4 text-gray-400">لا توجد منتجات أخرى</div>}
                   scrollableTarget={null}
                 >
                   {viewMode === "grid" ? (

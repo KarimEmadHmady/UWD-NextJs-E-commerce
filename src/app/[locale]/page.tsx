@@ -5,7 +5,7 @@ import { convertApiProductToUI } from '@/components/product/product-data';
 import ShopProductCard from '@/components/product/ShopProductCard/ShopProductCard';
 import ProductListItem from '@/components/shop/product-list-item';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import RevealOnScroll from '@/components/common/RevealOnScroll';
 import { useMemo } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -23,6 +23,9 @@ import CustomButton from '@/components/common/Button/CustomButton';
  */
 export default function HomePage() {
   const t = useTranslations('Home');
+  const params = useParams();
+  const locale = params.locale as string;
+  const isArabic = locale === 'ar';
   
   // Use API data instead of static data
   const { data: apiProducts, isLoading, error } = useAllProducts();
@@ -77,14 +80,14 @@ export default function HomePage() {
       <RevealOnScroll alwaysAnimate>
         <section className="relative py-10 overflow-hidden bg-black sm:py-16 lg:py-24 xl:py-32 h-[48vh] sm:h-[70vh] m-6 rounded-[30px] flex items-center justify-center sm:block">
           <div className="absolute inset-0 ">
-              <img className="object-cover w-full h-full md:object-center md:scale-150 md:origin-top-left" src="/Roxy 04-02-202418864.jpg" alt="Delicious Products" />
+              <img className="object-cover w-full h-full object-center" src="/483367061_624539500403532_7648628506745459953_n.png" alt={isArabic ? "منتجات لذيذة" : "Delicious Products"} />
           </div>
-          <div className="absolute inset-0 hidden bg-gradient-to-r md:block from-black to-transparent"></div>
+          <div className={`absolute inset-0 hidden md:block ${locale === 'ar' ? 'bg-gradient-to-l from-black to-transparent' : 'bg-gradient-to-r from-black to-transparent'}`}></div>
           <div className="absolute inset-0 block bg-black/60 md:hidden"></div>
           <div className="relative px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl  sm:mt-0 flex flex-col items-center justify-center h-full sm:block sm:h-auto">
-              <div className="text-center md:w-2/3 lg:w-1/2 xl:w-1/3 md:text-left flex flex-col items-center justify-center h-full sm:block sm:h-auto">
-                  <h2 className="text-2xl font-bold leading-tight text-white sm:text-2xl lg:text-7xl text-center">روكسى </h2>
-                  <p className="mt-8 text-2xl text-gray-200 text-center">شاورما ولاد البلد</p>
+              <div className={`text-center md:w-2/3 lg:w-1/2 xl:w-1/3 ${locale === 'ar' ? 'md:text-right' : 'md:text-left'} flex flex-col items-center justify-center h-full sm:block sm:h-auto`}>
+                  <h2 className="text-2xl font-bold leading-tight text-white sm:text-2xl lg:text-7xl text-center">{isArabic ? 'روكسي' : 'Roxy'}</h2>
+                  <p className="mt-8 text-2xl text-gray-200 text-center">{isArabic ? 'شاورما ولاد البلد' : 'Shawarma Wlad El Balad'}</p>
                   <form action="#" method="POST" className="mt-8 lg:mt-12">
                       <div className="flex flex-col items-center sm:flex-row  justify-center ">
                           <CustomButton 
@@ -92,7 +95,7 @@ export default function HomePage() {
                             size="lg"
                             className="w-[200px]  mt-4 font-semibold text-white sm:mt-0 sm:w-auto pb-7"
                           >
-                            اطلب الان 
+                            {isArabic ? 'اطلب الآن' : 'Order Now'}
                           </CustomButton>
                       </div>
                   </form>
@@ -125,9 +128,9 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <RevealOnScroll delay={0.2}>
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">منتجات مميزة</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{isArabic ? 'منتجات مميزة' : 'Featured Products'}</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              اكتشف مجموعتنا الجديدة من أفضل أنواع الشاورما. مثالية لكل احتياجاتك!
+              {isArabic ? 'اكتشف مجموعتنا الجديدة من أفضل أنواع الشاورما. مثالية لكل احتياجاتك!' : 'Discover our new collection of the best shawarma. Perfect for all your needs!'}
             </p>
           </div>
           </RevealOnScroll>
@@ -262,17 +265,29 @@ export default function HomePage() {
           <div className="max-w-5xl px-4 mx-auto sm:px-6 lg:px-8">
             <div className="grid items-center grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-20">
               <div className="">
-                <h2 className="text-3xl font-bold leading-tight text-black sm:text-4xl lg:text-5xl text-right">احتفل بكل لحظة مع روكسي شاورما</h2>
-                <p className="mt-4 text-base leading-relaxed text-gray-600 text-right">من المناسبات العائلية إلى التجمعات، شاورما روكسي تجعل كل لحظة مميزة. اطلب الآن واستمتع بمذاق السعادة!</p>
+                <h2 className="text-3xl font-bold leading-tight text-black sm:text-4xl lg:text-5xl text-right">{isArabic ? 'احتفل بكل لحظة مع روكسي شاورما' : 'Celebrate Every Moment with Roxy Shawarma'}</h2>
+                <p className="mt-4 text-base leading-relaxed text-gray-600 text-right">{isArabic ? 'من المناسبات العائلية إلى التجمعات، شاورما روكسي تجعل كل لحظة مميزة. اطلب الآن واستمتع بمذاق السعادة!' : 'From family occasions to gatherings, Roxy Shawarma makes every moment special. Order now and enjoy the taste of happiness!'}</p>
               </div>
               <div className="relative pl-20 pr-6 sm:pl-6 md:px-0">
                 <div className="relative w-full max-w-xs mt-4 mb-10 ml-auto">
                   <img className="ml-auto" src="/r78 .jpg" alt="احتفال" />
                   <img className="absolute -top-4 -left-12" src="https://cdn.rareblocks.xyz/collection/celebration/images/features/1/wavey-lines.svg" alt="" />
                   <div className="absolute -bottom-10 -left-16">
-                    <div className="bg-green-700">
-                      <div className="px-8 py-10">
-                        <span className="block text-4xl font-bold text-white lg:text-5xl text-center"> 100% </span>
+                    <div
+                      className="relativeoverflow-hidden flex items-center justify-center"
+                      style={{
+                        backgroundImage: "url('/Star_Green.png')",
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        height: '188px',
+                        width: '200px',
+                        maxWidth: '100%',
+                      }}
+                    >
+                      {/* Overlay for better text visibility */}
+                      <div className="absolute  bg-black/30" />
+                      <div className="relative px-8 py-10 z-10 flex flex-col items-center justify-center">
+                        <span className="block text-3xl font-bold text-white lg:text-2xl text-center"> 100% </span>
                         <span className="block mt-2 text-base leading-tight text-white text-center"> طازج ولذيذ<br />كل يوم </span>
                       </div>
                     </div>
@@ -288,8 +303,8 @@ export default function HomePage() {
       <RevealOnScroll delay={0.3}>
           <div className="max-w-5xl px-4 mx-auto sm:px-6 lg:px-8">
             <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">أشهى شاورما بطعمٍ أصيل وتجربة لا تُنسى</h2>
-              <p className="mt-2 text-gray-600">روكسي شاورما.. اختيارك الأمثل للجوع الحقيقي</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{isArabic ? 'أشهى شاورما بطعمٍ أصيل وتجربة لا تُنسى' : 'The Tastiest Shawarma with Authentic Flavor and Unforgettable Experience'}</h2>
+              <p className="mt-2 text-gray-600">{isArabic ? 'روكسي شاورما.. اختيارك الأمثل للجوع الحقيقي' : 'Roxy Shawarma.. Your best choice for real hunger'}</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
               <img src="/4sec-star4.png" alt="شاورما روكسي 1" className="w-full h-40 sm:h-48 object-contain" />

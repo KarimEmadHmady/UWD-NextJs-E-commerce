@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, MapPin, Truck, CreditCard, CheckCircle, ShoppingCart } from "lucide-react"
+import { ArrowLeft, MapPin, Truck, CreditCard, CheckCircle, ShoppingCart, User, Package, Home, Store, Clock, AlertCircle, Info, Phone, Mail, Building, Globe, Navigation, Search, Edit2, Plus, Minus, Calendar, Shield, Gift, Star, Heart, Settings, LogOut, UserCheck, MapPinOff, CheckCircle2, XCircle, HelpCircle, FileText, Receipt, Banknote, Wallet, QrCode, Smartphone, Monitor, Printer, Camera, Headphones, Wifi, Battery, Zap, Target, Compass, Globe2, Pin, LocateIcon, Route, Navigation2, Car, Bike, Plane, Ship, Train, Bus, Rocket, Satellite, Telescope, Microscope, Binoculars, Video, Music, Gamepad2, BookOpen, Newspaper, File, Folder, Database, Server, Cloud, Lock, Unlock, Key, Eye, EyeOff, Bell, BellOff, Volume2, VolumeX, Mic, MicOff, Speaker, Radio, Tv, Laptop, Tablet, Watch, Activity, BarChart3, TrendingUp, TrendingDown, DollarSign, Euro, Bitcoin, Coins, PiggyBank, Wallet2, Clipboard, ClipboardCheck, ClipboardList, ClipboardX, Clock2, Timer, Hourglass, Calculator } from "lucide-react"
 import LocationStep from "@/components/checkout/location-step"
 import ShippingStep from "@/components/checkout/shipping-step"
 import { Button } from "@/components/common/Button/Button"
@@ -155,12 +155,15 @@ export default function CheckoutPage() {
     return `E.L ${price.toFixed(2)}`
   }
 
+  // Helper for Arabic translation
+  const isArabic = locale === 'ar';
+
   const steps = [
-    { number: 1, title: "Login", icon: null, completed: isAuthenticated },
-    { number: 2, title: "Location", icon: MapPin, completed: !!location },
-    { number: 3, title: "Customer Info & Shipping", icon: Truck, completed: !!customerInfo && !!shippingMethod },
-    { number: 4, title: "Payment", icon: CreditCard, completed: !!paymentMethod },
-    { number: 5, title: "Review", icon: CheckCircle, completed: !!review },
+    { number: 1, title: isArabic ? 'تسجيل الدخول' : 'Login', icon: UserCheck, completed: isAuthenticated },
+    { number: 2, title: isArabic ? 'الموقع' : 'Location', icon: MapPin, completed: !!location },
+    { number: 3, title: isArabic ? 'معلومات العميل والشحن' : 'Customer Info & Shipping', icon: Truck, completed: !!customerInfo && !!shippingMethod },
+    { number: 4, title: isArabic ? 'الدفع' : 'Payment', icon: CreditCard, completed: !!paymentMethod },
+    { number: 5, title: isArabic ? 'مراجعة الطلب' : 'Review', icon: CheckCircle, completed: !!review },
   ];
   const canGoToStep = (stepNum: number) => {
     if (stepNum === 1) return true;
@@ -415,11 +418,19 @@ export default function CheckoutPage() {
       if (!user) {
         return (
           <div className="flex flex-col items-center justify-center min-h-[300px]">
-            <h2 className="text-2xl text-red-500 font-bold mb-4">Please Login or Register</h2>
-            <p className="mb-6 text-gray-600">You must be logged in to continue checkout.</p>
+            <h2 className="text-2xl text-red-500 font-bold mb-4">
+              {isArabic ? 'يرجى تسجيل الدخول أو إنشاء حساب' : 'Please Login or Register'}
+            </h2>
+            <p className="mb-6 text-gray-600">
+              {isArabic ? 'يجب تسجيل الدخول للمتابعة في عملية الشراء.' : 'You must be logged in to continue checkout.'}
+            </p>
             <div className="flex gap-4">
-              <button onClick={() => router.push(`/${locale}/login?from=checkout`)} className="bg-red-600 text-white px-6 py-2 rounded cursor-pointer">Login</button>
-              <button onClick={() => router.push(`/${locale}/register?from=checkout`)} className="bg-gray-200 text-gray-900 px-6 py-2 rounded cursor-pointer">Register</button>
+              <button onClick={() => router.push(`/${locale}/login?from=checkout`)} className="bg-red-600 text-white px-6 py-2 rounded cursor-pointer">
+                {isArabic ? 'تسجيل الدخول' : 'Login'}
+              </button>
+              <button onClick={() => router.push(`/${locale}/register?from=checkout`)} className="bg-gray-200 text-gray-900 px-6 py-2 rounded cursor-pointer">
+                {isArabic ? 'إنشاء حساب' : 'Register'}
+              </button>
             </div>
           </div>
         );
@@ -431,7 +442,7 @@ export default function CheckoutPage() {
     switch (currentStep) {
       case 2:
         return <>
-          {addressesLoading && <div className="text-center text-gray-500 py-4">Loading addresses...</div>}
+          {addressesLoading && <div className="text-center text-gray-500 py-4">{isArabic ? 'جاري تحميل العناوين...' : 'Loading addresses...'}</div>}
           <AddressSelector
             addresses={allAddresses}
             selectedId={selectedAddress?.id || ''}
@@ -480,7 +491,7 @@ export default function CheckoutPage() {
               className="px-8 py-2 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed pb-[20px]"
               type="button"
             >
-              Continue
+              {isArabic ? 'متابعة' : 'Continue'}
             </CustomButton>
           </div>
         </>;
@@ -505,6 +516,7 @@ export default function CheckoutPage() {
           onCustomerInfoSet={handleCustomerInfoSet}
           initialInfo={initialInfo}
           initialShippingMethod={shippingMethod || undefined}
+          continueLabel={isArabic ? 'متابعة' : 'Continue'}
         />;
       case 4:
         return (
@@ -512,34 +524,67 @@ export default function CheckoutPage() {
              <RevealOnScroll alwaysAnimate>
             <div className="text-center mb-8">
               <CreditCard className="w-16 h-16 text-red-600 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Information</h2>
-              <p className="text-gray-600">Enter your payment details to complete the order</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{isArabic ? 'معلومات الدفع' : 'Payment Information'}</h2>
+              <p className="text-gray-600">{isArabic ? 'أدخل بيانات الدفع لإكمال الطلب' : 'Enter your payment details to complete the order'}</p>
             </div>
             <Card>
               <CardHeader>
-                <CardTitle>Payment Details</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-red-600" />
+                  {isArabic ? 'تفاصيل الدفع' : 'Payment Details'}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-gray-900">
                 <div className="flex flex-col gap-4">
-                  <Button onClick={() => handlePaymentSelect('card')} className={`w-full ${paymentMethod === 'card' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>Pay by Card</Button>
-                  <Button onClick={() => handlePaymentSelect('cash')} className={`w-full ${paymentMethod === 'cash' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>Cash on Delivery</Button>
-                  <Button onClick={() => handlePaymentSelect('Payment in store')} className={`w-full ${paymentMethod === 'Payment in store' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>Payment in store</Button>
+                  <Button onClick={() => handlePaymentSelect('card')} className={`w-full flex items-center gap-2 ${paymentMethod === 'card' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>
+                    <CreditCard className="w-4 h-4" />
+                    {isArabic ? 'الدفع بالبطاقة' : 'Pay by Card'}
+                  </Button>
+                  <Button onClick={() => handlePaymentSelect('cash')} className={`w-full flex items-center gap-2 ${paymentMethod === 'cash' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>
+                    <Banknote className="w-4 h-4" />
+                    {isArabic ? 'الدفع عند الاستلام' : 'Cash on Delivery'}
+                  </Button>
+                  <Button onClick={() => handlePaymentSelect('Payment in store')} className={`w-full flex items-center gap-2 ${paymentMethod === 'Payment in store' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>
+                    <Store className="w-4 h-4" />
+                    {isArabic ? 'الدفع في المتجر' : 'Payment in store'}
+                  </Button>
                 </div>
                 {paymentMethod === 'card' && (
                   <div className="mt-6 space-y-4">
-                    <Input id="number" placeholder="Card Number (16 digits)" value={cardDetails.number} onChange={handleCardInput} maxLength={16} />
-                    <div className="flex gap-4">
-                      <Input id="expiry" placeholder="MM/YY" value={cardDetails.expiry} onChange={handleCardInput} maxLength={5} />
-                      <Input id="cvv" placeholder="CVV" value={cardDetails.cvv} onChange={handleCardInput} maxLength={3} />
+                    <div className="relative">
+                      <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Input id="number" placeholder={isArabic ? 'رقم البطاقة (16 رقم)' : 'Card Number (16 digits)'} value={cardDetails.number} onChange={handleCardInput} maxLength={16} className="pl-10" />
                     </div>
-                    {cardError && <div className="text-red-500 text-sm">{cardError}</div>}
-                    <Button onClick={handleCardContinue} className="w-full bg-red-600 hover:bg-red-700 text-white mt-2">Continue to Review</Button>
+                    <div className="flex gap-4">
+                      <div className="relative flex-1">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input id="expiry" placeholder={isArabic ? 'MM/YY' : 'MM/YY'} value={cardDetails.expiry} onChange={handleCardInput} maxLength={5} className="pl-10" />
+                      </div>
+                      <div className="relative flex-1">
+                        <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input id="cvv" placeholder={isArabic ? 'CVV' : 'CVV'} value={cardDetails.cvv} onChange={handleCardInput} maxLength={3} className="pl-10" />
+                      </div>
+                    </div>
+                    {cardError && <div className="text-red-500 text-sm flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
+                      {cardError}
+                    </div>}
+                    <Button onClick={handleCardContinue} className="w-full bg-red-600 hover:bg-red-700 text-white mt-2 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      {isArabic ? 'متابعة للمراجعة' : 'Continue to Review'}
+                    </Button>
                   </div>
                 )}
                 {paymentMethod !== 'card' && (
-                  <Button onClick={() => setCurrentStep(5)} className="w-full bg-red-600 hover:bg-red-700 text-white mt-[100px]">Continue to Review</Button>
+                  <Button onClick={() => setCurrentStep(5)} className="w-full bg-red-600 hover:bg-red-700 text-white mt-[100px] flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    {isArabic ? 'متابعة للمراجعة' : 'Continue to Review'}
+                  </Button>
                 )}
-                <Button variant="outline" onClick={() => setCurrentStep(2)} className="w-full mt-2">Back</Button>
+                <Button variant="outline" onClick={() => setCurrentStep(2)} className="w-full mt-2 flex items-center gap-2">
+                  <ArrowLeft className="w-4 h-4" />
+                  {isArabic ? 'رجوع' : 'Back'}
+                </Button>
               </CardContent>
             </Card>
             </RevealOnScroll>
@@ -551,74 +596,116 @@ export default function CheckoutPage() {
             <RevealOnScroll alwaysAnimate>
             <div className="text-center mb-8">
               <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Review Your Order</h2>
-              <p className="text-gray-600">Please review your order details before placing the order</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{isArabic ? 'مراجعة الطلب' : 'Review Your Order'}</h2>
+              <p className="text-gray-600">{isArabic ? 'يرجى مراجعة تفاصيل طلبك قبل إتمام الشراء' : 'Please review your order details before placing the order'}</p>
             </div>
             {/* Order Review */}
             <Card>
               <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+                <CardTitle>{isArabic ? 'ملخص الطلب' : 'Order Summary'}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-gray-900">
                 {/* بيانات العميل والموقع */}
                 <div className="mb-4 space-y-2">
-                  <h4 className="font-semibold mb-1">Customer Info</h4>
+                  <h4 className="font-semibold mb-1 flex items-center gap-2">
+                    <User className="w-4 h-4 text-blue-600" />
+                    {isArabic ? 'معلومات العميل' : 'Customer Info'}
+                  </h4>
                   {customerInfo && (
                     <ul className="text-sm text-gray-700 space-y-1">
-                      <li><b>Name:</b> {customerInfo.name}</li>
-                      <li><b>Phone:</b> {customerInfo.phone}</li>
-                      <li><b>City:</b> {customerInfo.city}</li>
+                      <li className="flex items-center gap-2">
+                        <User className="w-3 h-3 text-gray-500" />
+                        <b>{isArabic ? 'الاسم:' : 'Name:'}</b> {customerInfo.name}
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Phone className="w-3 h-3 text-gray-500" />
+                        <b>{isArabic ? 'الهاتف:' : 'Phone:'}</b> {customerInfo.phone}
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Building className="w-3 h-3 text-gray-500" />
+                        <b>{isArabic ? 'المدينة:' : 'City:'}</b> {customerInfo.city}
+                      </li>
                     </ul>
                   )}
                   {location && (
                     <ul className="text-sm text-gray-700 space-y-1 mt-2">
-                      <li><b>Address:</b> {location.address}</li>
+                      <li className="flex items-center gap-2">
+                        <MapPin className="w-3 h-3 text-gray-500" />
+                        <b>{isArabic ? 'العنوان:' : 'Address:'}</b> {location.address}
+                      </li>
                     </ul>
                   )}
                   <ul className="text-sm text-gray-700 space-y-1 mt-2">
-                    <li><b>Shipping Method:</b> {shippingMethod}</li>
-                    <li><b>Payment Method:</b> {paymentMethod}</li>
+                    <li className="flex items-center gap-2">
+                      <Truck className="w-3 h-3 text-gray-500" />
+                      <b>{isArabic ? 'طريقة الشحن:' : 'Shipping Method:'}</b> {shippingMethod}
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CreditCard className="w-3 h-3 text-gray-500" />
+                      <b>{isArabic ? 'طريقة الدفع:' : 'Payment Method:'}</b> {paymentMethod}
+                    </li>
                   </ul>
                 </div>
                 {/* ملخص الطلب */}
                 <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2">
+                      <Package className="w-4 h-4 text-gray-500" />
+                      {isArabic ? 'الإجمالي الفرعي' : 'Subtotal'}
+                    </span>
                     <span>{formatPrice(orderSummary.subtotal)}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Shipping ({shippingMethod})</span>
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2">
+                      <Truck className="w-4 h-4 text-gray-500" />
+                      {isArabic ? `الشحن (${shippingMethod})` : `Shipping (${shippingMethod})`}
+                    </span>
                     <span>{formatPrice(orderSummary.shipping)}</span>
                   </div>
                   {loyaltyDiscountCapped > 0 && (
-                    <div className="flex justify-between">
-                      <span>Discount (Loyalty)</span>
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center gap-2">
+                        <Gift className="w-4 h-4 text-green-500" />
+                        {isArabic ? 'خصم (نقاط الولاء)' : 'Discount (Loyalty)'}
+                      </span>
                       <span>-{formatPrice(loyaltyDiscountCapped)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <span>Tax</span>
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2">
+                      <Receipt className="w-4 h-4 text-gray-500" />
+                      {isArabic ? 'الضريبة' : 'Tax'}
+                    </span>
                     <span>{formatPrice(orderSummary.tax)}</span>
                   </div>
                   <hr />
-                  <div className="flex justify-between text-lg font-semibold">
-                    <span>Total</span>
+                  <div className="flex justify-between text-lg font-semibold items-center">
+                    <span className="flex items-center gap-2">
+                      <Calculator className="w-5 h-5 text-red-600" />
+                      {isArabic ? 'الإجمالي الكلي' : 'Total'}
+                    </span>
                     <span>{formatPrice(orderSummary.total)}</span>
                   </div>
                 </div>
                 <div className="mt-4">
-                  <h4 className="font-semibold mb-2">Products</h4>
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <Package className="w-4 h-4 text-green-600" />
+                    {isArabic ? 'المنتجات' : 'Products'}
+                  </h4>
                   <ul className="space-y-2">
                     {cartItems.map((item) => (
-                      <li key={item.id} className="flex justify-between text-sm">
-                        <span>{item.name} x{item.quantity || 1}</span>
+                      <li key={item.id} className="flex justify-between text-sm items-center">
+                        <span className="flex items-center gap-2">
+                          <Package className="w-3 h-3 text-gray-500" />
+                          {item.name} x{item.quantity || 1}
+                        </span>
                         <span>{formatPrice(item.price * (item.quantity || 1))}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <CustomButton onClick={() => handleReview({})} className="w-full mt-4 pb-[20px]">Place Order</CustomButton>
-                <CustomButton onClick={() => setCurrentStep(4)} className="w-full mt-2 pb-[20px]">Back</CustomButton>
+                <CustomButton onClick={() => handleReview({})} className="w-full mt-4 pb-[20px]">{isArabic ? 'إتمام الطلب' : 'Place Order'}</CustomButton>
+                <CustomButton onClick={() => setCurrentStep(4)} className="w-full mt-2 pb-[20px]">{isArabic ? 'رجوع' : 'Back'}</CustomButton>
               </CardContent>
             </Card>
             </RevealOnScroll>
@@ -635,10 +722,10 @@ export default function CheckoutPage() {
         <RevealOnScroll>
         <div className=" p-8 rounded-xl text-center max-w-md w-full">
           <ShoppingCart className="mx-auto mb-4 w-16 h-16 text-red-500" />
-          <h2 className="text-2xl font-bold mb-2 text-gray-900">Your cart is empty</h2>
-          <p className="text-gray-600 mb-6">You can't proceed to checkout without any products in your cart.</p>
+          <h2 className="text-2xl font-bold mb-2 text-gray-900">{isArabic ? 'سلة التسوق فارغة' : 'Your cart is empty'}</h2>
+          <p className="text-gray-600 mb-6">{isArabic ? 'لا يمكنك المتابعة بدون منتجات في السلة.' : "You can't proceed to checkout without any products in your cart."}</p>
           <CustomButton onClick={() => router.push('/shop')} className=" text-white px-6 py-2 rounded-full font-semibold pb-[20px]">
-            Go Shopping Now
+            {isArabic ? 'تسوق الآن' : 'Go Shopping Now'}
           </CustomButton>
         </div>
         </RevealOnScroll>
@@ -666,9 +753,14 @@ export default function CheckoutPage() {
           <Button variant="ghost" onClick={() => router.back()} className="p-2">
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
-            <p className="text-gray-600">Complete your purchase</p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+              <Receipt className="w-6 h-6 text-red-600" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{isArabic ? 'إتمام الشراء' : 'Checkout'}</h1>
+              <p className="text-gray-600">{isArabic ? 'أكمل عملية الشراء' : 'Complete your purchase'}</p>
+            </div>
           </div>
         </div>
 
@@ -677,7 +769,10 @@ export default function CheckoutPage() {
           <div className="order-2 lg:order-1 lg:col-span-1">
             <Card className="lg:sticky lg:top-4">
               <CardHeader>
-                <CardTitle>Checkout Progress</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-red-600" />
+                  {isArabic ? 'تقدم عملية الشراء' : 'Checkout Progress'}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -707,7 +802,8 @@ export default function CheckoutPage() {
                       >
                         {step.completed ? "✓" : step.number}
                       </div>
-                      <div>
+                      <div className="flex items-center gap-2 flex-1">
+                        {step.icon && <step.icon className="w-4 h-4 text-gray-500" />}
                         <p
                           className={`font-medium ${
                             currentStep === step.number
@@ -726,23 +822,38 @@ export default function CheckoutPage() {
 
                 {/* Order Summary */}
                 <div className="mt-6 pt-6 border-t border-gray-200 text-gray-900">
-                  <h3 className="font-semibold text-gray-900 mb-3">Order Total</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Calculator className="w-5 h-5 text-red-600" />
+                    {isArabic ? 'إجمالي الطلب' : 'Order Total'}
+                  </h3>
                   <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Subtotal</span>
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center gap-2">
+                        <Package className="w-4 h-4 text-gray-500" />
+                        {isArabic ? 'الإجمالي الفرعي' : 'Subtotal'}
+                      </span>
                       <span>{formatPrice(orderSummary.subtotal)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Shipping</span>
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center gap-2">
+                        <Truck className="w-4 h-4 text-gray-500" />
+                        {isArabic ? 'الشحن' : 'Shipping'}
+                      </span>
                       <span>{formatPrice(orderSummary.shipping)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Tax</span>
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center gap-2">
+                        <Receipt className="w-4 h-4 text-gray-500" />
+                        {isArabic ? 'الضريبة' : 'Tax'}
+                      </span>
                       <span>{formatPrice(orderSummary.tax)}</span>
                     </div>
                     <hr />
-                    <div className="flex justify-between font-semibold">
-                      <span>Total</span>
+                    <div className="flex justify-between font-semibold items-center">
+                      <span className="flex items-center gap-2">
+                        <Calculator className="w-5 h-5 text-red-600" />
+                        {isArabic ? 'الإجمالي الكلي' : 'Total'}
+                      </span>
                       <span>{formatPrice(orderSummary.total)}</span>
                     </div>
                   </div>
