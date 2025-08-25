@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useLocale } from "next-intl"
 import { Heart, ArrowLeft } from "lucide-react"
 import WishlistItemComponent from "@/components/wishlist/wishlist-item"
 import { Button } from "@/components/common/Button/Button"
@@ -55,6 +56,8 @@ const mockWishlistItems = [
  */
 export default function WishlistPage() {
   const router = useRouter()
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
   const { items: wishlistItems, removeItem: removeWishlistItem } = useWishlist()
   const { addItem, toggle } = useCart()
   const { notify } = useNotifications();
@@ -96,18 +99,20 @@ export default function WishlistPage() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
-            <p className="text-gray-600">{wishlistItems.length} items in your wishlist</p>
+            <h1 className="text-3xl font-bold text-gray-900">{isArabic ? 'قائمة المفضلة' : 'My Wishlist'}</h1>
+            <p className="text-gray-600">
+              {isArabic ? `${wishlistItems.length} عنصر في قائمتك` : `${wishlistItems.length} items in your wishlist`}
+            </p>
           </div>
         </div>
 
         {wishlistItems.length === 0 ? (
           <div className="text-center py-16">
             <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Your wishlist is empty</h2>
-            <p className="text-gray-600 mb-8">Start adding your favorite products to save them for later.</p>
-            <Button onClick={() => router.push("/shop")} className="bg-red-600 hover:bg-red-700">
-              Continue Shopping
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">{isArabic ? 'قائمة المفضلة فارغة' : 'Your wishlist is empty'}</h2>
+            <p className="text-gray-600 mb-8">{isArabic ? 'ابدأ بإضافة منتجاتك المفضلة للاحتفاظ بها لاحقًا.' : 'Start adding your favorite products to save them for later.'}</p>
+            <Button onClick={() => router.push(`/${locale}/shop`)} className="bg-red-600 hover:bg-red-700">
+              {isArabic ? 'تابع التسوق' : 'Continue Shopping'}
             </Button>
           </div>
         ) : (

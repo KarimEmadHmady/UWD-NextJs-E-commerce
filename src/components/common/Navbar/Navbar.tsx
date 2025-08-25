@@ -9,7 +9,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Search, User, MapPin, ShoppingCart, ChevronLeft, ChevronRight, ChevronDown, X, Heart } from "lucide-react"
+import { Search, User, MapPin, ShoppingCart, ChevronLeft, ChevronRight, ChevronDown, X, Heart ,Facebook, Instagram} from "lucide-react"
 import dynamic from "next/dynamic";
 import { useLang } from "@/hooks/useLang";
 import { useAuth } from "@/hooks/useAuth"
@@ -46,12 +46,12 @@ export default function Navigation() {
     { label: t('home'), href: '/' },
     { label: t('shop'), href: '/shop' },
     { label: t('categories'), href: '/categore' },
-    { label: t('cart'), href: '/cart' },
-    { label: t('checkout'), href: '/checkout' },
-    { label: t('contact'), href: '/contact' },
-    { label: t('wishlist'), href: '/wishlist' },
-    { label: t('orders'), href: '/order-confirmation' },
-    { label: t('profile'), href: '/account' },
+    // { label: t('cart'), href: '/cart' },
+    // { label: t('checkout'), href: '/checkout' },
+    // { label: t('contact'), href: '/contact' },
+    // { label: t('wishlist'), href: '/wishlist' },
+    // { label: t('orders'), href: '/order-confirmation' },
+    // { label: t('profile'), href: '/account' },
   ];
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([])
@@ -90,6 +90,17 @@ export default function Navigation() {
       document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
     }
   }, [lang]);
+
+  // Sync lang state with URL locale segment from next-intl
+  useEffect(() => {
+    if (locale === 'ar' || locale === 'en') {
+      if (lang !== locale) setLang(locale as 'ar' | 'en');
+    } else if (pathname?.startsWith('/ar') || pathname?.startsWith('/en')) {
+      const pathLocale = pathname.split('/')[1] as 'ar' | 'en';
+      if (pathLocale && pathLocale !== lang) setLang(pathLocale);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale, pathname]);
 
   // Handle language switch using next-intl router
   const handleLangSwitch = (newLang: 'ar' | 'en') => {
@@ -195,6 +206,7 @@ export default function Navigation() {
     const hasChildren = item.children && item.children.length > 0;
     const isOpen = openDropdowns.includes(item.label);
     // const isDropdownRight = index >= menuItems.length / 2; // Not used
+    const hrefWithLocale = `/${lang}${item.href}`.replace(/\/+/g, '/');
     return (
       <li
         key={item.label}
@@ -205,10 +217,10 @@ export default function Navigation() {
         `}
       >
         <Link
-          href={item.href}
+          href={hrefWithLocale}
           className={`
             flex items-center justify-between h-16 px-4 text-sm text-black transition-colors duration-250
-            hover:text-red-600 md:hover:text-red-600
+            hover:text-red-600 md:hover:text-red-600 underline underline-offset-4 decoration-red-600
             ${hasChildren ? "cursor-pointer" : ""}
             ${level > 0 ? "md:px-6 md:py-2 md:h-auto" : ""}
             ${isOpen ? "text-red-600" : ""}
@@ -284,7 +296,7 @@ export default function Navigation() {
             alt="Logo"
             width={70}
             height={70}
-            className="object-contain h-16 w-[100px]"
+            className="object-contain h-16 w-[80px]"
             priority
           />
         </Link>
@@ -450,12 +462,12 @@ export default function Navigation() {
             <X className="w-6 h-6 text-black" />
           </button>
         </div>
-        <ul className="pt-2 flex-1">
+        <ul className="pt-2 flex-1 divide-y-2 divide-gray-300">
           {menuItems.map((item: MenuItem, index: number) => (
-            <li key={item.label} className="border-b border-gray-100 last:border-b-0">
+            <li key={item.label}>
               <Link
-                href={item.href}
-                className="block px-6 py-3 text-base font-medium text-black hover:text-red-600 md:hover:text-bule-600 transition-colors duration-200"
+                href={`/${lang}${item.href}`.replace(/\/+/g, '/')}
+                className="block px-6 py-3 text-base font-medium text-black hover:text-red-600 md:hover:text-bule-600 transition-colors duration-200 underline underline-offset-4 decoration-red-600"
                 onClick={toggleMobileMenu}
               >
                 {item.label}
@@ -465,50 +477,75 @@ export default function Navigation() {
         </ul>
         
         {/* Language Switcher and Social Media Icons at the bottom - improved style */}
-        <div className="flex flex-col items-center justify-end mt-12 mb-8 gap-4">
-        <img className="w-auto h-35 mb-13" src="/logo.png" alt="" height="100px" />
-          <div className="flex flex-row items-center justify-between gap-2 w-[70%]">
-          <div className="flex justify-center gap-2 mb-2">
-            <button
-              className={`p-1 cursor-pointer rounded-full border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'en' ? 'bg-red-600 text-white border-red-600' : 'bg-white text-red-600 border-red-600 hover:bg-red-50'}`}
-              onClick={() => handleLangSwitch('en')}
-              disabled={lang === 'en'}
-            >
-              EN
-            </button>
-            <button
-              className={`p-1 cursor-pointer rounded-full border text-base font-bold transition-colors duration-200 focus:outline-none ${lang === 'ar' ? 'bg-red-600 text-white border-red-600' : 'bg-white text-red-600 border-red-600 hover:bg-red-50'}`}
-              onClick={() => handleLangSwitch('ar')}
-              disabled={lang === 'ar'}
-            >
-              AR
-            </button>
-          </div>
-          <div className="flex justify-center gap-1 ">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full  flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200 w-10 h-10">
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-red-600 group-hover:text-red-700 transition-colors duration-200">
-                <path fill="currentColor" d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/>
-              </svg>
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full  flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200 w-10 h-10">
-              {/* X Icon instead of Twitter */}
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="text-red-600 group-hover:text-red-600 transition-colors duration-200">
-                <path d="M4 4L20 20M20 4L4 20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-              </svg>
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-              className="group rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200 w-10 h-10">
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" className="text-red-500 group-hover:text-red-600 transition-colors duration-200">
-                <path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.974 1.246 2.241 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.974.974-2.241 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.974-.974-1.246-2.241-1.308-3.608C2.175 15.647 2.163 15.267 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.974-.974 2.241-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.013 7.052.072 5.775.13 4.602.402 3.635 1.37 2.668 2.338 2.396 3.511 2.338 4.788.013 8.332 0 8.741 0 12c0 3.259.013 3.668.072 4.948.058 1.277.33 2.45 1.298 3.418.968.968 2.141 1.24 3.418 1.298C8.332 23.987 8.741 24 12 24c3.259 0 3.668-.013 4.948-.072 1.277-.058 2.45-.33 3.418-1.298.968-.968 1.24-2.141 1.298-3.418.059-1.28.072-1.689.072-4.948 0-3.259-.013-3.668-.072-4.948-.058-1.277-.33-2.45-1.298-3.418-.968-.968-2.141-1.24-3.418-1.298C15.668.013 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/>
-              </svg>
-            </a>
-          </div>
-          </div>
-          <span className="text-xs text-gray-400 mt-2">© {new Date().getFullYear()} YourBrand</span>
-        </div>
-      </div>
+{/* Language Switcher and Social Media Icons */}
+<div className="flex flex-col items-center justify-end mt-12 mb-8 gap-4">
+  <img className="w-auto h-20 mb-6" src="/logo.png" alt="logo" />
+
+  {/* Language Switcher + Social */}
+  <div className="flex flex-row items-center justify-between gap-6 w-[70%]">
+    
+    {/* Language Switcher */}
+    <div className="flex items-center bg-gray-100 rounded-full p-1 shadow-sm">
+      <button
+        className={`px-4 py-1 text-sm font-semibold rounded-full transition-all duration-300 ${
+          lang === "en"
+            ? "bg-red-600 text-white shadow-md"
+            : "text-gray-600 hover:text-red-600"
+        }`}
+        onClick={() => handleLangSwitch("en")}
+        disabled={lang === "en"}
+      >
+        EN
+      </button>
+      <button
+        className={`px-4 py-1 text-sm font-semibold rounded-full transition-all duration-300 ${
+          lang === "ar"
+            ? "bg-red-600 text-white shadow-md"
+            : "text-gray-600 hover:text-red-600"
+        }`}
+        onClick={() => handleLangSwitch("ar")}
+        disabled={lang === "ar"}
+      >
+        AR
+      </button>
+    </div>
+
+    {/* Social Icons */}
+    <div className="flex justify-center gap-4">
+      {/* Facebook */}
+      <a
+        href="https://facebook.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Facebook className="w-7 h-7 text-[#1877F2] hover:opacity-80 transition" />
+      </a>
+
+      {/* Twitter (X) */}
+      <a
+        href="https://twitter.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <X className="w-7 h-7 text-black hover:opacity-80 transition" />
+      </a>
+
+      {/* Instagram */}
+      <a
+        href="https://instagram.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Instagram className="w-7 h-7 text-pink-500 hover:opacity-80 transition" />
+      </a>
+    </div>
+  </div>
+
+  <span className="text-xs text-gray-400 mt-2">
+    © {new Date().getFullYear()} Roxy
+  </span>
+</div>
+</div>
 
       {/* Mobile Overlay */}
       {isMobileMenuOpen && <div className="md:hidden fixed inset-0 bg-black/60 z-30" onClick={toggleMobileMenu} />}

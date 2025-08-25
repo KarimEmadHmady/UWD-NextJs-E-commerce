@@ -1,7 +1,11 @@
 import createMiddleware from 'next-intl/middleware';
-import {routing} from './i18n/routing';
- 
-export default createMiddleware(routing);
+
+// Force default locale (ar) instead of detecting from headers
+export default createMiddleware({
+  locales: ['ar', 'en'],
+  defaultLocale: 'ar',
+  localeDetection: false
+});
  
 export const config = {
   // Match all pathnames except for
