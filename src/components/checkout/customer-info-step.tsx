@@ -11,9 +11,10 @@ interface CustomerInfoStepProps {
   initialInfo?: any;
   initialShippingMethod?: string;
   continueLabel?: string;
+  onShippingSelected?: (method: string) => void;
 }
 
-export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initialShippingMethod, continueLabel }: CustomerInfoStepProps) {
+export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initialShippingMethod, continueLabel, onShippingSelected }: CustomerInfoStepProps) {
   const locale = useLocale();
   const isArabic = locale === 'ar';
   const [form, setForm] = useState({
@@ -59,6 +60,8 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
       return;
     }
     setFormError('');
+    // Notify parent about the chosen shipping method so it can run side-effects (e.g., branch modal)
+    if (onShippingSelected) onShippingSelected(shippingMethod);
     onCustomerInfoSet(form, shippingMethod);
   };
 
@@ -82,7 +85,7 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
             <Button
               variant={shippingMethod === 'Standard' ? 'default' : 'outline'}
               className={shippingMethod === 'Standard' ? 'bg-red-600 text-white' : ''}
-              onClick={() => setShippingMethod('Standard')}
+              onClick={() => { setShippingMethod('Standard'); }}
             >
               <span className="flex items-center gap-2">
                 <Truck className="w-4 h-4" />
@@ -92,7 +95,7 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
             <Button
               variant={shippingMethod === 'Pickup in Store' ? 'default' : 'outline'}
               className={shippingMethod === 'Pickup in Store' ? 'bg-red-600 text-white' : ''}
-              onClick={() => setShippingMethod('Pickup in Store')}
+              onClick={() => { setShippingMethod('Pickup in Store'); }}
             >
               <span className="flex items-center gap-2">
                 <Store className="w-4 h-4" />
@@ -102,7 +105,7 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
             <Button
               variant={shippingMethod === 'Dine in' ? 'default' : 'outline'}
               className={shippingMethod === 'Dine in' ? 'bg-red-600 text-white' : ''}
-              onClick={() => setShippingMethod('Dine in')}
+              onClick={() => { setShippingMethod('Dine in'); }}
             >
               <span className="flex items-center gap-2">
                 <Utensils className="w-4 h-4" />

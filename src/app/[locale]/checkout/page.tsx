@@ -62,6 +62,8 @@ export default function CheckoutPage() {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const { notify } = useNotifications();
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
+  const [branchInfo, setBranchInfo] = useState<{ name?: string; id?: string } | null>(null);
+  const [showBranchModal, setShowBranchModal] = useState(false);
   // استخرج refetch من useUserAddresses
   const { addresses: backendAddresses, loading: addressesLoading, refetch } = useUserAddresses(token);
   const [editAddress, setEditAddress] = useState<any>(null);
@@ -519,6 +521,50 @@ export default function CheckoutPage() {
           initialInfo={initialInfo}
           initialShippingMethod={shippingMethod || undefined}
           continueLabel={isArabic ? 'متابعة' : 'Continue'}
+          onShippingSelected={async (method) => {
+            if (method === 'Pickup in Store' || method === 'Dine in') {
+              try {
+                // Derive coordinates from multiple possible sources/fields
+                let lat: number | undefined;
+                let long: number | undefined;
+                let addrStr: string = '';
+
+                if (selectedAddress) {
+                  lat = selectedAddress.latitude ?? selectedAddress.lat;
+                  long = selectedAddress.longitude ?? selectedAddress.long;
+                  addrStr = selectedAddress.address_1 || selectedAddress.street || selectedAddress.address || '';
+                }
+                if ((lat == null || long == null) && location) {
+                  lat = location.latitude;
+                  long = location.longitude;
+                  addrStr = addrStr || location.address || '';
+                }
+                if ((lat == null || long == null) && userLatLong) {
+                  lat = userLatLong.lat;
+                  long = userLatLong.long;
+                }
+
+                if (lat == null || long == null) {
+                  notify('error', isArabic ? 'تعذر تحديد الإحداثيات للعنوان المختار' : 'Could not determine coordinates for the selected address');
+                  return;
+                }
+
+                const loc = { latitude: Number(lat), longitude: Number(long), address: addrStr };
+                const result: any = await checkLocation(loc);
+                if (result?.meta?.requestStatus === 'fulfilled') {
+                  const api = result.payload?.data;
+                  const name = api?.data?.name || api?.name;
+                  const id = api?.data?.id || api?.id;
+                  setBranchInfo({ name, id });
+                  setShowBranchModal(true);
+                } else if (result?.payload) {
+                  notify('error', String(result.payload));
+                }
+              } catch (e) {
+                notify('error', isArabic ? 'حدث خطأ أثناء تحديد الفرع' : 'An error occurred while determining the branch');
+              }
+            }
+          }}
         />;
       case 4:
         return (
@@ -737,6 +783,37 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen ">
+      {showBranchModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md text-center">
+            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Store className="w-7 h-7 text-red-600" />
+            </div>
+            <h3 className="text-2xl font-bold mb-2 text-gray-900">{isArabic ? 'الفرع الأقرب لك' : 'Your Nearest Branch'}</h3>
+            <div className="text-gray-700 mb-4">
+              {branchInfo?.name ? (
+                <>
+                  <span className="block mb-2">{isArabic ? 'سيتم التعامل مع طلبك من الفرع:' : 'Your order will be handled by:'}</span>
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 font-semibold">
+                    <MapPin className="w-4 h-4" />
+                    {branchInfo.name}
+                  </span>
+                </>
+              ) : (
+                <span>{isArabic ? 'جارٍ تحديد الفرع...' : 'Determining branch...'}</span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 mb-5">
+              {isArabic ? 'يمكنك تغيير العنوان من خطوة الموقع إذا لم يكن هذا الفرع مناسباً.' : 'You can change the address from the Location step if needed.'}
+            </p>
+            <div className="flex gap-3 justify-center">
+              <Button onClick={() => setShowBranchModal(false)} className="bg-red-600 hover:bg-red-700 text-white">
+                {isArabic ? 'حسناً' : 'OK'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       {isPlacingOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[9999]">
           <div className="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
