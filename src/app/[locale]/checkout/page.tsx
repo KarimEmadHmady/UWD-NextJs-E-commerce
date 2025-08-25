@@ -425,10 +425,12 @@ export default function CheckoutPage() {
               {isArabic ? 'يجب تسجيل الدخول للمتابعة في عملية الشراء.' : 'You must be logged in to continue checkout.'}
             </p>
             <div className="flex gap-4">
-              <button onClick={() => router.push(`/${locale}/login?from=checkout`)} className="bg-red-600 text-white px-6 py-2 rounded cursor-pointer">
+              <button onClick={() => router.push(`/${locale}/login?from=checkout`)} className="bg-red-600 text-white px-6 py-2 rounded cursor-pointer flex items-center gap-2 hover:bg-red-700 transition-colors">
+                <UserCheck className="w-4 h-4" />
                 {isArabic ? 'تسجيل الدخول' : 'Login'}
               </button>
-              <button onClick={() => router.push(`/${locale}/register?from=checkout`)} className="bg-gray-200 text-gray-900 px-6 py-2 rounded cursor-pointer">
+              <button onClick={() => router.push(`/${locale}/register?from=checkout`)} className="bg-gray-200 text-gray-900 px-6 py-2 rounded cursor-pointer flex items-center gap-2 hover:bg-gray-300 transition-colors">
+                <User className="w-4 h-4" />
                 {isArabic ? 'إنشاء حساب' : 'Register'}
               </button>
             </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useLocale } from "next-intl"
-import { CheckCircle, Package, Truck, MapPin, Calendar, Download, Share2, ArrowRight, Facebook, MessageCircle ,ShoppingCart} from "lucide-react"
+import { CheckCircle, Package, Truck, MapPin, Calendar, Download, Share2, ArrowRight, Facebook, MessageCircle ,ShoppingCart, CreditCard, Receipt, Calculator } from "lucide-react"
 import { Button } from "@/components/common/Button/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/card/card"
 import { Badge } from "@/components/common/Badge/Badge"
@@ -225,40 +225,42 @@ export default function OrderConfirmationPage() {
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-4 relative">
-                <Button onClick={() => { setShowTrackMsg(true); setTimeout(() => setShowTrackMsg(false), 2000); }} className="flex-1 text-black  hover:bg-gray-50 border-[1px] border-gray-200 cursor-pointer border-inputborder-input">
+                <Button onClick={() => { setShowTrackMsg(true); setTimeout(() => setShowTrackMsg(false), 2000); }} className="flex-1 text-black  hover:bg-gray-50 border-[1px] border-gray-200 cursor-pointer border-inputborder-input cursor-pointer gap-2">
                   <Package className="w-4 h-4 mr-2 text-black" />
                   {isArabic ? 'تتبع الطلب' : 'Track  Order'}
                 </Button>
-                <Button variant="outline" className="flex-1 bg-transparent" onClick={handleDownload}>
+                <Button variant="outline" className="flex-1 bg-transparent cursor-pointer gap-2" onClick={handleDownload}>
                   <Download className="w-4 h-4 mr-2" />
                   {isArabic ? 'تحميل الفاتورة' : 'Download Invoice'}
                 </Button>
-                <Button variant="outline" className="flex-1 bg-transparent" onClick={() => setShowShare(v => !v)}>
-                  <Share2 className="w-4 h-4 mr-2" />
-                  {isArabic ? 'مشاركة الطلب' : 'Share  Order'}
-                </Button>
-                {showShare && (
-                  <div className="absolute top-14 right-0 min-w-[180px] bg-white border border-gray-200 rounded-xl shadow-lg p-2 z-20 flex flex-col gap-2 animate-fade-in">
-                    <a
-                      href={whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-green-50 transition"
-                    >
-                      <MessageCircle className="w-5 h-5 text-green-500 " />
-                      <span className="font-medium text-black">WhatsApp</span>
-                    </a>
-                    <a
-                      href={facebookUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 transition"
-                    >
-                      <Facebook className="w-5 h-5 text-blue-600" />
-                      <span className="font-medium text-black">Facebook</span>
-                    </a>
-                  </div>
-                )}
+                <div className="relative flex-1">
+                  <Button variant="outline" className="w-full bg-transparent cursor-pointer gap-2" onClick={() => setShowShare(v => !v)}>
+                    <Share2 className="w-4 h-4 mr-2" />
+                    {isArabic ? 'مشاركة الطلب' : 'Share  Order'}
+                  </Button>
+                  {showShare && (
+                    <div className="absolute bottom-full right-0 mb-2 min-w-[180px] bg-white border border-gray-200 rounded-xl shadow-lg p-2 z-[9999] flex flex-col gap-2 max-h-60 overflow-auto animate-fade-in">
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-green-50 transition"
+                      >
+                        <MessageCircle className="w-5 h-5 text-green-500 " />
+                        <span className="font-medium text-black">WhatsApp</span>
+                      </a>
+                      <a
+                        href={facebookUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 transition"
+                      >
+                        <Facebook className="w-5 h-5 text-blue-600" />
+                        <span className="font-medium text-black">Facebook</span>
+                      </a>
+                    </div>
+                  )}
+                </div>
                 {showTrackMsg && (
                   <div className="absolute top-14 left-0 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded shadow text-sm z-10">
                     {isArabic ? 'تتبع الطلب قيد التطوير!' : 'Order tracking is under development!'}
@@ -271,24 +273,39 @@ export default function OrderConfirmationPage() {
             <div className="lg:col-span-1">
               <Card className="sticky top-4">
                 <CardHeader>
-                  <CardTitle>{isArabic ? 'ملخص الطلب' : 'Order Summary'}</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Receipt className="w-5 h-5 text-red-600" />
+                    {isArabic ? 'ملخص الطلب' : 'Order Summary'}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between text-gray-600">
-                      <span>{isArabic ? 'الإجمالي الفرعي :' : 'Subtotal :'}</span>
+                      <span className="flex items-center gap-2">
+                        <Package className="w-4 h-4" />
+                        {isArabic ? 'الإجمالي الفرعي :' : 'Subtotal :'}
+                      </span>
                       <span>{formatPrice(orderSummary.subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
-                      <span>{isArabic ? 'الشحن :' : 'Shipping :'}</span>
+                      <span className="flex items-center gap-2">
+                        <Truck className="w-4 h-4" />
+                        {isArabic ? 'الشحن :' : 'Shipping :'}
+                      </span>
                       <span>{latestOrder.shippingMethod ? (isArabic ? latestOrder.shippingMethod : latestOrder.shippingMethod) : (orderSummary.shipping === 0 ? (isArabic ? 'توصيل مجاني' : 'Free Delivery') : formatPrice(orderSummary.shipping))}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
-                      <span>{isArabic ? 'الدفع :' : 'Payment :'}</span>
+                      <span className="flex items-center gap-2">
+                        <CreditCard className="w-4 h-4" />
+                        {isArabic ? 'الدفع :' : 'Payment :'}
+                      </span>
                       <span>{latestOrder.paymentMethod}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
-                      <span>{isArabic ? 'الضريبة' : 'Tax'}</span>
+                      <span className="flex items-center gap-2">
+                        <Receipt className="w-4 h-4" />
+                        {isArabic ? 'الضريبة' : 'Tax'}
+                      </span>
                       <span>{formatPrice(orderSummary.tax)}</span>
                     </div>
                     {Array.isArray(latestOrder.redeemedRewards) && latestOrder.redeemedRewards.filter((r: any) => !r.orderId || r.orderId === latestOrder.id).some((r: any) => r.type === 'discount') && (
@@ -301,7 +318,10 @@ export default function OrderConfirmationPage() {
                     )}
                     <hr className="border-gray-200" />
                     <div className="flex justify-between text-lg font-semibold text-gray-900">
-                      <span>{isArabic ? 'الإجمالي الكلي' : 'Total'}</span>
+                      <span className="flex items-center gap-2">
+                        <Calculator className="w-5 h-5 text-red-600" />
+                        {isArabic ? 'الإجمالي ' : 'Total'}
+                      </span>
                       <span>{formatPrice(orderSummary.total)}</span>
                     </div>
                   </div>

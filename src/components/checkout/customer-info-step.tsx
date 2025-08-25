@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/common/ca
 import { Input } from "../common/input/input";
 import { PhoneInput } from "../common/input/phone-input";
 import { Button } from "../common/Button/Button";
+import { Truck, Store, Utensils, User as UserIcon, CheckCircle } from "lucide-react";
 
 interface CustomerInfoStepProps {
   onCustomerInfoSet: (info: any, shippingMethod: string) => void;
@@ -69,7 +70,12 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>{isArabic ? 'طريقة الشحن' : 'Shipping Method'}</CardTitle>
+          <CardTitle>
+            <span className="flex items-center gap-2">
+              <Truck className="w-5 h-5 text-red-600" />
+              {isArabic ? 'طريقة الشحن' : 'Shipping Method'}
+            </span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-3">
@@ -78,21 +84,30 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
               className={shippingMethod === 'Standard' ? 'bg-red-600 text-white' : ''}
               onClick={() => setShippingMethod('Standard')}
             >
-              {isArabic ? 'توصيل عادي (50 جنيه، 3-5 أيام)' : 'Standard Delivery (E.L 50, 3-5 days)'}
+              <span className="flex items-center gap-2">
+                <Truck className="w-4 h-4" />
+                {isArabic ? 'توصيل عادي (50 جنيه، 3-5 أيام)' : 'Standard Delivery (E.L 50, 3-5 days)'}
+              </span>
             </Button>
             <Button
               variant={shippingMethod === 'Pickup in Store' ? 'default' : 'outline'}
               className={shippingMethod === 'Pickup in Store' ? 'bg-red-600 text-white' : ''}
               onClick={() => setShippingMethod('Pickup in Store')}
             >
-              {isArabic ? 'استلام من المتجر' : 'Pickup in Store'}
+              <span className="flex items-center gap-2">
+                <Store className="w-4 h-4" />
+                {isArabic ? 'استلام من المتجر' : 'Pickup in Store'}
+              </span>
             </Button>
             <Button
               variant={shippingMethod === 'Dine in' ? 'default' : 'outline'}
               className={shippingMethod === 'Dine in' ? 'bg-red-600 text-white' : ''}
               onClick={() => setShippingMethod('Dine in')}
             >
-              {isArabic ? 'تناول في المطعم' : 'Dine in'}
+              <span className="flex items-center gap-2">
+                <Utensils className="w-4 h-4" />
+                {isArabic ? 'تناول في المطعم' : 'Dine in'}
+              </span>
             </Button>
           </div>
           {shippingMethod === 'Pickup in Store' && (
@@ -113,10 +128,20 @@ export default function CustomerInfoStep({ onCustomerInfoSet, initialInfo, initi
         </CardContent>
       </Card>
       {formError && <div className="text-red-500 text-sm">{formError}</div>}
-      <Button onClick={handleSubmit} className="w-full bg-red-600 hover:bg-red-700">{continueLabel ? continueLabel : (isArabic ? 'متابعة إلى الدفع' : 'Continue to Payment')}</Button>
+      <Button onClick={handleSubmit} className="w-full bg-red-600 hover:bg-red-700">
+        <span className="flex items-center justify-center gap-2 w-full">
+          <CheckCircle className="w-4 h-4" />
+          {continueLabel ? continueLabel : (isArabic ? 'متابعة إلى الدفع' : 'Continue to Payment')}
+        </span>
+      </Button>
       <Card>
         <CardHeader>
-          <CardTitle>{isArabic ? 'معلومات العميل' : 'Customer Info'}</CardTitle>
+          <CardTitle>
+            <span className="flex items-center gap-2">
+              <UserIcon className="w-5 h-5 text-red-600" />
+              {isArabic ? 'معلومات العميل' : 'Customer Info'}
+            </span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">

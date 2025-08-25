@@ -7,6 +7,7 @@ import { PhoneInput } from '../common/input/phone-input';
 import { addAddressService, AddressPayload } from '@/services/addressService';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocale } from 'next-intl';
+import { MapPin, Plus, Tag, Phone, User, Mail } from 'lucide-react';
 // import { useTranslation } from 'react-i18next';
 
 interface Address {
@@ -153,8 +154,13 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-black">Select Address</h2>
-        <CustomButton onClick={() => setShowAdd(true)} className="cursor-pointer pb-[20px] border-none outline-none">Add New Address</CustomButton>
+        <h2 className="text-xl font-bold text-black flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-red-600" />
+          Select Address
+        </h2>
+        <CustomButton onClick={() => setShowAdd(true)} className="cursor-pointer pb-[20px] border-none outline-none flex items-center gap-2 ">
+        Add New Address  <Plus className="w-4 h-4" />
+        </CustomButton>
       </div>
       {/* قائمة العناوين */}
       {addresses.length === 0 && (
@@ -186,7 +192,10 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
             {/* بيانات العنوان + الراديو */}
             <div className="flex flex-row justify-between items-center">
               <div className="flex flex-col gap-0.5 flex-1">
-                <div className="text-black font-semibold text-base leading-tight">
+                <div className="text-black font-semibold text-base leading-tight flex items-center gap-2">
+                  {selectedId === addr.id && (
+                    <MapPin className="w-4 h-4 text-red-600" />
+                  )}
                   {addr.name || `${addr.first_name || ''} ${addr.last_name || ''}`.trim() || '-'}
                 </div>
                 <div className="text-black text-sm leading-tight">{addr.address_1}</div>
@@ -212,22 +221,28 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
           {/* overlay */}
           <div className="absolute inset-0 bg-black/40" onClick={() => { setShowAdd(false); setLabel(''); setNewLocation(null); setError(''); setLocationCheckMsg(''); setPhone(''); setFirstName(''); setLastName(''); setEmail(''); }} />
           {/* modal */}
-          <div className="relative bg-white rounded-xl p-6 shadow-lg md:max-w-[60%] w-full z-50">
+          <div className="relative bg-white rounded-xl p-6 shadow-lg md:max-w-[60%] w-full z-50 max-h-[90vh] overflow-y-auto">
             <button
-              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-xl"
+              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-3xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
               onClick={() => { setShowAdd(false); setLabel(''); setNewLocation(null); setError(''); setLocationCheckMsg(''); setPhone(''); setFirstName(''); setLastName(''); setEmail(''); }}
               aria-label="Close"
             >
               ×
             </button>
-            <h3 className="font-semibold mb-2 text-black">Add New Address</h3>
+            <h3 className="font-semibold mb-2 text-black text-center text-2xl font-bold mb-5">Add New Address</h3>
             <div className="flex gap-2 mb-2 items-center">
               <div className="flex-1">
-                <label className="block text-sm font-medium mb-1 text-black">Label</label>
+                <label className="block text-sm font-medium mb-1 text-black flex items-center gap-2">
+                  <Tag className="w-4 h-4 text-red-600" />
+                  Label
+                </label>
                 <Input value={label} onChange={e => setLabel(e.target.value)} placeholder="e.g. Home, Work, Family..." className="text-black" />
               </div>
               <div className="flex-1">
-                <label className="block text-sm font-medium mb-1 text-black">Phone</label>
+                <label className="block text-sm font-medium mb-1 text-black flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-red-600" />
+                  Phone
+                </label>
                 <PhoneInput
                   value={phone}
                   onChange={setPhone}
@@ -238,16 +253,25 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
             </div>
             <div className="flex gap-2 mb-2 items-center">
               <div className="flex-1">
-                <label className="block text-sm font-medium mb-1 text-black">First Name</label>
+                <label className="block text-sm font-medium mb-1 text-black flex items-center gap-2">
+                  <User className="w-4 h-4 text-red-600" />
+                  First Name
+                </label>
                 <Input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="First Name" className="text-black" />
               </div>
               <div className="flex-1">
-                <label className="block text-sm font-medium mb-1 text-black">Last Name</label>
+                <label className="block text-sm font-medium mb-1 text-black flex items-center gap-2">
+                  <User className="w-4 h-4 text-red-600" />
+                  Last Name
+                </label>
                 <Input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Last Name" className="text-black" />
               </div>
             </div>
             <div className="mb-2">
-              <label className="block text-sm font-medium mb-1 text-black">Email</label>
+              <label className="block text-sm font-medium mb-1 text-black flex items-center gap-2">
+                <Mail className="w-4 h-4 text-red-600" />
+                Email
+              </label>
               <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" className="text-black" />
             </div>
             <LocationStep onLocationSet={handleLocationSet} initialLocation={undefined} isChecking={locationCheckLoading} forceOutOfCoverageModal={forceOutOfCoverageModal} onCloseOutOfCoverageModal={onCloseOutOfCoverageModal} />
