@@ -15,6 +15,7 @@ import { useLang } from "@/hooks/useLang";
 import { useAuth } from "@/hooks/useAuth"
 import { Button } from "../Button/Button"
 import { LogOut } from "lucide-react"
+import { useCategories } from '@/hooks/useCategories';
 // Lazy load SideCart for better performance
 const SideCart = dynamic(() => import("@/components/cart/side-cart/side-cart"), { ssr: false });
 
@@ -68,6 +69,9 @@ export default function Navigation() {
   const { items: wishlistItems } = useWishlist();
   const wishlistCount = wishlistItems.length;
   const { user, isAuthenticated, logout, userLocation } = useAuth()
+  const { categories, loading: categoriesLoading } = useCategories();
+  const [categoriesMenuOpen, setCategoriesMenuOpen] = useState(false);
+  const categoriesMenuTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isAuthenticated && typeof window !== "undefined") {
@@ -201,46 +205,54 @@ export default function Navigation() {
     return () => document.removeEventListener("keydown", handleEscape)
   }, [isMobileMenuOpen])
 
-  // Render menu item
+  // Render menu item (override for categories)
   const renderMenuItem = (item: MenuItem, level = 0, index: number) => {
     const hasChildren = item.children && item.children.length > 0;
     const isOpen = openDropdowns.includes(item.label);
-    // const isDropdownRight = index >= menuItems.length / 2; // Not used
     const hrefWithLocale = `/${lang}${item.href}`.replace(/\/+/g, '/');
+    // Special case for categories mega menu
+    const isCategoriesItem = level === 0 && item.href === '/categore';
+
+    // Default rendering for other menu items
     return (
       <li
         key={item.label}
-        className={`
-          relative group
-          ${level === 0 ? "md:border-b-0" : ""}
-          ${level > 0 ? "border-b border-gray-100 md:border-b-0" : "border-b border-gray-100 md:border-b-0"}
-        `}
+        className={`relative group ${level === 0 ? "md:border-b-0" : ""} ${level > 0 ? "border-b border-gray-100 md:border-b-0" : "border-b border-gray-100 md:border-b-0"}`}
+        onMouseEnter={() => {
+          if (!isCategoriesItem) return;
+          if (typeof window !== 'undefined' && window.innerWidth <= 768) return;
+          if (categoriesMenuTimeout.current) clearTimeout(categoriesMenuTimeout.current);
+          setCategoriesMenuOpen(true);
+        }}
+        onMouseLeave={() => {
+          if (!isCategoriesItem) return;
+          if (typeof window !== 'undefined' && window.innerWidth <= 768) return;
+          if (categoriesMenuTimeout.current) clearTimeout(categoriesMenuTimeout.current);
+          categoriesMenuTimeout.current = setTimeout(() => setCategoriesMenuOpen(false), 150);
+        }}
       >
         <Link
           href={hrefWithLocale}
-          className={`
-            flex items-center justify-between h-16 px-4 text-sm text-black transition-colors duration-250
-            hover:text-red-600 md:hover:text-red-600 underline underline-offset-4 decoration-red-600
-            ${hasChildren ? "cursor-pointer" : ""}
-            ${level > 0 ? "md:px-6 md:py-2 md:h-auto" : ""}
-            ${isOpen ? "text-red-600" : ""}
-          `}
-          onClick={(e) => {
+          className={`flex items-center justify-between h-16 px-4 text-sm text-black transition-colors duration-250 hover:text-red-600 md:hover:text-red-600 underline underline-offset-4 decoration-red-600 ${hasChildren ? "cursor-pointer" : ""} ${level > 0 ? "md:px-6 md:py-2 md:h-auto" : ""} ${isOpen ? "text-red-600" : ""}`}
+          onClick={e => {
             if (hasChildren && window.innerWidth <= 768) {
               e.preventDefault();
               toggleDropdown(item.label);
             }
           }}
         >
-          <span>{item.label}</span>
-          {hasChildren && (
-            <ChevronDown
-              className={`
-                w-4 h-4 transition-transform duration-250
-                ${isOpen ? "rotate-180" : ""}
-                md:opacity-75
-              `}
-            />
+          {isCategoriesItem ? (
+            <span className="flex items-center gap-1">
+              {item.label}
+              <ChevronDown className={`hidden md:inline-block w-4 h-4 transition-transform duration-250 ${categoriesMenuOpen ? "rotate-180" : ""} md:opacity-75`} />
+            </span>
+          ) : (
+            <>
+              <span>{item.label}</span>
+              {hasChildren && (
+                <ChevronDown className={`w-4 h-4 transition-transform duration-250 ${isOpen ? "rotate-180" : ""} md:opacity-75`} />
+              )}
+            </>
           )}
         </Link>
         {/* ...dropdown/mega menu rendering as before... */}
@@ -249,6 +261,21 @@ export default function Navigation() {
   };
 
   // ...rest of the JSX (header, menus, etc)...
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!profileDropdownOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target as Node)) {
+        setProfileDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [profileDropdownOpen]);
+
   return (
     <>
       <header className="sticky top-0 z-50 flex items-center justify-between gap-4 h-16 px-4 md:px-15 "
@@ -290,13 +317,13 @@ export default function Navigation() {
 
 
         {/* Logo */}
-        <Link href="/" className="flex items-center min-w-[95px] flex-shrink-0" aria-label="Home">
+        <Link href="/" className="flex items-center min-w-[120px] flex-shrink-0" aria-label="Home">
           <Image
             src="/logo.png"
             alt="Logo"
-            width={70}
-            height={70}
-            className="object-contain h-16 w-[80px]"
+            width={100}
+            height={100}
+            className="object-contain h-16 w-[120px]"
             priority
           />
         </Link>
@@ -304,7 +331,7 @@ export default function Navigation() {
 
         {/* Desktop Navigation + Language Switcher */}
         <div className="hidden md:flex items-center justify-center flex-1 gap-6">
-          <div ref={wrapperRef} className="overflow-hidden max-h-16">
+          <div ref={wrapperRef} className="overflow-visible max-h-16">
             <ul
               ref={menuRef}
               className="flex flex-row flex-wrap justify-center overflow-x-auto overflow-y-hidden h-full max-w-full w-full"
@@ -371,6 +398,10 @@ export default function Navigation() {
           </div>
         </div>
 
+
+
+        
+
         {/* Action Icons */}
         <div className="min-w-[90px] flex-shrink-0">
           
@@ -396,33 +427,42 @@ export default function Navigation() {
                 <Search className="w-5 h-5" />
               </Link>
             </li>
-            <li>
-              {isAuthenticated ? (
-                <button
-                  onClick={logout}
-                  className=" text-lg text-black transition-colors duration-250 hover:text-red-600 transition-transform duration-200 hover:scale-110 flex items-center cursor-pointer"
-                  aria-label="Logout"
-                >
-                  <LogOut className="w-5 h-5 " />
-                  
-                </button>
-              ) : (
-                <Link href="/login" className="p-1 text-lg text-black transition-colors duration-250 hover:text-red-600 transition-transform duration-200 hover:scale-110">
-                  <User className="w-5 h-5" />
-                </Link>
+            <li className="relative cursor-pointer">
+              <button
+                type="button"
+                className="p-1 text-lg text-black transition-colors duration-250 hover:text-red-600 cursor-pointer transition-transform duration-200 hover:scale-110 flex items-center"
+                aria-label={isAuthenticated ? "Open profile menu" : "Login"}
+                onClick={() => setProfileDropdownOpen((open) => !open)}
+              >
+                <User className="w-5 h-5" />
+              </button>
+              {profileDropdownOpen && (
+                <div ref={profileDropdownRef} className="absolute mt-2 -right-[100px] w-36 bg-white border border-gray-200 rounded shadow-lg z-50">
+                  {isAuthenticated ? (
+                    <>
+                      <button
+                        className="block w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-50 cursor-pointer"
+                        onClick={() => { router.push('/account'); setProfileDropdownOpen(false); }}
+                      >
+                        {lang === 'ar' ? 'الملف الشخصي' : 'Profile'}
+                      </button>
+                      <button
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => { logout(); setProfileDropdownOpen(false); }}
+                      >
+                        {lang === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="block w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-50 cursor-pointer"
+                      onClick={() => { router.push('/login'); setProfileDropdownOpen(false); }}
+                    >
+                      {lang === 'ar' ? 'تسجيل الدخول' : 'Login'}
+                    </button>
+                  )}
+                </div>
               )}
-            </li>
-            {isAuthenticated && (
-              <li>
-                <Link href="/account" className="p-1 text-lg text-black transition-colors duration-250 hover:text-red-600 transition-transform duration-200 hover:scale-110">
-                  <User className="w-5 h-5" />
-                </Link>
-              </li>
-            )}
-            <li>
-              <Link href="/contact" className="p-1 text-lg text-black transition-colors duration-250 hover:text-red-600 transition-transform duration-200 hover:scale-110">
-                <MapPin className="w-5 h-5" />
-              </Link>
             </li>
             <li className="relative cursor-pointer">
               <button
@@ -445,6 +485,44 @@ export default function Navigation() {
           </ul>
         </div>
       </header>
+      {/* Categories mega menu (desktop): visible only when hovering categories */}
+      {categoriesMenuOpen && (
+        <div className="hidden md:block">
+          <div
+            className="fixed left-0 top-[70px] w-screen bg-white shadow-2xl border-b border-gray-100 rounded-b-lg z-[99999] px-10 py-8 animate-fade-in"
+            style={{minHeight: '220px'}}
+            onMouseEnter={() => {
+              if (categoriesMenuTimeout.current) clearTimeout(categoriesMenuTimeout.current);
+              setCategoriesMenuOpen(true);
+            }}
+            onMouseLeave={() => {
+              if (categoriesMenuTimeout.current) clearTimeout(categoriesMenuTimeout.current);
+              categoriesMenuTimeout.current = setTimeout(() => setCategoriesMenuOpen(false), 150);
+            }}
+          >
+            {categoriesLoading ? (
+              <div className="text-center py-8">جاري التحميل...</div>
+            ) : categories.length === 0 ? (
+              <div className="text-center py-8 text-gray-400">لا توجد تصنيفات متاحة حالياً</div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-7xl mx-auto">
+                {categories.map(cat => (
+                  <Link
+                    key={cat.id}
+                    href={`/${lang}/shop/${cat.slug}`}
+                    className="flex flex-col items-center gap-2 p-3 rounded hover:bg-gray-50 transition group min-w-[120px]"
+                  >
+                    {cat.image && (
+                      <img src={cat.image} alt={cat.name} className="w-14 h-14 object-cover rounded-full mb-1" />
+                    )}
+                    <span className="text-sm font-medium text-black group-hover:text-red-600 text-center line-clamp-2">{cat.name}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {/* Mobile Menu */}
       <div
         className={`
@@ -477,74 +555,74 @@ export default function Navigation() {
         </ul>
         
         {/* Language Switcher and Social Media Icons at the bottom - improved style */}
-{/* Language Switcher and Social Media Icons */}
-<div className="flex flex-col items-center justify-end mt-12 mb-8 gap-4">
-  <img className="w-auto h-20 mb-6" src="/logo.png" alt="logo" />
+        {/* Language Switcher and Social Media Icons */}
+        <div className="flex flex-col items-center justify-end mt-12 mb-8 gap-4">
+          <img className="w-auto h-20 mb-6" src="/logo.png" alt="logo" />
 
-  {/* Language Switcher + Social */}
-  <div className="flex flex-row items-center justify-between gap-6 w-[70%]">
-    
-    {/* Language Switcher */}
-    <div className="flex items-center bg-gray-100 rounded-full p-1 shadow-sm">
-      <button
-        className={`px-4 py-1 text-sm font-semibold rounded-full transition-all duration-300 ${
-          lang === "en"
-            ? "bg-red-600 text-white shadow-md"
-            : "text-gray-600 hover:text-red-600"
-        }`}
-        onClick={() => handleLangSwitch("en")}
-        disabled={lang === "en"}
-      >
-        EN
-      </button>
-      <button
-        className={`px-4 py-1 text-sm font-semibold rounded-full transition-all duration-300 ${
-          lang === "ar"
-            ? "bg-red-600 text-white shadow-md"
-            : "text-gray-600 hover:text-red-600"
-        }`}
-        onClick={() => handleLangSwitch("ar")}
-        disabled={lang === "ar"}
-      >
-        AR
-      </button>
-    </div>
+          {/* Language Switcher + Social */}
+          <div className="flex flex-row items-center justify-between gap-6 w-[70%]">
+            
+            {/* Language Switcher */}
+            <div className="flex items-center bg-gray-100 rounded-full p-1 shadow-sm">
+              <button
+                className={`px-4 py-1 text-sm font-semibold rounded-full transition-all duration-300 ${
+                  lang === "en"
+                    ? "bg-red-600 text-white shadow-md"
+                    : "text-gray-600 hover:text-red-600"
+                }`}
+                onClick={() => handleLangSwitch("en")}
+                disabled={lang === "en"}
+              >
+                EN
+              </button>
+              <button
+                className={`px-4 py-1 text-sm font-semibold rounded-full transition-all duration-300 ${
+                  lang === "ar"
+                    ? "bg-red-600 text-white shadow-md"
+                    : "text-gray-600 hover:text-red-600"
+                }`}
+                onClick={() => handleLangSwitch("ar")}
+                disabled={lang === "ar"}
+              >
+                AR
+              </button>
+            </div>
 
-    {/* Social Icons */}
-    <div className="flex justify-center gap-4">
-      {/* Facebook */}
-      <a
-        href="https://facebook.com"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Facebook className="w-7 h-7 text-[#1877F2] hover:opacity-80 transition" />
-      </a>
+            {/* Social Icons */}
+            <div className="flex justify-center gap-4">
+              {/* Facebook */}
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Facebook className="w-7 h-7 text-[#1877F2] hover:opacity-80 transition" />
+              </a>
 
-      {/* Twitter (X) */}
-      <a
-        href="https://twitter.com"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <X className="w-7 h-7 text-black hover:opacity-80 transition" />
-      </a>
+              {/* Twitter (X) */}
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <X className="w-7 h-7 text-black hover:opacity-80 transition" />
+              </a>
 
-      {/* Instagram */}
-      <a
-        href="https://instagram.com"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Instagram className="w-7 h-7 text-pink-500 hover:opacity-80 transition" />
-      </a>
-    </div>
-  </div>
+              {/* Instagram */}
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Instagram className="w-7 h-7 text-pink-500 hover:opacity-80 transition" />
+              </a>
+            </div>
+          </div>
 
-  <span className="text-xs text-gray-400 mt-2">
-    © {new Date().getFullYear()} Roxy
-  </span>
-</div>
+          <span className="text-xs text-gray-400 mt-2">
+            © {new Date().getFullYear()} Roxy
+          </span>
+        </div>
 </div>
 
       {/* Mobile Overlay */}
