@@ -18,6 +18,7 @@ import { useSearchParams, usePathname } from 'next/navigation';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useAuth } from '@/hooks/useAuth';
 import { LocationData } from '@/services/authService';
+import { useLocale } from 'next-intl';
 
 /**
  * RegisterPage component - Provides a registration form for new users to create an account.
@@ -38,6 +39,7 @@ export default function RegisterPage() {
   const searchParams = useSearchParams();
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
   const locale = pathname.split("/")[1] || "en";
+  const isArabic = locale === 'ar';
   const { notify } = useNotifications();
   
   // Redux auth state
@@ -214,21 +216,21 @@ export default function RegisterPage() {
       <main className="flex-1 flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-gray-900">Create an Account</CardTitle>
+            <CardTitle className="text-3xl font-bold text-gray-900">{isArabic ? 'إنشاء حساب جديد' : 'Create an Account'}</CardTitle>
             <CardDescription className="text-gray-600">
-              Join us and start exploring our amazing products
+              {isArabic ? 'انضم إلينا وابدأ باستكشاف منتجاتنا المميزة' : 'Join us and start exploring our amazing products'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">{isArabic ? 'الاسم الكامل' : 'Full Name'}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
                     id="name"
                     type="text"
-                    placeholder="your name"
+                    placeholder={isArabic ? 'اسمك' : 'your name'}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -237,13 +239,13 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{isArabic ? 'البريد الإلكتروني' : 'Email'}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="your@example.com"
+                    placeholder={isArabic ? 'your@example.com' : 'your@example.com'}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -252,13 +254,13 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{isArabic ? 'كلمة المرور' : 'Password'}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder={isArabic ? '••••••••' : '••••••••'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -267,13 +269,13 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Label htmlFor="confirm-password">{isArabic ? 'تأكيد كلمة المرور' : 'Confirm Password'}</Label>
                 <div className="relative">
                   <CheckCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
                     id="confirm-password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder={isArabic ? '••••••••' : '••••••••'}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
@@ -282,23 +284,23 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone_number">Phone Number</Label>
+                <Label htmlFor="phone_number">{isArabic ? 'رقم الهاتف' : 'Phone Number'}</Label>
                 <div className="relative">
                   <PhoneInput
                     value={phoneNumber}
                     onChange={setPhoneNumber}
-                    placeholder="Phone Number"
+                    placeholder={isArabic ? 'رقم الهاتف' : 'Phone Number'}
                     required
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="city">{isArabic ? 'المدينة' : 'City'}</Label>
                 <div className="relative">
                   <Input
                     id="city"
                     type="text"
-                    placeholder="City"
+                    placeholder={isArabic ? 'المدينة' : 'City'}
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     required
@@ -307,12 +309,12 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="states">District/Area</Label>
+                <Label htmlFor="states">{isArabic ? 'الحي/المنطقة' : 'District/Area'}</Label>
                 <div className="relative">
                   <Input
                     id="states"
                     type="text"
-                    placeholder="District/Area"
+                    placeholder={isArabic ? 'الحي/المنطقة' : 'District/Area'}
                     value={states}
                     onChange={(e) => setStates(e.target.value)}
                     required
@@ -322,29 +324,29 @@ export default function RegisterPage() {
               </div>
               {location && (
                 <div className="bg-red-50 rounded-lg p-3 mb-2 text-xs text-gray-700">
-                  <b>Location:</b> {location.address} <br />
-                  <span>Lat: {location.latitude?.toFixed(5)}, Lng: {location.longitude?.toFixed(5)}</span>
+                  <b>{isArabic ? 'الموقع:' : 'Location:'}</b> {location.address} <br />
+                  {/* <span>{isArabic ? 'دقة' : 'Lat'}: {location.latitude?.toFixed(5)}, {isArabic ? 'خط طول' : 'Lng'}: {location.longitude?.toFixed(5)}</span> */}
                 </div>
               )}
               <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 py-3" disabled={registrationLoading}>
                 {registrationLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Registering...
+                    {isArabic ? 'جاري إنشاء الحساب...' : 'Registering...'}
                   </>
                 ) : (
                   <>
                     <LogIn className="w-4 h-4 mr-2" />
-                    Register
+                    {isArabic ? 'تسجيل' : 'Register'}
                   </>
                 )}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link href="/login" className="text-red-600 hover:underline ml-1">
-              Login
+            {isArabic ? 'لديك حساب بالفعل؟' : 'Already have an account?'}{" "}
+            <Link href={`/${locale}/login`} className="text-red-600 hover:underline ml-1">
+              {isArabic ? 'تسجيل الدخول' : 'Login'}
             </Link>
           </CardFooter>
         </Card>

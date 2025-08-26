@@ -250,7 +250,7 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
         {/* Confirm Button */}
         <Button 
           type="submit" 
-          className="bg-red-600 hover:bg-red-700 w-full py-3 sm:py-4 text-base sm:text-lg font-semibold transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer" 
+          className="bg-blue-600 hover:bg-blue-800 w-full py-3 sm:py-4 text-base sm:text-lg font-semibold transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer" 
           disabled={manualLoading}
           onClick={async () => {
             try {

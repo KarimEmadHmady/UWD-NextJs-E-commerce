@@ -18,6 +18,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useCategories } from '@/hooks/useCategories';
 import { useAllProducts } from '@/hooks/useProducts';
 import { convertApiProductToUI, products as staticProducts } from '@/components/product/product-data';
+import { useLocale } from 'next-intl';
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
@@ -27,6 +28,8 @@ export default function SearchPage() {
   const [error, setError] = useState("");
   const { selectedCategories, selectedQuantities, selectedSizes, selectedBrands } = useFilter();
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
   
   // Use API data instead of static data - same as shop page
   const { data: apiProducts, isLoading: productsLoading, error: productsError } = useAllProducts();
@@ -67,9 +70,9 @@ export default function SearchPage() {
 
   const filters = useMemo(() => ({
     categories: categoriesWithCount,
-    quantities: ["1 piece", "6 pieces", "12 pieces", "500g", "1kg"],
-    sizes: ["Small", "Medium", "Large"],
-  }), [categoriesWithCount]);
+    quantities: isArabic ? ["قطعة واحدة", "6 قطع", "12 قطعة", "500 جم", "1 كجم"] : ["1 piece", "6 pieces", "12 pieces", "500g", "1kg"],
+    sizes: isArabic ? ["صغير", "متوسط", "كبير"] : ["Small", "Medium", "Large"],
+  }), [categoriesWithCount, isArabic]);
 
   const searchResults = useMemo(() => {
     const filtered = productsWithPrice.filter((item) => {
@@ -165,7 +168,7 @@ export default function SearchPage() {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading search results...</p>
+            <p className="mt-4 text-gray-600">{isArabic ? 'جاري تحميل نتائج البحث...' : 'Loading search results...'}</p>
           </div>
         </div>
       </div>
@@ -178,8 +181,8 @@ export default function SearchPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Data</h2>
-            <p className="text-gray-600">Failed to load products or categories. Please try again later.</p>
+            <h2 className="text-2xl font-bold text-red-600 mb-4">{isArabic ? 'خطأ في تحميل البيانات' : 'Error Loading Data'}</h2>
+            <p className="text-gray-600">{isArabic ? 'فشل في تحميل المنتجات أو الفئات. يرجى المحاولة لاحقاً.' : 'Failed to load products or categories. Please try again later.'}</p>
           </div>
         </div>
       </div>
@@ -197,7 +200,7 @@ export default function SearchPage() {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 type="text"
-                placeholder="Search for products..."
+                placeholder={isArabic ? 'ابحث عن المنتجات...' : 'Search for products...'}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="pl-12 pr-4 py-4 text-lg border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -219,9 +222,11 @@ export default function SearchPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                {searchQuery ? `Search results for "${searchQuery}"` : "All Products"}
+                {searchQuery 
+                  ? (isArabic ? `نتائج البحث عن "${searchQuery}"` : `Search results for "${searchQuery}"`)
+                  : (isArabic ? 'جميع المنتجات' : 'All Products')}
               </h1>
-              <p className="text-gray-600">{searchResults.length} items available</p>
+              <p className="text-gray-600">{isArabic ? `${searchResults.length} منتج متاح` : `${searchResults.length} items available`}</p>
             </div>
 
             <Button
@@ -230,7 +235,7 @@ export default function SearchPage() {
               className="lg:hidden bg-transparent"
             >
               <SlidersHorizontal className="w-4 h-4 mr-2" />
-              Filters
+              {isArabic ? 'الفلاتر' : 'Filters'}
               {activeFiltersCount > 0 && <Badge className="ml-2">{activeFiltersCount}</Badge>}
             </Button>
           </div>
@@ -238,7 +243,7 @@ export default function SearchPage() {
           {/* Active Filters */}
           {activeFiltersCount > 0 && (
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-sm text-gray-600">Active filters:</span>
+              <span className="text-sm text-gray-600">{isArabic ? 'الفلاتر المفعلة:' : 'Active filters:'}</span>
               {selectedCategories.map((filter) => (
                 <Badge key={filter} variant="secondary" className="flex items-center gap-1">
                   {filter}
@@ -264,13 +269,13 @@ export default function SearchPage() {
                 </Badge>
               ))}
               <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-red-600">
-                Clear all
+                {isArabic ? 'مسح الكل' : 'Clear all'}
               </Button>
             </div>
           )}
         </div>
 
-        {loading && <div className="text-center py-4">Loading search results...</div>}
+        {loading && <div className="text-center py-4">{isArabic ? 'جاري تحميل نتائج البحث...' : 'Loading search results...'}</div>}
         {error && <div className="text-center py-4 text-red-500">{error}</div>}
 
         <div className="flex gap-8">
@@ -283,7 +288,7 @@ export default function SearchPage() {
           >
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{isArabic ? 'الفئات' : 'Categories'}</h3>
                 <div className="space-y-3">
                   {filters.categories.map((category) => (
                     <div key={category.name} className="flex items-center space-x-3">
@@ -303,7 +308,7 @@ export default function SearchPage() {
             </Card>
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Quantity</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{isArabic ? 'الكمية' : 'Quantity'}</h3>
                 <div className="space-y-3">
                   {filters.quantities.map((quantity) => (
                     <div key={quantity} className="flex items-center space-x-3">
@@ -322,7 +327,7 @@ export default function SearchPage() {
             </Card>
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Size</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{isArabic ? 'المقاس' : 'Size'}</h3>
                 <div className="space-y-3">
                   {filters.sizes.map((size) => (
                     <div key={size} className="flex items-center space-x-3">
@@ -341,7 +346,7 @@ export default function SearchPage() {
             </Card>
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Price Range</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{isArabic ? 'نطاق السعر' : 'Price Range'}</h3>
                 <div className="space-y-4">
                   <Slider
                     value={priceRange}
@@ -352,8 +357,8 @@ export default function SearchPage() {
                     className="w-full"
                   />
                   <div className="flex justify-between text-sm text-gray-600 mt-2">
-                    <span>EGP {priceRange[0]}</span>
-                    <span>EGP {priceRange[1]}</span>
+                    <span>{isArabic ? `ج.م ${priceRange[0]}` : `EGP ${priceRange[0]}`}</span>
+                    <span>{isArabic ? `ج.م ${priceRange[1]}` : `EGP ${priceRange[1]}`}</span>
                   </div>
                 </div>
               </CardContent>
@@ -366,8 +371,8 @@ export default function SearchPage() {
               dataLength={productsToShow.length}
               next={loadMore}
               hasMore={hasMore}
-              loader={<div className="text-center py-4 text-gray-600">Loading...</div>}
-              endMessage={<div className="text-center py-4 text-gray-400">No more products</div>}
+              loader={<div className="text-center py-4 text-gray-600">{isArabic ? 'جاري التحميل...' : 'Loading...'}</div>}
+              endMessage={<div className="text-center py-4 text-gray-400">{isArabic ? 'لا توجد منتجات أخرى' : 'No more products'}</div>}
             >
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                 {productsToShow.map((product) => {
@@ -389,12 +394,12 @@ export default function SearchPage() {
             {searchResults.length === 0 && (
               <div className="text-center py-16">
                 <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">No matching products found</h2>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-2">{isArabic ? 'لا توجد منتجات مطابقة' : 'No matching products found'}</h2>
                 <p className="text-gray-600 mb-6">
-                  Try changing your search or filters to find the products you want
+                  {isArabic ? 'جرّب تغيير البحث أو الفلاتر للعثور على المنتجات التي تريدها' : 'Try changing your search or filters to find the products you want'}
                 </p>
                 <Button onClick={clearAllFilters} variant="outline" className="bg-transparent">
-                  Clear all filters
+                  {isArabic ? 'مسح كل الفلاتر' : 'Clear all filters'}
                 </Button>
               </div>
             )}

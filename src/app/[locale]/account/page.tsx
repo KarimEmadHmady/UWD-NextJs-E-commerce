@@ -721,7 +721,7 @@ export default function AccountPage() {
                     </div>
                   </div>
                   <Button
-                    className="mt-4 w-full bg-red-600 text-white cursor-pointer"
+                    className="mt-4 w-full bg-blue-600 hover:bg-blue-800 text-white cursor-pointer"
                     onClick={async () => {
                       if (!newLocation) {
                         notify('error', 'Please select a valid location within our service area!');

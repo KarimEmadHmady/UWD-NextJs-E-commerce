@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import RevealOnScroll from "@/components/common/RevealOnScroll"
+import { useLocale } from "next-intl"
 
 /**
  * LoginPage component - Provides a login form for users to authenticate and access their account.
@@ -20,8 +21,8 @@ import RevealOnScroll from "@/components/common/RevealOnScroll"
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams();
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
-  const locale = pathname.split("/")[1] || "en";
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login, isAuthenticated, registrationError, registrationLoading } = useAuth();
@@ -35,10 +36,9 @@ export default function LoginPage() {
       if (from === 'checkout') {
         router.push(`/${locale}/checkout`);
       } else if (document.referrer && !document.referrer.includes('/login')) {
-        // إذا كان هناك referrer (الصفحة السابقة) وليس صفحة تسجيل الدخول نفسها
         window.location.href = document.referrer;
       } else {
-        router.push('/account');
+        router.push(`/${locale}/account`);
       }
     }
   }, [isAuthenticated, router, searchParams, locale, redirected]);
@@ -46,7 +46,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !password) {
-      notify('error', 'Please enter your email/phone and password');
+      notify('error', isArabic ? 'يرجى إدخال البريد/الهاتف وكلمة المرور' : 'Please enter your email/phone and password');
       return;
     }
     await login({ username, password });
@@ -58,19 +58,19 @@ export default function LoginPage() {
       <main className="flex-1 flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-gray-900">Login to Your Account</CardTitle>
-            <CardDescription className="text-gray-600">Enter your credentials to access your dashboard</CardDescription>
+            <CardTitle className="text-3xl font-bold text-gray-900">{isArabic ? 'تسجيل الدخول إلى حسابك' : 'Login to Your Account'}</CardTitle>
+            <CardDescription className="text-gray-600">{isArabic ? 'أدخل بياناتك للوصول إلى حسابك' : 'Enter your credentials to access your dashboard'}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="username">Email or Phone</Label>
+                <Label htmlFor="username">{isArabic ? 'البريد الإلكتروني أو الهاتف' : 'Email or Phone'}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
                     id="username"
                     type="text"
-                    placeholder="your@example.com or 01xxxxxxxxx"
+                    placeholder={isArabic ? 'your@example.com أو 01xxxxxxxxx' : 'your@example.com or 01xxxxxxxxx'}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
@@ -79,13 +79,13 @@ export default function LoginPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{isArabic ? 'كلمة المرور' : 'Password'}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder={isArabic ? '••••••••' : '••••••••'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -93,7 +93,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <Link href="#" className="text-sm text-red-600 hover:underline text-right block">
-                  Forgot password?
+                  {isArabic ? 'هل نسيت كلمة المرور؟' : 'Forgot password?'}
                 </Link>
               </div>
               {registrationError && (
@@ -103,21 +103,21 @@ export default function LoginPage() {
                 {registrationLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Logging In...
+                    {isArabic ? 'جاري تسجيل الدخول...' : 'Logging In...'}
                   </>
                 ) : (
                   <>
                     <LogIn className="w-4 h-4 mr-2" />
-                    Login
+                    {isArabic ? 'تسجيل الدخول' : 'Login'}
                   </>
                 )}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center text-sm text-gray-600">
-            Don't have an account?{" "}
-            <Link href="/register" className="text-red-600 hover:underline ml-1">
-              Sign Up
+            {isArabic ? 'ليس لديك حساب؟' : "Don't have an account?"}{" "}
+            <Link href={`/${locale}/register`} className="text-red-600 hover:underline ml-1">
+              {isArabic ? 'إنشاء حساب' : 'Sign Up'}
             </Link>
           </CardFooter>
         </Card>

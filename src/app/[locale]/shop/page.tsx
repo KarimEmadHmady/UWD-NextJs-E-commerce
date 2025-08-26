@@ -22,6 +22,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAllProducts } from '@/hooks/useProducts';
 import { useCategories } from '@/hooks/useCategories';
 import Skeleton from '@/components/common/Skeleton';
+import { useLocale } from 'next-intl';
 
 /**
  * ShopPage component - Displays all products with filtering, search, sorting, and grid/list view.
@@ -35,6 +36,8 @@ export default function ShopPage() {
   const [wishlist, setWishlist] = useState<number[]>([])
   const [sortBy, setSortBy] = useState("featured");
   const { start, stop } = useGlobalLoading();
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
   
   // Use API data instead of static data
   const { data: apiProducts, isLoading, error } = useAllProducts();
@@ -100,9 +103,9 @@ export default function ShopPage() {
           <div className="max-w-7xl mx-auto px-4 py-4">
             <Breadcrumbs
               items={[
-                { label: 'الرئيسية', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
-                { label: 'المنتجات', href: '/shop', },
-                { label: 'جميع المنتجات' }
+                { label: isArabic ? 'الرئيسية' : 'Home', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
+                { label: isArabic ? 'المنتجات' : 'Products', href: '/shop', },
+                { label: isArabic ? 'جميع المنتجات' : 'All Products' }
               ]}
             />
           </div>
@@ -147,8 +150,8 @@ export default function ShopPage() {
   return (
     <div className="min-h-screen bg-gray-50 relative">
       {/* Decorative stars */}
-      <img src="/star-yellow.png" alt="نجمة صفراء" className="pointer-events-none absolute top-6 left-6 w-20 h-20 opacity-80 rotate-12 z-10" />
-      <img src="/Star_Green.png" alt="نجمة خضراء" className="pointer-events-none absolute bottom-6 right-6 w-20 h-20 opacity-80 -rotate-12 z-10" />
+      <img src="/star-yellow.png" alt={isArabic ? 'نجمة صفراء' : 'Yellow Star'} className="pointer-events-none absolute top-6 left-6 w-20 h-20 opacity-80 rotate-12 z-10" />
+      <img src="/Star_Green.png" alt={isArabic ? 'نجمة خضراء' : 'Green Star'} className="pointer-events-none absolute bottom-6 right-6 w-20 h-20 opacity-80 -rotate-12 z-10" />
 
       <RevealOnScroll alwaysAnimate>
         {/* Breadcrumbs */}
@@ -156,9 +159,9 @@ export default function ShopPage() {
           <div className="max-w-7xl mx-auto px-4 py-4">
             <Breadcrumbs
               items={[
-                { label: 'الرئيسية', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
-                { label: 'المنتجات', href: '/shop', },
-                { label: 'جميع المنتجات' }
+                { label: isArabic ? 'الرئيسية' : 'Home', href: '/', icon: <Home className="w-4 h-4 text-gray-400" /> },
+                { label: isArabic ? 'المنتجات' : 'Products', href: '/shop', },
+                { label: isArabic ? 'جميع المنتجات' : 'All Products' }
               ]}
             />
           </div>
@@ -170,10 +173,12 @@ export default function ShopPage() {
           <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="text-center mb-8">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                 شاورما روكسي
+                 {isArabic ? 'شاورما روكسي' : 'Shawarma Roxy'}
               </h1>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                اكتشف مجموعتنا الكاملة من أشهى أنواع الشاورما والوجبات السريعة. مثالية لكل مناسبة!
+                {isArabic
+                  ? 'اكتشف مجموعتنا الكاملة من أشهى أنواع الشاورما والوجبات السريعة. مثالية لكل مناسبة!'
+                  : 'Discover our full range of delicious shawarma and fast-food meals. Perfect for every occasion!'}
               </p>
             </div>
             {/* Search Bar */}
@@ -181,7 +186,7 @@ export default function ShopPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 type="text"
-                placeholder="ابحث هنا ..."
+                placeholder={isArabic ? 'ابحث هنا ...' : 'Search here ...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 text-black pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"

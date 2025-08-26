@@ -330,7 +330,7 @@ export default function Navigation() {
 
 
         {/* Desktop Navigation + Language Switcher */}
-        <div className="hidden md:flex items-center justify-center flex-1 gap-6">
+        <div className="hidden md:flex items-center justify-between flex-1 gap-6 w-full pr-10">
           <div ref={wrapperRef} className="overflow-visible max-h-16">
             <ul
               ref={menuRef}
@@ -344,25 +344,7 @@ export default function Navigation() {
             </ul>
           </div>
 
-          {/* Horizontal Scroll Buttons */}
-          {maxScrollSteps > 0 && (
-            <div className="flex ml-4">
-              <button
-                onClick={() => handleHorizontalScroll("prev")}
-                disabled={scrollStep === 0}
-                className="w-9 h-9 flex items-center justify-center text-sm border-0 bg-transparent cursor-pointer transition-colors duration-250 hover:text-bule-600 disabled:opacity-25 disabled:cursor-default"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => handleHorizontalScroll("next")}
-                disabled={scrollStep >= maxScrollSteps}
-                className="w-9 h-9 flex items-center justify-center text-sm border-0 bg-transparent cursor-pointer transition-colors duration-250 hover:text-bule-600 disabled:opacity-25 disabled:cursor-default"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          )}
+
 
           {/* Language Switcher Dropdown (Desktop) */}
           <div className="relative ml-6">
