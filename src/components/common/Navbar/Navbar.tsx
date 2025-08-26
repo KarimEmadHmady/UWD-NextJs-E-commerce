@@ -506,7 +506,7 @@ export default function Navigation() {
               <div className="text-center py-8 text-gray-400">لا توجد تصنيفات متاحة حالياً</div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-7xl mx-auto">
-                {categories.map(cat => (
+                {categories.filter(cat => cat.name !== "غير مصنف").map(cat => (
                   <Link
                     key={cat.id}
                     href={`/${lang}/shop/${cat.slug}`}

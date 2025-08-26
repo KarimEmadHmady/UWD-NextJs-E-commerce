@@ -296,9 +296,9 @@ export default function LocationStep({ onLocationSet, initialLocation, isCheckin
               <MapPin className="w-5 h-5 text-red-600" />
               <span className="font-semibold text-gray-900 break-words">{location.address}</span>
             </div>
-            <span className="text-xs text-gray-500 ml-7">
-              {isArabic ? 'خط العرض' : 'Lat'}: {location.latitude.toFixed(5)}, {isArabic ? 'خط الطول' : 'Lng'}: {location.longitude.toFixed(5)}
-            </span>
+              {/* <span className="text-xs text-gray-500 ml-7">
+                {isArabic ? 'خط العرض' : 'Lat'}: {location.latitude.toFixed(5)}, {isArabic ? 'خط الطول' : 'Lng'}: {location.longitude.toFixed(5)}
+              </span> */}
           </div>
           <Button 
             className="w-full bg-red-600 hover:bg-red-700 mt-4 cursor-pointer" 

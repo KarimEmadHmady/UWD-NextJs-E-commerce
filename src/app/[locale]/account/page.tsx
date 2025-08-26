@@ -161,6 +161,10 @@ export default function AccountPage() {
     };
   }
 
+  const [editName, setEditName] = useState(user.name || user.username || "");
+  const [editAvatar, setEditAvatar] = useState(userAvatar);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <RevealOnScroll alwaysAnimate>
@@ -181,16 +185,13 @@ export default function AccountPage() {
         <div className="mb-8">
           <div className="flex items-center gap-6 mb-6">
             <Avatar className="w-20 h-20">
-              <AvatarImage src={userAvatar} alt={user.name || user.username || "User"} />
+              <AvatarImage src={editAvatar} alt={editName || "User"} />
               <AvatarFallback className="text-xl">
-                {(user.name || user.username || "User")
-                  .split(" ")
-                  .map((n: string) => n[0])
-                  .join("")}
+                {(editName || "User").split(" ").map((n: string) => n[0]).join("")}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{user.name || user.username}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{editName}</h1>
               <p className="text-gray-600">{user.email}</p>
               {user.phone_number && (
                 <p className="text-sm text-gray-500">{user.phone_number}</p>
@@ -269,7 +270,7 @@ export default function AccountPage() {
               <svg className="w-4 h-4 hidden lg:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {isArabic ? 'الولاء' : 'Loyalty'}
+              {isArabic ? 'نفاط الولاء' : 'Loyalty'}
             </TabsTrigger>
             <TabsTrigger value="settings" className="data-[state=active]:text-black min-w-max text-[10px] md:text-base flex items-center gap-2">
               <Settings className="w-4 h-4 hidden lg:block" />
@@ -391,7 +392,12 @@ export default function AccountPage() {
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" className="w-full mt-4 bg-transparent cursor-pointer" onClick={() => setActiveTab('orders')}>
+                  <Button variant="outline" className="w-full mt-4 bg-transparent cursor-pointer" onClick={() => {
+                    setActiveTab('orders');
+                    if (typeof window !== 'undefined') {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}>
                     {isArabic ? 'عرض كل الطلبات' : 'View All Orders'}
                   </Button>
                 </CardContent>
@@ -787,6 +793,56 @@ export default function AccountPage() {
                   <CardTitle>{isArabic ? 'إعدادات الحساب' : 'Account Settings'}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {isEditingProfile ? (
+                    <form
+                      className="space-y-4"
+                      onSubmit={e => {
+                        e.preventDefault();
+                        setIsEditingProfile(false);
+                      }}
+                    >
+                      <div className="flex items-center gap-4">
+                        <img src={editAvatar} alt="avatar" className="w-20 h-20 rounded-full object-cover border" />
+                        <label className="cursor-pointer bg-gray-100 px-3 py-2 rounded text-sm font-medium hover:bg-gray-200 text-black">
+                          {isArabic ? 'تغيير الصورة' : 'Change Photo'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={e => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = ev => setEditAvatar(ev.target?.result as string);
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1 text-gray-900">{isArabic ? 'الاسم' : 'Name'}</label>
+                        <input
+                          type="text"
+                          className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900"
+                          value={editName}
+                          onChange={e => setEditName(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button type="submit" className="bg-red-600 text-white">{isArabic ? 'حفظ' : 'Save'}</Button>
+                        <Button type="button" variant="outline" onClick={() => setIsEditingProfile(false)}>{isArabic ? 'إلغاء' : 'Cancel'}</Button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="flex items-center gap-4 mb-4">
+                      <img src={editAvatar} alt="avatar" className="w-20 h-20 rounded-full object-cover border" />
+                      <div>
+                        <div className="font-bold text-lg text-gray-900">{editName}</div>
+                        <Button variant="outline" className="mt-2" onClick={() => setIsEditingProfile(true)}>{isArabic ? 'تعديل الملف الشخصي' : 'Edit Profile'}</Button>
+                      </div>
+                    </div>
+                  )}
                   <Button 
                     variant="outline" 
                     className="w-full justify-start bg-transparent cursor-pointer"

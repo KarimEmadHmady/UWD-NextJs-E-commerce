@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, MapPin, Truck, CreditCard, CheckCircle, ShoppingCart, User, Package, Home, Store, Clock, AlertCircle, Info, Phone, Mail, Building, Globe, Navigation, Search, Edit2, Plus, Minus, Calendar, Shield, Gift, Star, Heart, Settings, LogOut, UserCheck, MapPinOff, CheckCircle2, XCircle, HelpCircle, FileText, Receipt, Banknote, Wallet, QrCode, Smartphone, Monitor, Printer, Camera, Headphones, Wifi, Battery, Zap, Target, Compass, Globe2, Pin, LocateIcon, Route, Navigation2, Car, Bike, Plane, Ship, Train, Bus, Rocket, Satellite, Telescope, Microscope, Binoculars, Video, Music, Gamepad2, BookOpen, Newspaper, File, Folder, Database, Server, Cloud, Lock, Unlock, Key, Eye, EyeOff, Bell, BellOff, Volume2, VolumeX, Mic, MicOff, Speaker, Radio, Tv, Laptop, Tablet, Watch, Activity, BarChart3, TrendingUp, TrendingDown, DollarSign, Euro, Bitcoin, Coins, PiggyBank, Wallet2, Clipboard, ClipboardCheck, ClipboardList, ClipboardX, Clock2, Timer, Hourglass, Calculator } from "lucide-react"
 import LocationStep from "@/components/checkout/location-step"
@@ -64,10 +64,14 @@ export default function CheckoutPage() {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
   const [branchInfo, setBranchInfo] = useState<{ name?: string; id?: string } | null>(null);
   const [showBranchModal, setShowBranchModal] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
+  const [selectedBranchTime, setSelectedBranchTime] = useState<string | null>(null);
   // استخرج refetch من useUserAddresses
   const { addresses: backendAddresses, loading: addressesLoading, refetch } = useUserAddresses(token);
   const [editAddress, setEditAddress] = useState<any>(null);
   const [showOutOfCoverageModal, setShowOutOfCoverageModal] = useState(false);
+  const [prevShippingMethod, setPrevShippingMethod] = useState<string | null>(null);
+  const timeInputRef = useRef<HTMLInputElement>(null);
 
   const redeemedRewards = useReduxSelector(selectSessionRedeemedRewards);
   const currentPoints = useReduxSelector(selectLoyaltyPoints);
@@ -255,6 +259,23 @@ export default function CheckoutPage() {
   const handleCustomerInfoSet = (info: any, shipping: string) => {
     setCustomerInfo(info);
     dispatch(setShippingMethod(shipping));
+    // Require branch and time for Pickup/Dine in
+    if (shipping === 'Pickup in Store' || shipping === 'Dine in') {
+      if (!selectedBranch || !selectedBranchTime) {
+        notify('error', isArabic ? 'يرجى اختيار الفرع والوقت المناسب قبل المتابعة' : 'Please select a branch and preferred time before continuing');
+        setShowBranchModal(true);
+        return;
+      }
+      // Ensure valid payment for pickup/dine in
+      if (paymentMethod === 'cash') {
+        dispatch(setPaymentMethod('Payment in store'));
+      }
+    } else {
+      // Ensure valid payment for delivery
+      if (paymentMethod === 'Payment in store') {
+        dispatch(setPaymentMethod('cash'));
+      }
+    }
     // أضف العنوان الجديد للـ addressSlice إذا لم يكن موجوداً
     const exists = addresses.some(addr =>
       addr.name === info.name &&
@@ -326,6 +347,8 @@ export default function CheckoutPage() {
       shipping: orderSummary.shipping,
       tax: orderSummary.tax,
       redeemedRewards: rewardsWithOrderId,
+      branch: selectedBranch || undefined,
+      preferredTime: selectedBranchTime || undefined,
     };
     // اربط مكافآت الجلسة الحالية بالأوردر في الستور
     try { reduxDispatch(attachOrderIdToCurrentRedeemed(order.id)); } catch {}
@@ -413,6 +436,30 @@ export default function CheckoutPage() {
       region: parts[2] || '',
       city: parts[3] || '',
     };
+  }
+
+  // دالة لتحويل الوقت لصيغة 12 ساعة مع AM/PM
+  function formatTime12Hour(timeString: string) {
+    if (!timeString) return '';
+    // إذا كانت القيمة فقط وقت (مثل 17:52)
+    if (/^\d{2}:\d{2}$/.test(timeString)) {
+      let [hours, minutes] = timeString.split(":").map(Number);
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+      return `${hours}:${minutesStr} ${ampm}`;
+    }
+    // إذا كانت القيمة datetime
+    const date = new Date(timeString);
+    if (isNaN(date.getTime())) return timeString; // fallback if invalid
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+    return `${hours}:${minutesStr} ${ampm}`;
   }
 
   const renderStepContent = () => {
@@ -522,47 +569,17 @@ export default function CheckoutPage() {
           initialShippingMethod={shippingMethod || undefined}
           continueLabel={isArabic ? 'متابعة' : 'Continue'}
           onShippingSelected={async (method) => {
+            if ((method === 'Pickup in Store' || method === 'Dine in') && method !== prevShippingMethod) {
+              setSelectedBranch(null);
+              setSelectedBranchTime(null);
+            }
+            setPrevShippingMethod(method);
             if (method === 'Pickup in Store' || method === 'Dine in') {
-              try {
-                // Derive coordinates from multiple possible sources/fields
-                let lat: number | undefined;
-                let long: number | undefined;
-                let addrStr: string = '';
-
-                if (selectedAddress) {
-                  lat = selectedAddress.latitude ?? selectedAddress.lat;
-                  long = selectedAddress.longitude ?? selectedAddress.long;
-                  addrStr = selectedAddress.address_1 || selectedAddress.street || selectedAddress.address || '';
-                }
-                if ((lat == null || long == null) && location) {
-                  lat = location.latitude;
-                  long = location.longitude;
-                  addrStr = addrStr || location.address || '';
-                }
-                if ((lat == null || long == null) && userLatLong) {
-                  lat = userLatLong.lat;
-                  long = userLatLong.long;
-                }
-
-                if (lat == null || long == null) {
-                  notify('error', isArabic ? 'تعذر تحديد الإحداثيات للعنوان المختار' : 'Could not determine coordinates for the selected address');
-                  return;
-                }
-
-                const loc = { latitude: Number(lat), longitude: Number(long), address: addrStr };
-                const result: any = await checkLocation(loc);
-                if (result?.meta?.requestStatus === 'fulfilled') {
-                  const api = result.payload?.data;
-                  const name = api?.data?.name || api?.name;
-                  const id = api?.data?.id || api?.id;
-                  setBranchInfo({ name, id });
-                  setShowBranchModal(true);
-                } else if (result?.payload) {
-                  notify('error', String(result.payload));
-                }
-              } catch (e) {
-                notify('error', isArabic ? 'حدث خطأ أثناء تحديد الفرع' : 'An error occurred while determining the branch');
+              if (paymentMethod === 'cash') {
+                dispatch(setPaymentMethod('Payment in store'));
               }
+            } else if (paymentMethod === 'Payment in store') {
+              dispatch(setPaymentMethod('cash'));
             }
           }}
         />;
@@ -588,14 +605,18 @@ export default function CheckoutPage() {
                     <CreditCard className="w-4 h-4" />
                     {isArabic ? 'الدفع بالبطاقة' : 'Pay by Card'}
                   </Button>
-                  <Button onClick={() => handlePaymentSelect('cash')} className={`w-full flex items-center gap-2 ${paymentMethod === 'cash' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>
-                    <Banknote className="w-4 h-4" />
-                    {isArabic ? 'الدفع عند الاستلام' : 'Cash on Delivery'}
-                  </Button>
-                  <Button onClick={() => handlePaymentSelect('Payment in store')} className={`w-full flex items-center gap-2 ${paymentMethod === 'Payment in store' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>
-                    <Store className="w-4 h-4" />
-                    {isArabic ? 'الدفع في المتجر' : 'Payment in store'}
-                  </Button>
+                  {(shippingMethod !== 'Pickup in Store' && shippingMethod !== 'Dine in') && (
+                    <Button onClick={() => handlePaymentSelect('cash')} className={`w-full flex items-center gap-2 ${paymentMethod === 'cash' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>
+                      <Banknote className="w-4 h-4" />
+                      {isArabic ? 'الدفع عند الاستلام' : 'Cash on Delivery'}
+                    </Button>
+                  )}
+                  {(shippingMethod === 'Pickup in Store' || shippingMethod === 'Dine in') && (
+                    <Button onClick={() => handlePaymentSelect('Payment in store')} className={`w-full flex items-center gap-2 ${paymentMethod === 'Payment in store' ? 'bg-red-600 text-white' : 'bg-white text-red-600 border border-red-600'}`}>
+                      <Store className="w-4 h-4" />
+                      {isArabic ? 'الدفع في المتجر' : 'Payment in store'}
+                    </Button>
+                  )}
                 </div>
                 {paymentMethod === 'card' && (
                   <div className="mt-6 space-y-4">
@@ -617,14 +638,14 @@ export default function CheckoutPage() {
                       <AlertCircle className="w-4 h-4" />
                       {cardError}
                     </div>}
-                    <Button onClick={handleCardContinue} className="w-full bg-red-600 hover:bg-red-700 text-white mt-2 flex items-center gap-2">
+                    <Button onClick={handleCardContinue} className="w-full bg-red-600 hover:bg-red-700 text-white mt-2 flex items-center gap-2" disabled={!paymentMethod}>
                       <CheckCircle className="w-4 h-4" />
                       {isArabic ? 'متابعة للمراجعة' : 'Continue to Review'}
                     </Button>
                   </div>
                 )}
                 {paymentMethod !== 'card' && (
-                  <Button onClick={() => setCurrentStep(5)} className="w-full bg-red-600 hover:bg-red-700 text-white mt-[100px] flex items-center gap-2">
+                  <Button onClick={() => setCurrentStep(5)} className="w-full bg-red-600 hover:bg-red-700 text-white mt-[100px] flex items-center gap-2" disabled={!paymentMethod}>
                     <CheckCircle className="w-4 h-4" />
                     {isArabic ? 'متابعة للمراجعة' : 'Continue to Review'}
                   </Button>
@@ -683,6 +704,22 @@ export default function CheckoutPage() {
                       </li>
                     </ul>
                   )}
+                  {/* {(shippingMethod === 'Pickup in Store' || shippingMethod === 'Dine in') && (
+                    <ul className="text-sm text-gray-700 space-y-1 mt-2">
+                      {selectedBranch && (
+                        <li className="flex items-center gap-2">
+                          <Store className="w-3 h-3 text-gray-500" />
+                          <b>{isArabic ? 'الفرع:' : 'Branch:'}</b> {selectedBranch}
+                        </li>
+                      )}
+                      {(shippingMethod === 'Pickup in Store' || shippingMethod === 'Dine in') && selectedBranchTime && (
+                        <li className="flex items-center gap-2">
+                          <Clock className="w-3 h-3 text-gray-500" />
+                          <b>{isArabic ? 'الوقت المفضل:' : 'Preferred Time:'}</b> {formatTime12Hour(selectedBranchTime)}
+                        </li>
+                      )}
+                    </ul>
+                  )} */}
                   <ul className="text-sm text-gray-700 space-y-1 mt-2">
                     <li className="flex items-center gap-2">
                       <Truck className="w-3 h-3 text-gray-500" />
@@ -692,6 +729,18 @@ export default function CheckoutPage() {
                       <CreditCard className="w-3 h-3 text-gray-500" />
                       <b>{isArabic ? 'طريقة الدفع:' : 'Payment Method:'}</b> {paymentMethod}
                     </li>
+                    {(shippingMethod === 'Pickup in Store' || shippingMethod === 'Dine in') && selectedBranch && (
+                      <li className="flex items-center gap-2">
+                        <Store className="w-3 h-3 text-gray-500" />
+                        <b>{isArabic ? 'الفرع:' : 'Branch:'}</b> {selectedBranch}
+                      </li>
+                    )}
+                    {(shippingMethod === 'Pickup in Store' || shippingMethod === 'Dine in') && selectedBranchTime && (
+                      <li className="flex items-center gap-2">
+                        <Clock className="w-3 h-3 text-gray-500 " />
+                        <b>{isArabic ? 'الوقت المفضل:' : 'Preferred Time:'}</b> {formatTime12Hour(selectedBranchTime)}
+                      </li>
+                    )}
                   </ul>
                 </div>
                 {/* ملخص الطلب */}
@@ -752,8 +801,10 @@ export default function CheckoutPage() {
                     ))}
                   </ul>
                 </div>
-                <CustomButton onClick={() => handleReview({})} className="w-full mt-4 pb-[20px]">{isArabic ? 'إتمام الطلب' : 'Place Order'}</CustomButton>
-                <CustomButton onClick={() => setCurrentStep(4)} className="w-full mt-2 pb-[20px]">{isArabic ? 'رجوع' : 'Back'}</CustomButton>
+                <div className="flex justify-between mt-4 gap-4 pb-[20px]">
+                  <CustomButton onClick={() => setCurrentStep(4)} className="px-8">{isArabic ? 'رجوع' : 'Back'}</CustomButton>
+                  <CustomButton onClick={() => handleReview({})} className=" text-white px-8">{isArabic ? 'إتمام الطلب' : 'Place Order'}</CustomButton>
+                </div>
               </CardContent>
             </Card>
             </RevealOnScroll>
@@ -789,26 +840,53 @@ export default function CheckoutPage() {
             <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <Store className="w-7 h-7 text-red-600" />
             </div>
-            <h3 className="text-2xl font-bold mb-2 text-gray-900">{isArabic ? 'الفرع الأقرب لك' : 'Your Nearest Branch'}</h3>
-            <div className="text-gray-700 mb-4">
-              {branchInfo?.name ? (
-                <>
-                  <span className="block mb-2">{isArabic ? 'سيتم التعامل مع طلبك من الفرع:' : 'Your order will be handled by:'}</span>
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 font-semibold">
-                    <MapPin className="w-4 h-4" />
-                    {branchInfo.name}
-                  </span>
-                </>
-              ) : (
-                <span>{isArabic ? 'جارٍ تحديد الفرع...' : 'Determining branch...'}</span>
-              )}
+            <h3 className="text-2xl font-bold mb-2 text-gray-900">{isArabic ? 'اختيار الفرع والوقت' : 'Choose Branch and Time'}</h3>
+            <p className="text-sm text-gray-600 mb-4">{isArabic ? 'يجب اختيار الفرع الأنسب لك' : 'Please choose your most convenient branch'}</p>
+            <div className="text-left space-y-4">
+              <div>
+                <label className="block text-gray-900 text-sm font-medium mb-1">{isArabic ? 'الفرع' : 'Branch'}</label>
+                <select
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900"
+                  value={selectedBranch || ''}
+                  onChange={(e) => setSelectedBranch(e.target.value)}
+                >
+                  <option value="" disabled>{isArabic ? 'اختر الفرع' : 'Select a branch'}</option>
+                  <option value={isArabic ? 'مصر الجديدة' : 'Heliopolis'}>{isArabic ? 'مصر الجديدة' : 'Heliopolis'}</option>
+                  <option value={isArabic ? 'الدقي' : 'Dokki'}>{isArabic ? 'الدقي' : 'Dokki'}</option>
+                  <option value={isArabic ? 'التجمع' : 'Settlement'}>{isArabic ? 'التجمع' : 'Settlement'}</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-gray-900 text-sm font-medium mb-1">{isArabic ? 'الوقت المفضل' : 'Preferred Time'}</label>
+                <input
+                  type="time"
+                  ref={timeInputRef}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900"
+                  value={selectedBranchTime || ''}
+                  onChange={(e) => setSelectedBranchTime(e.target.value)}
+                  onClick={() => timeInputRef.current && timeInputRef.current.showPicker && timeInputRef.current.showPicker()}
+                />
+              </div>
             </div>
-            <p className="text-xs text-gray-500 mb-5">
-              {isArabic ? 'يمكنك تغيير العنوان من خطوة الموقع إذا لم يكن هذا الفرع مناسباً.' : 'You can change the address from the Location step if needed.'}
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Button onClick={() => setShowBranchModal(false)} className="bg-red-600 hover:bg-red-700 text-white">
-                {isArabic ? 'حسناً' : 'OK'}
+            <div className="flex gap-3 justify-center mt-5">
+              <Button
+                variant="outline"
+                onClick={() => setShowBranchModal(false)}
+                className="text-gray-700"
+              >
+                {isArabic ? 'إلغاء' : 'Cancel'}
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!selectedBranch || !selectedBranchTime) {
+                    notify('error', isArabic ? 'اختر الفرع والوقت أولاً' : 'Please select branch and time first');
+                    return;
+                  }
+                  setShowBranchModal(false);
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {isArabic ? 'تأكيد' : 'Confirm'}
               </Button>
             </div>
           </div>

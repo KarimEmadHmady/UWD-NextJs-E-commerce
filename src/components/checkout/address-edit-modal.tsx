@@ -382,9 +382,9 @@ export default function AddressEditModal({ address, onClose, onSave, token, forc
             </h3>
             <div className="mb-2">
               <MapWithMarker lat={mapLoc.latitude} lng={mapLoc.longitude} onChange={handleMapChange} />
-              <div className="mt-2 text-xs text-gray-700 text-center">
+              {/* <div className="mt-2 text-xs text-gray-700 text-center">
                 {isArabic ? 'خط العرض' : 'Lat'}: {mapLoc.latitude?.toFixed(5)}, {isArabic ? 'خط الطول' : 'Lng'}: {mapLoc.longitude?.toFixed(5)}
-              </div>
+              </div> */}
             </div>
           </div>
 
