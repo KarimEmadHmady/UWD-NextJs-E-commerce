@@ -15,11 +15,10 @@ import dynamic from 'next/dynamic';
 import { WorldMapDemo } from "@/components/common/ui/WorldMapDemo";
 
 const branches = [
-  { name: "فرع وسط البلد", address: "١٥ شارع رمسيس، القاهرة", lat: 30.0444, lng: 31.2357 },
-  { name: "فرع الإسكندرية", address: "٢٢ شارع الكورنيش، الإسكندرية", lat: 31.2001, lng: 29.9187 },
-  { name: "فرع الجيزة", address: "٨ شارع جامعة القاهرة، الجيزة", lat: 30.0131, lng: 31.2089 },
-  { name: "فرع المنصورة", address: "٧٧ شارع الجمهورية، المنصورة", lat: 31.0364, lng: 31.3807 },
-  { name: "فرع طنطا", address: "٥ شارع النادي، طنطا", lat: 30.7865, lng: 31.0004 },
+{ name: "فرع مصر الجديدة", address: "٢٥ شارع الحجاز، مصر الجديدة، القاهرة", lat: 30.0910, lng: 31.3220 },
+{ name: "فرع الدقي", address: "١٢ شارع التحرير، الدقي، الجيزة", lat: 30.0370, lng: 31.2118 },
+{ name: "فرع التجمع الخامس", address: "٩٠ شارع التسعين الجنوبي، التجمع الخامس، القاهرة الجديدة", lat: 30.0109, lng: 31.4372 },
+
 ];
 
 const MapWithMarkers = dynamic(() => import("@/components/common/ui/MapWithMarkers"), { ssr: false });
@@ -55,7 +54,7 @@ export default function ContactPage() {
     {
       icon: MapPin,
       title: "زورونا في مطعم روكسي",
-      details: ["١٥ شارع رمسيس", "القاهرة", "مصر"],
+      details: ["الدقى", "مصر الجديدة", "التجمع"],
       color: "text-red-600",
       bgColor: "bg-red-100",
     },

@@ -79,7 +79,7 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Shopping Cart ({items.reduce((total, item) => total + item.quantity, 0)})</h2>
+          <h2 className="text-xl font-bold text-gray-900"> سلة المشتريات ({items.reduce((total, item) => total + item.quantity, 0)})</h2>
           <Button variant="ghost" size="icon" onClick={onClose} className="cursor-pointer">
             <X className="w-5 h-5 cursor-pointer" />
           </Button>
@@ -135,7 +135,7 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
               variant="outline"
               className="w-full mt-4 bg-transparent cursor-pointer"
             >
-              View Full Cart <ArrowRight className="w-4 h-4 ml-2 cursor-pointer" />
+               مشاهدة السلة  <ArrowRight className="w-4 h-4 ml-2 cursor-pointer" />
             </Button>
             <Button
               onClick={() => {
@@ -144,7 +144,7 @@ export default function SideCart({ isOpen, onClose }: SideCartProps) {
               variant="outline"
               className="w-full mt-3 bg-transparent text-red-600 border-red-200 hover:text-red-700 cursor-pointer"
             >
-               Clear Cart
+               تفريغ السلة 
             </Button>
           </div>
         )}

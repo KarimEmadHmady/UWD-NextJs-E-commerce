@@ -338,7 +338,7 @@ export default function AccountPage() {
               <div className="mb-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>{isArabic ? 'الولاء' : 'Loyalty'}</CardTitle>
+                  <CardTitle>{isArabic ? 'نقاظ الولاء' : 'Loyalty'}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <LoyaltyPanel

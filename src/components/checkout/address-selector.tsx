@@ -156,10 +156,10 @@ export default function AddressSelector({ addresses, onAddAddress, onSelect, def
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-black flex items-center gap-2">
           <MapPin className="w-5 h-5 text-red-600" />
-          Select Address
+          تحديد عنوان
         </h2>
         <CustomButton onClick={() => setShowAdd(true)} className="cursor-pointer pb-[20px] border-none outline-none flex items-center gap-2 ">
-        Add New Address +
+        اضافة عنوان جديد +
         </CustomButton>
       </div>
       {/* قائمة العناوين */}
