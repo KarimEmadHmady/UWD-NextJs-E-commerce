@@ -124,7 +124,7 @@ export default function OutOfCoverageModal({ onClose }: { onClose: () => void })
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 mb-2"
             onClick={() => setShowMap(true)}
           >
-            {isArabic ? 'أدخل موقعك' : 'Share Your Location'}
+            {isArabic ? 'أرسل موقعك' : 'Share Your Location'}
           </button>
         </div>
 

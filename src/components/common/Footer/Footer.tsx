@@ -102,7 +102,7 @@ export default function Footer() {
           </div>
         </div>
         <hr className="mt-16 mb-10 border-gray-200" />
-        <p className="text-sm text-center text-gray-600">{isArabic ? '© جميع الحقوق محفوظة 2025 لمطعم روكسي' : '© All rights reserved 2025 for Roxy Restaurant'}</p>
+        <p className="text-sm text-center text-gray-600">{isArabic ? '© تم التطوير بواسطة شركة المتحدة' : '© Developed by UWD'}</p>
       </div>
     </section>
   );
